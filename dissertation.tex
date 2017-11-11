@@ -15,42 +15,23 @@
 % This template package can be found in ./Latex/Classes/
 % It aims to follow the official NYU-Steinhardt guidelines:
 %       http://steinhardt.nyu.edu/doctoral/dissertation/formatting
-\documentclass[oneside, 12pt, letterpaper]{Latex/Classes/NYUdissertation}
+\documentclass[oneside, 12pt, letterpaper]{marl}
+% preamble
+\usepackage[default,regular,black]{sourceserifpro}
 
-%: Macro file for Latex
-% Macros help you summarise frequently repeated Latex commands.
-% Here, they are placed in an external file /Latex/Macros/MacroFile1.tex
-% An macro that you may use frequently is the figuremacro (see introduction.tex)
-\include{Latex/Macros/MacroFile1}
 
-%: ----------------------------------------------------------------------
-%:                  TITLE PAGE: name, degree,..
-% ----------------------------------------------------------------------
-% below is to generate the title page with crest and author name
 
-%if output to PDF then put the following in PDF header
-\ifpdf
-    \pdfinfo { /Title  (Bear Claw Macaroon Tiramisu Cheesecake)
-               /Creator (TeX)
-               /Producer (pdfTeX)
-               /Author (Your Name addy@nyu.edu)
-               % /CreationDate (D:YYYYMMDDhhmmss)  %format D:YYYYMMDDhhmmss
-               % /ModDate (D:YYYYMMDDhhmm)
-               /Subject (Music Technology)
-               /Keywords (Marzipan, jujubes, pudding, sesame snaps) }
-         \pdfcatalog { /PageMode (/UseOutlines)
-                  /OpenAction (fitbh)  }
-\fi
-
-\title{\doublespacing Bear Claw Macaroon Tiramisu Cheesecake}
+\proposaltitle{\doublespacing 
+	Modern Generative Methods for Music Transcription
+}
 
 \threecommittee
-{Professor I.~M. Smart, Chairperson}
-{Professor Beardsley Wordsworth}
-{Professor Norma Hazelwood}
+{Professor Juan Pablo Bello, Chairperson}
+{Professor }
+{Professor }
 
 \degree{Doctor of Philosophy}
-\degreedate{2015}
+\degreedate{\the\year}
 
 % ----------------------------------------------------------------------
 % The section below defines www links/email for author and institutions
@@ -60,7 +41,7 @@
 % You can also see below how, www links are placed
 % \href{http://www.something.net}{link text}
 
-\author{\href{mailto:addy@nyu.edu}{Your Name}}
+\author{\href{mailto:jongwook@nyu.edu}{Jong Wook Kim}}
 \program{Program in \href{http://steinhardt.nyu.edu/music/technology/}{Music Technology}}
 \department{Department of \href{http://steinhardt.nyu.edu/music/}{Music and Performing Arts Professions}}
 \university{\href{http://www.nyu.edu/}{New York University}}
@@ -78,14 +59,18 @@
 \hfuzz=50pt
 \makeindex
 
-%:--------------------------------------------------------------
-%:                  FRONT MATTER: dedications, abstract,..
-% --------------------------------------------------------------
+
+%if output to PDF then put the following in PDF header
+\ifpdf
+\pdfinfo { /Title  (\@title)
+	/Author (Jong Wook Kim <jongwook@nyu.edu>)
+	/Subject (Music Technology)
+	/Keywords (Marzipan, jujubes, pudding, sesame snaps) }
+	\pdfcatalog { /PageMode (/UseOutlines)	/OpenAction (fitbh)  }
+\fi
 
 \begin{document}
 
-%\hyphenpenalty=9000
-%\frontmatter
 \widowpenalty=10000
 \clubpenalty=10000
 
@@ -93,7 +78,7 @@
 %: ----------------------- generate cover page ------------------------
 %\setstretch{1.2}
 \maketitle  % command to print the title page with above variables
-\makecopyright
+% \makecopyright
 
 %: ----------------------- abstract ------------------------
 
@@ -109,7 +94,7 @@
 
 %: ----------------------- contents ------------------------
 % levels are: 0 - chapter, 1 - section, 2 - subsection, 3 - subsubsection
-\setcounter{secnumdepth}{0} % organisational level that receives a numbers (NYU Steinhardt recommends level 0, which is pretty hideous)
+\setcounter{secnumdepth}{3} % organisational level that receives a numbers (NYU Steinhardt recommends level 0, which is pretty hideous)
 \setcounter{tocdepth}{2}    % print table of contents for level 2
 \singlespacing
 \tableofcontents            % print the table of contents
@@ -130,7 +115,6 @@
 %\clearpage
 %\printglossaries
 
-
 \chapterbegin
 
 %: ----------------------- epigraph ------------------------
@@ -150,7 +134,7 @@
 % But take care that the paths match. You can also change the order of appearance by moving the include commands.
 
 \include{1-introduction/introduction}
-\include{2-literature/literature}
+\include{2-review/review}
 \include{3-methods/methods}
 \include{4-pilot/pilot}
 
@@ -174,6 +158,7 @@
 
 
 %: ------ appendices----------------------------------------
+\appendixbegin
 \include{backmatter/appendices}
 
 %: --------------------------- index ---------------------------

@@ -6,7 +6,7 @@
 %---------------------------------------------------------------------------
 
 %-------------------------- identification ---------------------
-\ProvidesClass{Latex/Classes/NYUdissertation}[2014/07/01 PhD dissertation class]
+\ProvidesClass{marl}[2017/11/11 MARL PhD dissertation class]
 
 %:-------------------------- book -----------------------
 
@@ -81,7 +81,7 @@
 \usepackage[nottoc]{tocbibind} % correct page numbers for bib in TOC, nottoc suppresses an entry for TOC itself
 \usepackage{textcase}
 \usepackage{prettyref}
-\newrefformat{chp}{Chapter~\ref{#1}}
+\newrefformat{ch}{Chapter~\ref{#1}}
 \newrefformat{tab}{Table~\ref{#1}}
 \newrefformat{fig}{Figure~\ref{#1}}
 \newrefformat{subtab}{Table~\ref{#1}}
@@ -101,17 +101,6 @@
 %if you use a macTeX 2008 or later, use the ifpdf package
 \usepackage{ifpdf}
 \usepackage{ifxetex}
-%if you use an older version, uncomment these lines:
-%\newif \ifpdf
-%    \ifx \pdfoutput \undefined
-%       % for running latex
-%        \pdffalse
-%    \else
-%       % for running pdflatex
-%        \pdfoutput = 1    % positive value for a PDF output
-%                         % otherwise a DVI
-%        \pdftrue
-%\fi
 
 \ifpdf
     \usepackage[ pdftex,
@@ -138,7 +127,6 @@
     \DeclareGraphicsExtensions{.png, .jpg, .jpeg, .pdf, .gif} %GIF doesn't work??
     \usepackage[pdftex]{graphicx}
     \pdfcompresslevel=9
-    
 \else
     \usepackage[ dvips,
                  %ocgcolorlinks,
@@ -220,7 +208,14 @@
 %\renewcommand{\@pnumwidth}{3em} \renewcommand{\@tocrmarg}{4em}
 
 \newcommand{\chapterbegin}{\cftaddtitleline{toc}{part}{CHAPTER}{}}
-\newcommand{\appendixbegin}{\cftaddtitleline{toc}{part}{APPENDICES}{}}
+\newcommand{\appendixbegin}{
+	\cftaddtitleline{toc}{part}{APPENDICES}{}
+	\titleformat{\chapter}[display]
+	{\normalfont\normalsize\centering}
+	{\singlespacing\MakeUppercase
+		\chaptertitlename~ \Alph{chapter}}{0em}
+	{\singlespacing\normalsize\MakeUppercase}
+}
 
 \let\originall@chapter\l@chapter
 \def\l@chapter#1#2{\originall@chapter{{\uppercase{#1}}}{#2}}
@@ -269,14 +264,10 @@
 {\singlespacing\normalsize\MakeUppercase}
 
 % Section and subsection displays using NYU guidelines
-\titleformat{\section}
-{\normalsize}{}{0pt}{\underline}
-\titleformat{\subsection}
-{\centering\normalsize}{}{0pt}{\underline}
-\titleformat{\subsubsection}
-{\normalsize}{}{0pt}{}
-\titleformat{\subsubsubsection}
-{\normalsize\centering}{}{0pt}{}
+%\titleformat{\section}{\normalsize}{\thesection}{0pt}{\underline}
+%\titleformat{\subsection}{\centering\normalsize}{\thesubsection}{0pt}{\underline}
+%\titleformat{\subsubsection}{\normalsize}{\thesubsubsection}{0pt}{}
+%\titleformat{\subsubsubsection}{\normalsize\centering}{\thesubsubsubsection}{0pt}{}
 
 % Margin
 \titlespacing{\chapter}{0pt}{2em}{3em}
@@ -371,19 +362,6 @@
 % starts roman page numbering until chapter 1
 % important to avoid two pages numbered 1 and 2 which may cause bad links
 % bug: cover i + back side ii and then numbering restarts with i; should be iii
-\newcommand{\ps@thesis}{
-  \renewcommand{\@oddhead}{}%
-  \vspace{-0.25in}
-  \if@twoside
-  \hspace{-0.05in}
-  \else
-  \hspace{-0.25in}
-  \fi
-  \@crest
-  \renewcommand{\@evenhead}{}%
-  \renewcommand{\@oddfoot}{}%
-  \renewcommand{\@evenfoot}{}%
-}
 
 \renewcommand{\thepage}{\roman{page}}
 
@@ -509,7 +487,7 @@
   \thispagestyle{empty}
   \null\vfill
   \begin{center}
-    Copyright \copyright \, \@degreedate \, \@author
+    Copyright \textcopyright \, \@degreedate \, \@author
   \end{center}
   \null\vfill
 }
