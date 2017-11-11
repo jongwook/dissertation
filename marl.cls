@@ -229,7 +229,8 @@
 \cftsetindents{table}{0em}{3.5em}
 
 \AtBeginDocument{%
-  \preto\section{\ifnum\value{section}=0\addtocontents{toc}{\vskip 1em}\fi }
+  \preto\section{\addtocontents{toc}{\vskip 0.6em}}
+  \preto\subsection{\addtocontents{toc}{\vskip 0.3em}}
 }
 
 %:-------------------------- Heading Formats -----------------------
@@ -246,7 +247,7 @@
 \subsectionfont{\centering\normalsize \normalfont\underline}
 \subsubsectionfont{\normalfont\normalsize}
 
-\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesection}{\arabic{section}.}
 \renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
 \renewcommand{\thesubsubsection}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}}
 
