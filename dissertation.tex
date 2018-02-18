@@ -1,25 +1,6 @@
-% ---------------------------------------------------------------------------
-%                   LATEX TEMPLATE FOR MARL PhD THESIS
-% ---------------------------------------------------------------------------
-
-% Taemin Cho put together a nice LaTeX class, that Oriol Nieto modified.
-% Eric Humphrey added all of this sweet content, and made it available to 
-% the rest of MARLities.
-
-% Everything is based on Harish Bhanderi's PhD/MPhil template, then Uni Cambridge
-% http://www-h.eng.cam.ac.uk/help/tpl/textprocessing/ThesisStyle/
-% corrected and extended in 2007 by Jakob Suckale, then MPI-CBG PhD programme
-% and made available through OpenWetWare.org - the free biology wiki
-
-%: Style file for Latex NYU-MARL:
-% This template package can be found in ./Latex/Classes/
-% It aims to follow the official NYU-Steinhardt guidelines:
-%       http://steinhardt.nyu.edu/doctoral/dissertation/formatting
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8 Unicode
 \documentclass[oneside, 12pt, letterpaper]{marl}
-% preamble
-\usepackage[default,regular,black]{sourceserifpro}
-
-
 
 \proposaltitle{\doublespacing 
 	Modern Generative Methods for Music Transcription
@@ -27,19 +8,11 @@
 
 \threecommittee
 {Professor Juan Pablo Bello, Chairperson}
-{Professor }
-{Professor }
+{Professor Robert Rowe}
+{Doctor Eric J. Humphrey}
 
 \degree{Doctor of Philosophy}
 \degreedate{\the\year}
-
-% ----------------------------------------------------------------------
-% The section below defines www links/email for author and institutions
-% They will appear on the title page of the PDF and can be clicked
-
-%: ----------------------- HELP: www links
-% You can also see below how, www links are placed
-% \href{http://www.something.net}{link text}
 
 \author{\href{mailto:jongwook@nyu.edu}{Jong Wook Kim}}
 \program{Program in \href{http://steinhardt.nyu.edu/music/technology/}{Music Technology}}
@@ -51,29 +24,17 @@
   Doctor of Philosophy in the\\
   \href{http://steinhardt.nyu.edu/}{Steinhardt School of Culture, Education, and Human Development}}
 
-
-% ----------------------------------------------------------------------
-
 % turn of those nasty overfull and underfull hboxes
 \hbadness=10000
 \hfuzz=50pt
 \makeindex
 
-
-%if output to PDF then put the following in PDF header
-\ifpdf
-\pdfinfo { /Title  (\@title)
-	/Author (Jong Wook Kim <jongwook@nyu.edu>)
-	/Subject (Music Technology)
-	/Keywords (Marzipan, jujubes, pudding, sesame snaps) }
-	\pdfcatalog { /PageMode (/UseOutlines)	/OpenAction (fitbh)  }
-\fi
+\addbibresource{library/library.bib}
 
 \begin{document}
 
 \widowpenalty=10000
 \clubpenalty=10000
-
 
 %: ----------------------- generate cover page ------------------------
 %\setstretch{1.2}
@@ -82,28 +43,30 @@
 
 %: ----------------------- abstract ------------------------
 
-% Your institution may have specific regulations if you need an abstract and where it is to be placed in the document. The default here is just after title.
-
 % \include{frontmatter/abstract}
 
 %: ----------------------- tie in front matter ------------------------
 \doublespacing
-
 % \include{frontmatter/dedication}
 % \include{frontmatter/acknowledgement}
+\singlespacing
 
 %: ----------------------- contents ------------------------
 % levels are: 0 - chapter, 1 - section, 2 - subsection, 3 - subsubsection
 \setcounter{secnumdepth}{3} % organisational level that receives a numbers (NYU Steinhardt recommends level 0, which is pretty hideous)
 \setcounter{tocdepth}{2}    % print table of contents for level 2
-\singlespacing
-\tableofcontents            % print the table of contents
-%\addcontentsline{toc}{section}{continued}
-%: ----------------------- list of figures/tables ------------------------
-\clearpage
-\listoftables                   % print list of tables
-\clearpage
-\listoffigures                  % print list of figures
+
+{
+	\small 
+	\tableofcontents            % print the table of contents
+	%\addcontentsline{toc}{section}{continued}
+	%: ----------------------- list of figures/tables ------------------------
+	
+	%\clearpage
+	%\listoftables                   % print list of tables
+	\clearpage
+	\listoffigures                  % print list of figures
+}
 
 %: ----------------------- glossary ------------------------
 
@@ -128,15 +91,18 @@
 
 \mainmatter
 \doublespacing
+\sloppy
+
 %: ----------------------- subdocuments ------------------------
 
 % Parts of the thesis are included below. Rename the files as required.
 % But take care that the paths match. You can also change the order of appearance by moving the include commands.
 
 \include{1-introduction/introduction}
-\include{2-review/review}
-\include{3-methods/methods}
-\include{4-pilot/pilot}
+\include{2-deeplearning/deeplearning}
+\include{3-mir/mir}
+\include{4-methods/methods}
+\include{5-pilot/pilot}
 
 % -------------------------------------------------------------- 
 %:                  BACK MATTER: appendices, refs,..
@@ -147,19 +113,17 @@
 
 %: ----------------------- bibliography ------------------------
 
+{
 %\clearpage
 \onehalfspacing
-\bibliographystyle{apacite}
-
+\renewcommand{\bibfont}{\small}
 \renewcommand{\bibname}{Bibliography} % changes the header; default: Bibliography
-
-\bibliography{backmatter/library} % adjust this to fit your BibTex file
-
-
+\printbibliography
+}
 
 %: ------ appendices----------------------------------------
-\appendixbegin
-\include{backmatter/appendices}
+%\appendixbegin
+%\include{backmatter/appendices}
 
 %: --------------------------- index ---------------------------
 

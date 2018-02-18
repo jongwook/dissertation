@@ -9,15 +9,117 @@
 \chapter{Introduction}
 \label{ch:introduction}
 
-Automatic music transcription refers to an automated method that can identify all musical events in the input audio and convert them into musical notations.
+As listening is a core constituent of human perception, an essential component of artificial intelligence is machine listening.
+The purpose of machine listening research is to make computers able to process and understand sounds as humans do.
+This thesis focuses on machine understanding of music, among many types of sounds, especially on the ability to automatically transcribe music, which largely remains an unsolved problem despite the decades of research.
+The recent rapid development in deep learning research, however, hints at many new possibilities for improving the performance of, or even achieving human-level accuracy in music transcription.
+
+
+\section{Statement of Problem}
+
+Automatic music transcription (AMT) refers to an automated method that can identify all musical events in the input audio and convert them into musical notations.
+This work focuses on the possibilities of using manifold learning powered by deep generative models, possibly accompanied with automatic generation of music, to achieve better performance in music transcription.
+
+
+\section{Subproblems and Research Questions}
+
+The problem consists of two major subproblems:
+
+\vspace{1em}
+
+\begin{enumerate}
+	\item Can we perform manifold learning on musical audio signals and use the learned semantics to perform automatic music transcription?
+	\begin{enumerate}
+		\item Can deep generative models such as generative adversarial networks (GAN) be an effective building block for this purpose?
+		\item How can we make such model learn and distinguish the core aspects of sounds --- pitch, timbre, loudness, and duration --- to be used for transcription in the presence of polyphony and multiple instruments?
+	\end{enumerate}
+	\item Can we build a music generation pipeline for producing a large-scale annotated dataset that is required by the manifold learning?
+	\begin{enumerate}
+		\item Can we use software instruments and audio post-processing techniques to span various timbres and recording environments that we are expected to encounter in transcription?
+		\item How can we formulate a music language model that can be plugged into music synthesis and build generalizable datasets for polyphonic, multi-instrument music transcription?
+		\item Would it be possible to incorporate the music generation pipeline into the deep generative model as a learnable component of the automatic music transcription algorithm?
+	\end{enumerate}
+\end{enumerate}
+
+\vspace{1em}
+
+The primary objective of this thesis lies on the first subproblem, concerning manifold learning on musical audio powerd by deep generative models.
+Necessary to the successful application of data-driven learning is the availability of large-scale training data, while the difficulty of obtaining large-scale labeled data has always been a problem in music informatics.
+The second subproblem is aimed at alleviating this issue by employing automatically generated datasets using software instruments and music language models.
+In this sense, while not being the primary research objective of the thesis, effectively designing the data generation pipeline would be an essential component of achieving the primary goal.
+
+\section{Definitions}
+
+\paragraph{Research Areas}
+
+\begin{itemize}
+	\item \textbf{Music Informatics}: An interdisciplinary research area that includes analysis, production, distribution, and consumption  of digital music; used interchangeably with \textbf{Music Information Retrieval}.
+	\item \textbf{Automatic Music Transcription}: An automated method of extracting musical events in the input audio and converting them into musical notations.
+	\item \textbf{Multi-Pitch Estimation}: A task of estimating individual pitch values in polyphonic music. Synonymous with \textbf{Multiple Fundamental Frequency (F0) Estimation}.
+\end{itemize}
+
+\noindent \begin{minipage}{\textwidth}
+\paragraph{Music and Audio Signal Processing}
+
+\begin{itemize}
+	\item \textbf{Fundamental Frequency}: The reciprocal of fundamental period.
+	\item \textbf{Fundamental Period}: The least positive period of a periodic signal.
+	\item \textbf{Period}: A quantity associated with a periodic signal where it is invariant under a linear translation by this amount.
+	\item \textbf{Pitch}: A perceived quality of highness or lowness of a sound that is closely related to the fundamental frequency.
+	\item \textbf{Spectrogram}: A two-dimensional representation of an audio signal that visualizes the spectral decomposition of the sound over time, using the magnitudes of the short-time Fourier transform (STFT).
+	\item \textbf{Short-Time Fourier Transform (STFT)}: A linear transformation that maps a one-dimensional signal to a two-dimensional representation that contains the Fourier spectra of the short-time segments.
+\end{itemize}
+\end{minipage}
+
+\paragraph{Machine Learning and Deep Learning}
+
+\begin{itemize}
+	\item \textbf{Heuristics}: A method that is not optimal or perfect but useful for immediate practical purposes, usually employing manually designed functions or computations.
+	\item \textbf{Data-Driven Method}: A method based on the optimization of model parameters using examples of data.
+	\item \textbf{Ground-Truth}: Annotations corresponding to the data examples that we assume to be true.
+	\item \textbf{Machine Learning}: Programming computers to learn from experience, without being explicitly programmed \cite{samuel1959ml}.
+	\item \textbf{Supervised Learning}: A category of machine learning methods that require labeled training data.
+	\item \textbf{Deep Learning}: A family of machine learning methods that employ multiple layers of learned representations, obtained by composing simple transformations at each level \cite{lecun2015deeplearning}.
+	\item \textbf{Representation Learning}: A task of learning the underlying representations of data that make it easier to extract useful information \cite{bengio2013representation}.
+	\item \textbf{Manifold Learning}: A task of identifying a low-dimensional manifold formed by high-dimensional data points, where its parameterization conveys useful information about the underlying data.
+	\item \textbf{Deep Generative Model}: A deep model that is capable of generating data points that are coherent to supplied training examples.
+\end{itemize}
+
+\section{Delimitations/Limitations}
+
+This study of automatic music transcription is entirely quantitative and does not involve subjective tests on human participants.
+The dataset to be used in thesis consists of audio signals, i.e. waveforms encoding the physical vibrations of air.
+However, music is essentially a perceived notion, and thus are the core qualities of sound --- pitch, timbre, and loudness --- which are the output of automatic transcription.
+For this reason, manually annotating polyphonic music is an error-prone process, where any two annotators may produce drastically different annotations.
+Although this problem of inaccuracy and subjective difference is often overcome by using a ground-truth dataset synthesized from known frequency information, the gap still persists between what a model can learn from synthesized audio and what it will respond to the real-world sound.
+This thesis aims to take one step further than using synthesized training datasets, by building a generative model that can better model the real-world sound of interest.
+However, as the primary goal is on automatic transcription, sound synthesis at a state-of-the-art quality is out of the scope of this thesis.
+
+Additional limitations should be considered on the types of instruments to be transcribed, for practical purposes.
+Initial experiments in the pilot study concern non-vocal harmonic sounds of Western classical instruments.
+Depending on the dataset, the model may not sufficiently learn the variety of musical techniques typically present in real-world music recordings, such as vibrato, tremolo, pizzicato, and the usage of a mute or harmonics, among others.
+The final transcription model, however, should be made generalizable to arbitrary types of instruments and techniques, assuming that a sufficient amount of training data can be provided.
+
+
+The goal of automatic transcription is at a lower level than the tasks like chord recognition and melody tracking, which may incur even more subjective disagreements caused by the imprecise definitions of chords and melodies.
+While pitch is relatively precisely defined in this sense, the mathematical definition of fundamental frequency still cannot be applied for all pitched sounds.
+The Shepard tone \cite{shepard1964circularity} is one of the most notable examples where the pitch of a harmonic sound fails to be consistently mapped to a fundamental frequency.
+Polyphonic music contains a mixture of sounds with an indefinite number of notes being played simultaneously; even the most experienced musician may not be able to identify every note, and the audio mixture may not have contained the sufficient information to convey all notes in the first place.
+It would be unreasonable to expect anyone to perfectly transcribe all notes in the score of an orchestral music from an audio file, but it would be sensible for a trained musician to produce a version of score that, when played by the same orchestra, sounds indistinguishable to the original recording.
+Considering these limitations, passing this ``transcriptional Turing test'', rather than achieving the 100\% accuracy on a certain dataset, should be the ultimate goal of automatic music transcription, at which point it can be said to have a human-level intelligence on this task.
+Meanwhile, this study will focus on improving the objective metrics without need of subjective experiments, toward the point where the accuracy of automatic transcription becomes comparable to human's.
+
+
+
+\section{Need for Study}
+
 The nature of music transcription is multifold; to create a complete transcription, one has to identify all instruments, beats, dynamics, and the pitch traces for every instrument present in the music, and it is still far from achieving the human-level accuracy despite decades of research in each of these subtasks.
-The need for study arises naturally, not only because this is an intriguing problem in the interdiscipline of music and technology that has remained unsolved for decades, but also because the solution to this problem can provide practical benefits to many applications including, but not limited to, music recommender systems, music search engine, and compositional aid software.
+The need for study arises naturally, not only because this is an intriguing problem in the interdiscipline of music and technology that has remained unsolved for decades, but also because the solution to this problem can provide practical benefits to many applications including, but not limited to, music recommender systems, music search engines, and compositional aid software.
 The task of automatic music transcription shares many common values with other machine learning tasks, such as image segmentation, machine translation, and speech recognition, in a sense that the core task is to build an intelligent system that can extract and process semantics that are conveyed in complex signals.
 This is the essence of artificial intelligence (AI)
 --- a system that perceives its environment and takes actions that maximizes the utility \cite{russell2009ai} --- 
 where the signals coming from the environment is complex multimedia data and understanding the semantics of them is a necessity to perform well.
 Therefore, the problem of automatic music transcription is not just an intriguing task in music technology, but will also be a key component of the AI-enabled future society, constituting a musical brain of AI.
-
 
 This thesis aims to design and develop improved methods for automatic music transcription with deeper computational understanding of musical semantics, leveraging the recent technological breakthroughs in the area of deep learning and big data.
 The idea more specifically focuses on deep generative models and learning from training data generated by various sources including software instruments, so that machine learning algorithms can benefit from an effectively infinite source of labeled training data.
@@ -30,72 +132,9 @@ To validate this claim as a feasible research direction, this proposal provides 
 One of the most exciting phenomena that have been happening in the field of machine learning during the past five years is the advent of deep learning and its tremendous success in computer vision, natural language processing, and many other fields.
 The success was made possible by the unprecedented scale of high-performance computing resources that became available, which made intelligent systems capable of processing machine learning algorithms and data pipelines that were infeasible to be realized just until a few years ago.
 At the same time, a number of new models and techniques have been devised to drastically improve the effectiveness and flexibility of existing algorithms.
-Because it is expected that the techniques of deep learning will play the most important role in this study, this proposal starts with a general introduction to deep learning in Section \ref{sec:deeplearning}, which provides a survey of the essential building blocks of deep learning with an emphasis on deep generative models.
+Because it is expected that the techniques of deep learning will play the most important role in this study, this proposal starts with a general introduction to deep learning in Chapter \ref{ch:deeplearning}, which provides a survey of the essential building blocks of deep learning with an emphasis on deep generative models.
 
-
-% Due to the difficulty and complexity of the problem, automatic music transcription has been tackled by researchers by dividing the problem into several separate subtasks, which include rhythmic, timbral, harmonic, and symbolic analyses, as well as audio source separation which aims to separate the individual tracks and perform transcription on each track.
 Despite being not tremendously successful, there have been numerous research projects toward automatic music transcription as a whole or targeting a subtask of it, that stemmed from musicology, audio signal processing, and machine learning perspectives.
-Section \ref{sec:review} provides a review of the standard methods and the current trends of automatic music transcription research.
-Section \ref{sec:other} will present the overall pipeline that describes the specific methods for the proposed automatic music transcription research, which incorporates deep learning and music signal processing methods as well as other important components including data augmentation, software instruments, audio synthesis, and music language models.
-
-Subsequently, some results of the preliminary experiments in this direction of research, including a monotonic pitch estimator based on time-domain convolutional neural network and a generative adversarial network trained on log-magnitude spectrograms of instrument note samples, are introduced in Section \ref{sec:prelim}.
-These experiments are based on a few publicly and commercially available datasets including RWC Music Database \cite{goto2003rwc}, MedleyDB \cite{bittner2014medleydb}, and Vienna Symphonic Library of orchestral sounds as studied in \cite{humphrey2011nlse}.
-In future studies, the NSynth Dataset published recently by Google's Magenta project \cite{engel2017nsynth} is also planned to be used, as the dataset contains additional kinds of instruments and comes with more accurate annotations.
-Lastly, Section \ref{sec:summary} concludes the proposal by summarizing the core idea for the thesis.
-
-
-\section{Scope of this Study}
-\label{sec:scope}
-
-Souffle chupa chups croissant donut. Muffin cotton candy cookie marzipan chupa chups. Jelly-o gummi bears topping caramels pudding. Marzipan applicake jujubes souffle sweet roll. Lemon drops dessert fruitcake carrot cake cotton candy lollipop tiramisu. Gummi bears oat cake bear claw liquorice tootsie roll jelly cookie. Lemon drops croissant applicake. Toffee applicake pie carrot cake. Wafer dragee souffle toffee. Powder tart apple pie pie sweet cotton candy sesame snaps.
-
-\section{Motivation}
-
-Icing toffee gummi bears bear claw caramels chocolate bar apple pie. Apple pie biscuit jelly jelly. Jelly beans tiramisu gingerbread gummi bears. Souffle topping bonbon chupa chups pie fruitcake. Souffle topping muffin jelly beans gummies liquorice tiramisu. Gummi bears tiramisu danish. Liquorice dessert chocolate powder macaroon gummies apple pie croissant. Topping jelly-o gingerbread unerdwear.com bonbon sugar plum candy canes. Croissant gummies cupcake gummi bears sesame snaps macaroon biscuit. Sweet roll liquorice apple pie sweet roll.
-
-\section{Dissertation Outline}\label{sec:do}
-\label{sec:outline}
-
-\thesection, \thesubsection, \thechapter, \ref{sec:do}
-
-\arabic{chapter}, \arabic{section}, \arabic{subsection}
-
-\begin{description}
-	
-\item Chapter \ref{ch:review} Tiramisu wafer wafer icing fruitcake powder brownie macaroon dessert. 
-
-\item Chapter \ref{ch:methods} concludes this thesis. Candy gingerbread chupa chups carrot cake danish. 
-\end{description}
-
-\section{Contributions}
-The primary contributions of this dissertation are listed below:
-
-\begin{itemize}
-  \onehalfspacing
-\item Carrot cake macaroon brownie chupa chups powder sesame snaps bear claw souffle biscuit. 
-\item Sweet roll chocolate chocolate cake. 
-\end{itemize}
-
-\section{Associated Publications by the Author}
-
-This thesis covers much of the work presented in the publications listed below:
-
-\subsection{Peer-Reviewed Articles}
-\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-\vspace{1em}
-\begin{itemize}
-\onehalfspacing
-\item Sugar plum jelly beans cookie tootsie roll jelly-o.
-\item Tootsie roll sugar plum cotton candy pastry chocolate cake pudding oat cake gummi bears. 
-\end{itemize}
-
-\subsection{Peer-Reviewed Conference Papers}
-\vspace{1em}
-\begin{itemize}
-\onehalfspacing
-\item Cheesecake pudding marzipan gingerbread cheesecake oat cake applicake.
-\item  Dragee marzipan unerdwear.com powder icing croissant pastry. 
-\item  Dessert macaroon sweet roll macaroon wafer topping croissant. 
-
-\end{itemize}
-
+Chapter \ref{ch:mir} provides a review of the standard methods and the current trends of automatic music transcription research.
+Section \ref{ch:methods} will present the overall pipeline that describes the specific methods for the proposed automatic music transcription research, which incorporates deep learning and music signal processing methods as well as other important components including data augmentation, software instruments, audio synthesis, and music language models.
+Subsequently, some results of the preliminary experiments in this direction of research, including a monotonic pitch estimator based on time-domain convolutional neural network and a generative adversarial network trained on log-magnitude spectrograms of instrument note samples, are introduced in Section \ref{ch:pilot}.

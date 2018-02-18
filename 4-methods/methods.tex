@@ -1,8 +1,15 @@
 %!TEX root = ../dissertation.tex
 
-\graphicspath{{3-methods/figures/}}
+\graphicspath{{4-methods/figures/}}
 \chapter{Methods}
 \label{ch:methods}
+
+\section{Model Design}
+
+\begin{figure}
+	\includegraphics[width=\textwidth]{grand.pdf}
+	\caption{The proposed architecture for the automatic music transcription pipeline. A deep generative model is trained using data augmentation and manifold learning on instrumental sound library, as well as a music language model, to generate audio track that sounds similarly as the input audio. The conditions used to generate the matching audio can produce the predicted music transcription.}\label{fig:grand}
+\end{figure}
 
 Figure \ref{fig:grand} shows the proposed architecture for an end-to-end automatic music transcription system.
 In short, a deep generative model in the center will learn to generate audio signals that mimics the input, and the combinations of instruments and pitches used for generating that audio will be the resulting transcription.
@@ -14,7 +21,7 @@ Combined with the audio sources from various software instruments and sample lib
 
 Synthesizing music is also an important part of the pipeline in Figure \ref{fig:grand}.
 While sound synthesis is a topic that has a long history \cite{cook2002synthesis}, recent deep models were very successful in synthesizing breathtakingly high-quality audio signals.
-WaveNet \cite{van2016wavenet}, developed by Google DeepMind, uses a causal architecture using dilated convolutions to generate time-domain audio samples, and is able to produce realistic human voices and piano sounds.
+WaveNet \cite{oord2016wavenet}, developed by Google DeepMind, uses a causal architecture using dilated convolutions to generate time-domain audio samples, and is able to produce realistic human voices and piano sounds.
 There also exist faster approaches using recurrent neural networks to produce vocal and musical audio, as found in \cite{nayebi2015gruv} and \cite{kalingeri2016generation}, albeit with lower quality when compared to WaveNet.
 Tacotron \cite{wang2017tacotron} is a fully end-to-end speech synthesizer that works directly on a sequence of characters, which can learn the pronunciation of unseen complex words and different ways of reading the same word according to the phrase semantics and punctuations.
 SampleRNN \cite{mehri2016samplernn} formed a basis for the techniques used by Lyrebird, an AI startup founded by University of Montr\'{e}al students that provides API for synthesized voice of a specific person, e.g. Barack Obama.
@@ -25,11 +32,9 @@ Lastly, another important component is the music language model that will help t
 Clearly, there is a similarity between music and human language \cite{patel2010musiclanguage}, and there have been approaches using recurrent neural network to build a music language models \cite{sigtia2014lm}.
 There are decades-long history of algorithmic composition techniques \cite{fernandez2013ai}, where MidiNet \cite{yang2017midinet} is the one of the latest example which generates symbolic music using a generative adversarial network.
 
+\section{Datasets}
+
+The experiments are based on a few publicly and commercially available datasets including RWC Music Database \cite{goto2003rwc}, MedleyDB \cite{bittner2014medleydb}, and Vienna Symphonic Library of orchestral sounds as studied in \cite{humphrey2011nlse}.
+In future studies, the NSynth Dataset published recently by Google's Magenta project \cite{engel2017nsynth} is also planned to be used, as the dataset contains additional kinds of instruments and comes with more accurate annotations.
 
 
-
-
-\begin{figure}
-	\includegraphics[width=\textwidth]{grand.pdf}
-	\caption{The proposed architecture for the automatic music transcription pipeline. A deep generative model is trained using data augmentation and manifold learning on instrumental sound library, as well as a music language model, to generate audio track that sounds similarly as the input audio. The conditions used to generate the matching audio can produce the predicted music transcription.}\label{fig:grand}
-\end{figure}

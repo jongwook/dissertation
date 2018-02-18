@@ -4,13 +4,10 @@
 
 %: ----------------------- introduction file header -----------------------
 % the code below specifies where the figures are stored
-\graphicspath{{2-review/figures/}}
+\graphicspath{{2-deeplearning/figures/}}
 
-\chapter{Review of Related Literature}
-\label{ch:review}
-
-
-\section{Deep Learning in a Nutshell}\label{sec:deeplearning}
+\chapter{Deep Learning in a Nutshell}\label{sec:deeplearning}
+\label{ch:deeplearning}
 
 Since recently, a family of machine learning research under the buzzword "deep learning" has incurred groundbreaking changes to the world of artificial intelligence, making the long-waited dream of the strong artificial intelligence look not so distant in the future.
 The impact of deep learning was so dramatic that many successful applications of deep learning like DeepMind's AlphaGo beating the human Go champion and Google's neural machine translation have became familiar to laypeople.
@@ -18,9 +15,9 @@ The core idea of using artificial neural network to process complex information 
 Around 2010, it turned out that neural networks can substantially outperform those other approaches and have much more flexibility for the further improvements, and the lower performance of neural network was simply due to the insufficient data, the lack of computational power, and some tricks that have not been employed before.
 This finding has opened the era of deep learning, a term coined after the fact that neural networks often employ multiple layers of learned feature transformations, and is continuing to innovate virtually all fields of science and engineering, including, of course, music technology.
 
-Because it is expected that the methodologies and techniques of deep learning will play a crucial role in the thesis, this section briefly covers the essential concepts and terminologies of deep learning. Starting from the basic architectures and techniques, more emphasis will be given on manifold learning and deep generative models, as these are the key concepts and techniques that enables the generation of natural-sounding music.
+Because it is expected that the methodologies and techniques of deep learning will play a crucial role in the thesis, this chapter briefly covers the essential concepts and terminologies of deep learning. Starting from the basic architectures and techniques, more emphasis will be given on manifold learning and deep generative models, as these are the key concepts and techniques that enables the generation of natural-sounding music.
 
-\subsection{Neural Network Architectures}
+\section{Neural Network Architectures}
 
 The key idea of artificial neural network is basically to find an appropriate matrix $W$ to model the relationship between variables $\mathbf{x}$ and $\mathbf{y}$ so that
 \begin{equation}\label{eqn:perceptron}
@@ -37,29 +34,31 @@ This model in Equation \ref{eqn:mlp} is called a multilayer perceptron (MLP) in 
 A multilayer perceptron is a special case of feedforward neural network, which refers to any computational graph that does not contain a cycle. A popular model under this category is convolutional neural networks (CNN), which uses a convolution (a cross-correlation, to be precise) with a fixed-size kernel instead of the fully connected layers performing matrix multiplications.
 This results in a fewer number of parameters to learn in each layer, allowing deeper models for the same total number of parameters.
 LeNet \cite{lecun1995lenet} for digit classification is what pioneered the technique of using convolutional layers in neural networks, and it is an essential building block of the majority of deep learning methods, including the models that surpassed the human-level accuracy in the ImageNet Large Scale Visual Recognition Challenge (ILSVRC) \cite{krizhevsky2012imagenet, simonyan2014vgg, szegedy2015googlenet, he2016resnet}.
-Fully convolutional networks, which omit the fully connected layers that are typically placed at the last stages of neural networks, do not require a fixed input and output size and are known to perform well for image segmentation \cite{long2015fully}.
-Because deep convolutional layers are known to be capable of extracting complex semantic information from images, many artistic applications have been developed, such as the transfer of artistic style from one image to another \cite{gatys2015style}, and a captivating visualization known as Deep Dream \cite{mahendran2016deepdream}.
+Fully convolutional networks, which omit the fully connected layers that are typically placed at the last stages of neural networks, do not require a fixed input and output size and are known to perform well for image segmentation \cite{shelhamer2017fcn}.
+Because deep convolutional layers are known to be capable of extracting complex semantic information from images, many artistic applications have been developed, such as the transfer of artistic style from one image to another \cite{gatys2015style}, and a captivating transformation of images using neural network weights known as Deep Dream \cite{mahendran2016deepdream}.
 
 A network with a cyclic connection is called a recurrent neural network, and has been successfully applied to modeling sequence data.
 Because it is hard for a recurrent neural network to propagate long-range dependencies through a chain of recurrent connections, a specific recurrent unit called long short-term memory (LSTM) \cite{hochreiter1997lstm} and gated recurrent unit (GRU) \cite{cho2014seq2seq} are devised to resolve the problem and are considered essential for recurrent neural network.
 A specific formulation of recurrent neural network called the sequence-to-sequence model \cite{cho2014seq2seq,sutskever2014seq2seq} is well known to be very effective for machine translation, and is deployed in production in Google's translation services \cite{wu2016google}.
 
-Reinforcement learning \cite{sutton1998reinforcement} is a formulation of machine learning where a software agent takes actions in an environment to maximize the reward given according to the actions.
+Reinforcement learning \cite{sutton2018reinforcement} is a formulation of machine learning where a software agent takes actions in an environment to maximize the reward given according to the actions.
 This formulation is inspired by behaviorist psychology and is well-suited for environments that require explorations by the agent, such as robotics and games.
 Deep Q-Network (DQN) \cite{mnih2015dqn} is a neural network model designed for reinforcement learning, which has been successfully applied to automatically playing Atari games \cite{mnih2013atari} and the agent playing the game of Go that surpassed the human level \cite{silver2016alphago}.
 
-\subsection{Techniques for Better Performance and Faster Optimization}
+\section{Performance Optimization Techniques}
+
+The success of deep learning was posibble not only because of the architectural design of deep models, but also thanks to the numerous elaborate techniques and clever tricks that enabled previously impossible performances.
 
 Training a neural network involves optimization of its parameters, e.g. $W$ in Equation \ref{eqn:perceptron} and \ref{eqn:mlp}, which typically requires the gradient of the loss function, i.e. the partial derivatives with respect to all of the model's parameters.
 It is feasible to manually derive the gradient for shallow models, but for deep neural networks it is often too complex and error-prone to calculate the derivative by hand.
-For this reason, a method called backpropagation \cite{werbos1982backpropagation, williams1986backpropagation} was introduced based on the ideas of automatic differentiation \cite{linnainmaa1970ad} and revived neural network research that had been largely abandoned since 1970.
+For this reason, a method called backpropagation \cite{werbos1982backpropagation, rumelhart1986backpropagation} was introduced based on the ideas of automatic differentiation \cite{linnainmaa1970ad} and revived neural network research that had been largely abandoned since 1970.
 The popularization of backpropagation in the 1980s partly contributed to the ending of the first AI winter, leading to the first commercially successful application of neural network in optical digit recognition and speech recognition.
 Backpropagation is still an elemental part of deep learning, and many deep learning frameworks are capable of automatically calculating gradients using backpropagation when a compute graph is given.
 This enables the developer to write only the forward calculation and run the backpropagation automatically, greatly improving the productivity.
 
 Once a gradient is known the standard way of optimizing a neural network is to use a variant of stochastic gradient descent, where the direction of the gradient descent is determined only based on a mini-batch of training data.
 Although using only a subset of training data will make the gradient unstable, practically it is known to converge faster with the stochastic version.
-Adding momentum in the gradient descent optimizer has shown to be effective for finding the convergence even faster, and many schemes for applying the momentum have been introduced, such as Adagrad \cite{duchi2011adagrad}, RMSprop \cite{tieleman2012rmsprop}, Adadelta \cite{zeiler2012adadelta}, Adam \cite{kingma2014adam}, and Eve \cite{koushik2016eve}.
+Adding momentum in the gradient descent optimizer has shown to be effective for finding the convergence even faster, and many schemes for applying the momentum have been introduced, such as Adagrad \cite{duchi2011adagrad}, RMSprop \cite{hinton2012rmsprop}, Adadelta \cite{zeiler2012adadelta}, Adam \cite{kingma2014adam}, and Eve \cite{koushik2016eve}.
 
 Historically, sigmoid and hyperbolic tangent function have been popular choices for the nonlinearity, but it is surprisingly shown \cite{nair2010relu} that rectified linear units (ReLU),
 \begin{equation}
@@ -80,7 +79,7 @@ Additionally, because typical neural networks contain thousands to millions of p
 In early days of deep learning, unsupervised pre-training of weights \cite{bengio2007greedy,erhan2010pretraining} was considered necessary, but recently it is shown that a simple random initialization of weights is sufficient with the current computational power of the hardware.
 A widely practiced way of initializing the weights without unsupervised pre-training is to sample from a Gaussian or uniform distribution according to the number of input and output nodes \cite{glorot2010initialization,he2015prelu}.
 
-\subsection{Manifold Learning and Deep Generative Models}
+\section{Manifold Learning and Deep Generative Models}
 
 A natural formulation of neural network for unlabeled data is to build an encoder that transforms the input data into a smaller dimension, followed by a decoder that maps it back to the original data.
 This architecture is called an autoencoder \cite{bengio2009deeplearning}, and is capable of learning a nonlinear mapping for dimensionality reduction.
@@ -102,9 +101,9 @@ Some variations of the minimax game in Equation \ref{eqn:gan} are introduced in 
 
 Since the introduction of GAN, a lot of its variants and applications have been introduced at an astounding pace.
 As the original GAN architecture was not capable of learning from high-resolution images, LAPGAN \cite{denton2015lapgan} uses a Laplacian pyramid of images for generating high-resolution images, and Deep Convolutional GAN (DCGAN) \cite{radford2015dcgan} follows a list of best practices that are considered to be helpful in training GAN for large images.
-A number of practical and theoretical insights were introduced in order to help make GAN training more stable, where researches suggested a list of improved techniques \cite{salimans2016improved}, included various regularization terms in the minimax game \cite{che2016mrgan}, and used Wasserstein distance instead of the usual Kullback-Leibler distance GAN \cite{arjovsky2017wasserstein,berthelot2017began}.
-There also have been a number of variants to make the latent representation to convey an interpretable semantic of the data, e.g. Conditional GAN \cite{mirza2014conditional}, Auxiliary Classifier GAN \cite{odena2016acgan}, Adversarially Learned Inference \cite{dumoulin2016ali}, and InfoGAN \cite{chen2016infogan}.
-GANs are also known to be successful in transferring artistic style \cite{zhu2017unpaired} and other cross-domain relationships \cite{kim2017discogan} as well as speech enhancement \cite{pascual2017segan} which is notable because it works directly on the time-domain audio signal using 1-D convolutions.
+A number of practical and theoretical insights were introduced in order to help make GAN training more stable, where researches suggested a list of improved techniques \cite{salimans2016improved}, included various regularization terms in the minimax game \cite{che2016mrgan}, and used Wasserstein distance instead of the usual Kullback-Leibler distance GAN \cite{arjovsky2017wgan,berthelot2017began}.
+There also have been a number of variants to make the latent representation to convey an interpretable semantic of the data, e.g. Conditional GAN \cite{mirza2014conditional}, Auxiliary Classifier GAN \cite{odena2016acgan}, Adversarially Learned Inference \cite{dumoulin2017ali}, and InfoGAN \cite{chen2016infogan}.
+GANs are also known to be successful in transferring artistic style \cite{zhu2017cyclegan} and other cross-domain relationships \cite{kim2017discogan} as well as speech enhancement \cite{pascual2017segan} which is notable because it works directly on the time-domain audio signal using 1-D convolutions.
 
 The amazing performance of GAN is not yet grounded by a perfect theoretical interpretation, but it is conjectured that GAN performs well because it can precisely model the lower-dimensional manifold that contains the data, unlike VAE which assumes a Gaussian posterior and includes a variational lower bound that results in blurry generated images.
 For example, the distribution of the MNIST digit images \cite{lecun1998mnist} is much lower dimensional than the actual 784-dimensional distribution of the bitmap images, and even a 2-D t-SNE embedding \cite{maaten2008tsne} can map the entire 60,000 images to a 2-D space while almost perfectly separating the digit labels.
@@ -115,68 +114,10 @@ Extending this result, the core idea of this thesis is to build a deep generativ
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.55\textwidth]{instruments-tsne.png}
-	\caption{A 2-D t-SNE embedding of sounds from Vienna Symhonic Library shows that a convolutional neural network can learn a manifold that separates the sounds of woodwinds (blue colors), strings (red colors), and brass (green colors) instruments.}\label{fig:tsne}
+	\includegraphics[width=\textwidth]{instruments-tsne.png}
+	\caption{A 2-D t-SNE embedding of sounds from Vienna Symphonic Library shows that a convolutional neural network can learn a manifold that separates the sounds of woodwinds (blue colors), strings (red colors), and brass (green colors) instruments.}\label{fig:tsne}
 \end{figure}
 
-
-
-
-
-
-\section{Music Information Retrieval Methods for Transcription} \label{sec:review}
-
-Being able to accurately identify all musical events from audio and transcribe them into musical notations is an essential skill for musicians as well as a paramount goal of music machine learning research.
-Enabling an automatic conversion from musical audio to symbolic notations, and vice versa through music synthesis, opens up many new possibilities.
-The most straightforward application of automatic music transcription would be a software tool that transcribes audio recording and produces a musical score, which can aid musicians in various situations.
-Automatic music transcription can help build a melody database to be used for music retrieval systems, such as query by humming \cite{molina2014humming}, where it is often very hard to obtain annotated data even when the audio files are abundantly available.
-Similarly, by building a database containing symbolic information of music, music recommender systems can leverage the database to infer how much individual users would prefer the music, based on melodic, harmonic, and instrumental information present in the transcription.
-
-As stated, due to the complexity and difficulty of creating an all-encompassing end-to-end music transcription system, many existing approaches focus on a specific subtask of the problem \cite{casey2008mir}, e.g. extracting onsets and beats, recognizing timbre and instruments, tracking monophonic and polyphonic pitches, or separating audio sources from a mixture.
-Each of these subtasks poses interesting goals and applications even without the lofty goal of the full music transcription, and they are often classified under the umbrella term of music information retrieval (MIR).
-Although this term has existed since 1960s \cite{kassler1966mir}, it was only after the late 1990s when active research on this area has spun off from computer music and computational musicology literature.
-During the last two decades, numerous sophisticated and novel approaches for each of these subproblems have been introduced, that have continuously improved the performance in terms of the accuracy in predicting the correct annotations.
-This section will first introduce the standard pipeline of music information retrieval, followed by a few state-of-the-art techniques for music transcription.
-
-\subsection{The Standard Pipeline}
-
-Audio data is huge in volume --- a typical audio track contains 44,100 real-numbered samples per second, and sometimes even more.
-Therefore, computational methods for extracting musical information from audio usually contains a pipeline of feature extraction stages to reduce the volume and increase the interpretability of input data, as shown in Figure \ref{fig:pipeline}.
-The pipeline shares many techniques that have been widely used in speech processing, but also many feature extraction stages are created for music-specific purposes.
-
-\begin{figure}[t]
-	\includegraphics[width=\textwidth]{pipeline.pdf}
-	\caption{\small The standard pipeline for music feature extraction. An appropriate set of feature extraction methods needs to be heuristically selected depending on the task.}\label{fig:pipeline}
-\end{figure}
-
-While there are many MIR tasks that operate on the track-level, such as music recommendation, tagging, and genre classification, most subtasks of music transcription involve the prediction of labels that are dependent on time, operating either in the sample-level or frame-level.
-Frames are created by taking a series of overlapping short-time audio segments, where the length of a segment is typically 10-50 milliseconds, and optionally multiplying them by a windowing function.
-Taking discrete Fourier transforms on the frames produces a short-time Fourier transform (STFT), and the magnitude of an STFT gives a spectrogram.
-Spectrograms give very rich information about the audio; for example, the contour of melodies and dynamics of music are usually identifiable from the image.
-However, the dimensionality of a spectrogram is still quite high, making it computationally prohibitive to run many algorithms directly on an STFT or a spectrogram.
-This necessitated further transformations by the means of filterbanks, producing Mel-Frequency Cepstral Coefficients (MFCC) via the Mel filterbank, or chroma features by applying 12 filters specific to each scale degree.
-Constant-Q transform (CQT) \cite{schorkhuber2010cqt} alleviates a drawback of STFT in which the linear spacing of frequency bins does not align with human auditory perception, by placing the center frequencies of filters to have a constant Q factor, which is the ratio between the center frequency and the 3 dB bandwidth of a filter.
-By configuring CQT to produce 12 filters per octave, it is possible to obtain the coefficients corresponding to each musical tone, and to fold the representation to produce a chroma feature.
-To extract the beat and tempo information, heuristic functions like the first-order difference of the time-domain log energy function or the spectral flux that measures the total energy increase over the frequency bins, to formulate a novelty curve, which measures energy bursts typically present in the onsets of notes.
-The onset information can then be further processed to obtain tempo information via tempograms.
-
-
-%Although a few recent techniques were successfully applied on the raw audio data without a predefined feature transformation,
-
-While the pipeline shown in Figure \ref{fig:pipeline} is considered a de-facto standard for any audio processing systems, recent deep learning approaches have successfully eliminated some or all feature transformation stages by training model to learn the feature from the spectrogram or audio waveforms.
-In theory, any feature extraction stage induces a loss of information, and it suggests that the best-performing model would benefit most from the raw audio data.
-
-\subsection{Techniques for Multiple Fundamental Frequency Estimation}
-
-Among the aforementioned subtasks of automatic music transcription, estimating the pitch from polyphonic recording poses the most difficult challenges, as apparent from the recent stream of results from MIREX challenges \cite{downie2014mirex}.
-The task is commonly referred to as multiple fundamental frequency estimation (Multi-F0 estimation, or MFFE), and in some sense supersedes the onset and beat detection problems as well as chord and melody tracking problems,
-since the frequency tracking has to indicate the onset and offset of every sound, and tracking chords and melodies becomes much easier when the correct annotations for all pitch contours are available.
-
-Many early methods for MFFE \cite{klapuri2003multiple,emiya2010multipitch} focused on extracting features like harmonicity and spectral smoothness from the audio spectrogram and devising a good heuristic for frequency estimation.
-More recent models employ data-driven approaches, using dynamic Bayesian networks \cite{raczynski2013dynamic} or recurrent neural networks \cite{sigtia2016endtoend}, and achieved better performance.
-
-The idea of using generative models to predict multiple fundamental frequencies is not new \cite{dubois2005harmonic,cemgil2006generative}, but they relied on manually designed generative models for sound generation, which might have led to poor generalizability.
-Using deep generative models is expected to help overcoming this limitation, since deep learning methods is known to be excellent in learning embeddings and manifolds that are generalizable to different tasks and domains.
 
 
 

@@ -14,11 +14,7 @@
 \DeclareOption{nyustyle}{\@nyustyletrue}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{book}}
 \ProcessOptions\relax
-\ifx\pdfoutput\undefined
-   \LoadClass[dvips]{book}
-\else
-   \LoadClass[pdftex]{book}
-\fi
+\LoadClass[pdftex]{book}
 
 %:-------------------------- packages for fancy things -----------------------
 \usepackage{afterpage}
@@ -98,68 +94,98 @@
 
 %:-------------------------- PDF/PS setup -----------------------
 
-%if you use a macTeX 2008 or later, use the ifpdf package
-\usepackage{ifpdf}
-\usepackage{ifxetex}
+\usepackage[ xetex,
+             plainpages = false, pdfpagelabels,
+             %ocgcolorlinks,
+             pdfpagelayout = useoutlines,
+             bookmarks,
+             bookmarksopen = true,
+             bookmarksnumbered = true,
+             breaklinks = true,
+             linktoc = all,
+             % pagebackref,
+             colorlinks = true,
+             allcolors = black,
+             % linkcolor = red,
+             % urlcolor  = BlueViolet,
+             citecolor = OliveGreen,
+             % anchorcolor = Purple,
+             hyperindex = true,
+             hyperfootnotes=false,
+             hyperfigures
+             ]{hyperref}
 
-\ifpdf
-    \usepackage[ pdftex,
-                 plainpages = false, pdfpagelabels,
-                 %ocgcolorlinks,
-                 pdfpagelayout = useoutlines,
-                 bookmarks,
-                 bookmarksopen = true,
-                 bookmarksnumbered = true,
-                 breaklinks = true,
-                 linktoc = all,
-                 pagebackref,
-                 colorlinks = true,
-                 allcolors = black,
-                 % linkcolor = red,
-                 % urlcolor  = BlueViolet,
-                 % citecolor = OliveGreen,
-                 % anchorcolor = Purple,
-                 hyperindex = true,
-                 hyperfootnotes=false,
-                 hyperfigures
-                 ]{hyperref}
-
-    \DeclareGraphicsExtensions{.png, .jpg, .jpeg, .pdf, .gif} %GIF doesn't work??
-    \usepackage[pdftex]{graphicx}
-    \pdfcompresslevel=9
-\else
-    \usepackage[ dvips,
-                 %ocgcolorlinks,
-                 bookmarks,
-                 bookmarksopen = true,
-                 bookmarksnumbered = true,
-                 breaklinks = true,
-                 linktoc = all,
-                 pagebackref,
-                 colorlinks = true,
-                 allcolors = black,
-                 % linkcolor = red,
-                 % urlcolor  = BlueViolet,
-                 % citecolor = OliveGreen,
-                 % anchorcolor = Purple,
-                 hyperindex = true,
-                 hyperfootnotes=false,
-                 hyperfigures
-                 ]{hyperref}
-
-    \DeclareGraphicsExtensions{.eps, .ps}
-    \usepackage{epsfig}
-    \usepackage{graphicx}
-\fi
+\DeclareGraphicsExtensions{.png, .jpg, .jpeg, .pdf, .gif} %GIF doesn't work??
+\usepackage[xetex]{graphicx}
+% \pdfcompresslevel=9
 
 \graphicspath{{figures/}}
 
 \usepackage[xindy]{imakeidx}
 \usepackage{makeidx}
-\usepackage[nosectionbib]{apacite}
-\bibliographystyle{apacite}
-\setlength\bibitemsep{2\itemsep} % double space between entry
+\usepackage[style=apa,backend=biber,url=false,doi=false,eprint=false,uniquename=false,hyperref=true]{biblatex}
+\setlength\bibitemsep{2\itemsep}
+\DeclareFieldFormat{apacase}{#1}
+\DeclareSourcemap{
+	\maps[datatype=bibtex]{
+		\map{
+			\step[fieldset=abstract, null]
+			\step[fieldset=month, null]
+			\step[fieldset=ISBN, null]
+		}
+	}
+}
+\DeclareCiteCommand{\cite}[\mkbibparens]
+{\usebibmacro{prenote}}
+{\usebibmacro{citeindex}%
+	\printtext[bibhyperref]{\usebibmacro{cite}}}
+{\multicitedelim}
+{\usebibmacro{postnote}}
 
+\DeclareCiteCommand*{\cite}[\mkbibparens]
+{\usebibmacro{prenote}}
+{\usebibmacro{citeindex}%
+	\printtext[bibhyperref]{\usebibmacro{citeyear}}}
+{\multicitedelim}
+{\usebibmacro{postnote}}
+
+\DeclareCiteCommand{\parencite}[\mkbibparens]
+{\usebibmacro{prenote}}
+{\usebibmacro{citeindex}%
+	\printtext[bibhyperref]{\usebibmacro{cite}}}
+{\multicitedelim}
+{\usebibmacro{postnote}}
+
+\DeclareCiteCommand*{\parencite}[\mkbibparens]
+{\usebibmacro{prenote}}
+{\usebibmacro{citeindex}%
+	\printtext[bibhyperref]{\usebibmacro{citeyear}}}
+{\multicitedelim}
+{\usebibmacro{postnote}}
+
+\DeclareCiteCommand{\footcite}[\mkbibfootnote]
+{\usebibmacro{prenote}}
+{\usebibmacro{citeindex}%
+	\printtext[bibhyperref]{ \usebibmacro{cite}}}
+{\multicitedelim}
+{\usebibmacro{postnote}}
+
+\DeclareCiteCommand{\footcitetext}[\mkbibfootnotetext]
+{\usebibmacro{prenote}}
+{\usebibmacro{citeindex}%
+	\printtext[bibhyperref]{\usebibmacro{cite}}}
+{\multicitedelim}
+{\usebibmacro{postnote}}
+
+\DeclareCiteCommand{\textcite}
+{\boolfalse{cbx:parens}}
+{\usebibmacro{citeindex}%
+	\printtext[bibhyperref]{\usebibmacro{textcite}}}
+{\ifbool{cbx:parens}
+	{\bibcloseparen\global\boolfalse{cbx:parens}}
+	{}%
+	\multicitedelim}
+{\usebibmacro{textcite:postnote}}
 
 %:-------------------------- Glossary/Abbrev./Symbols -----------------------
 \usepackage[nomain,xindy, toc, acronym]{glossaries}
@@ -180,13 +206,14 @@
 
 %:-------------------------- Table Of Contents  -----------------------
 \usepackage{etoolbox}
+\usepackage{xpatch}
 \usepackage[titles]{tocloft}
 \AtBeginDocument{%
   \renewcommand\contentsname{TABLE OF CONTENTS}
   \renewcommand\listtablename{LIST OF TABLES}
   \renewcommand\listfigurename{LIST OF FIGURES}
 }
-\renewcommand{\cftchappresnum}{\hspace{1.5em}}
+\renewcommand{\cftchappresnum}{\hspace{1em}}
 
 \setlength{\cftbeforechapskip}{1em}
 \setlength{\cftbeforepartskip}{1em}
@@ -211,7 +238,7 @@
 \newcommand{\appendixbegin}{
 	\cftaddtitleline{toc}{part}{APPENDICES}{}
 	\titleformat{\chapter}[display]
-	{\normalfont\normalsize\centering}
+	{\normalfont\normalsize}
 	{\singlespacing\MakeUppercase
 		\chaptertitlename~ \Alph{chapter}}{0em}
 	{\singlespacing\normalsize\MakeUppercase}
@@ -222,29 +249,55 @@
 
 % Spaces for the TOC
 \cftsetindents{chapter}{0em}{4em}
-\cftsetindents{section}{3em}{2.8em}
-\cftsetindents{subsection}{5.8em}{3.5em}
-\cftsetindents{subsubsection}{9.3em}{4.5em}
+\cftsetindents{section}{2.5em}{2em}
+\cftsetindents{subsection}{4em}{3em}
+\cftsetindents{subsubsection}{6em}{4em}
 \cftsetindents{figure}{0em}{3.5em}
 \cftsetindents{table}{0em}{3.5em}
 
 \AtBeginDocument{%
-  \preto\section{\addtocontents{toc}{\vskip 0.6em}}
-  \preto\subsection{\addtocontents{toc}{\vskip 0.3em}}
+  \preto\section{\addtocontents{toc}{\vskip 0.4em}}
+  \preto\subsection{\addtocontents{toc}{\vskip 0.2em}}
 }
 
 %:-------------------------- Heading Formats -----------------------
 
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
+\usepackage{fontspec}
 \usepackage{titlesec}
 \usepackage{sectsty}
 \usepackage[normalem]{ulem}
 \usepackage{blindtext}
 \usepackage{hyperref}
 
-\sectionfont{\normalfont\normalsize \underline} %\underline
-\subsectionfont{\centering\normalsize \normalfont\underline}
+\setmainfont{SourceSerifPro}[
+Path=fonts/ ,
+Extension=.otf ,
+UprightFont=*-Regular ,
+BoldFont=*-SemiBold ,
+ItalicFont=Heuristica-Italic ,
+BoldItalicFont=Heuristica-BoldItalic
+]
+
+\setsansfont{SourceSansPro}[
+Path=fonts/ ,
+Extension=.otf ,
+UprightFont=*-Regular ,
+BoldFont=*-Bold ,
+ItalicFont=*-It ,
+BoldItalicFont=*-BoldIt
+]
+
+\setmonofont{SourceCodePro}[
+Path=fonts/ ,
+Extension=.otf ,
+UprightFont=*-Regular ,
+BoldFont=*-Bold ,
+ItalicFont=*-It ,
+BoldItalicFont=*-BoldIt
+]
+
+\sectionfont{\centering\normalfont\normalsize\underline}
+\subsectionfont{\normalsize\normalfont}
 \subsubsectionfont{\normalfont\normalsize}
 
 \renewcommand{\thesection}{\arabic{section}.}
