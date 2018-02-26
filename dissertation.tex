@@ -1,6 +1,8 @@
 %!TEX TS-program = xelatex
 %!TEX encoding = UTF-8 Unicode
-\documentclass[oneside, 12pt, letterpaper]{marl}
+%!BIB program = biber
+
+\documentclass[oneside, 11pt, letterpaper]{marl}
 
 \proposaltitle{\doublespacing 
 	Modern Generative Methods for Music Transcription
@@ -30,9 +32,11 @@
 \makeindex
 
 \addbibresource{library/library.bib}
+\renewcommand{\doublespacing}{\setstretch{1.5}}
 
 \begin{document}
 
+\sloppy
 \widowpenalty=10000
 \clubpenalty=10000
 
@@ -91,7 +95,6 @@
 
 \mainmatter
 \doublespacing
-\sloppy
 
 %: ----------------------- subdocuments ------------------------
 

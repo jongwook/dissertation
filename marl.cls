@@ -43,6 +43,12 @@
 \usepackage{multirow}
 \usepackage{hhline}
 \usepackage{textcomp}
+\usepackage{ wasysym }
+
+\usepackage[none]{hyphenat}
+\flushbottom
+\setlength{\parskip}{0pt plus 6pt}
+\setlength{\baselineskip}{12pt plus 1pt minus 0.5pt}
 
 \newenvironment{dedication}
 {\clearpage           % we want a new page
@@ -108,7 +114,7 @@
              allcolors = black,
              % linkcolor = red,
              % urlcolor  = BlueViolet,
-             citecolor = OliveGreen,
+             citecolor = RoyalBlue,
              % anchorcolor = Purple,
              hyperindex = true,
              hyperfootnotes=false,
@@ -123,7 +129,23 @@
 
 \usepackage[xindy]{imakeidx}
 \usepackage{makeidx}
-\usepackage[style=apa,backend=biber,url=false,doi=false,eprint=false,uniquename=false,hyperref=true]{biblatex}
+\usepackage{xpatch}
+\usepackage[
+	style=apa,
+	backend=biber,
+	url=false,
+	doi=false,
+	eprint=false,
+	uniquename=false,
+	uniquelist=false,
+	hyperref=true,
+	mincitenames=1,
+	maxcitenames=1,
+	maxbibnames=1000
+]{biblatex}
+
+\xpatchnameformat{labelname}{\ifciteseen}{\ifnumcomp{\value{listtotal}}{>}{\value{maxnames}}}{}{}
+
 \setlength\bibitemsep{2\itemsep}
 \DeclareFieldFormat{apacase}{#1}
 \DeclareSourcemap{
@@ -132,6 +154,7 @@
 			\step[fieldset=abstract, null]
 			\step[fieldset=month, null]
 			\step[fieldset=ISBN, null]
+			\step[fieldset=url, null]
 		}
 	}
 }
@@ -274,7 +297,7 @@ Path=fonts/ ,
 Extension=.otf ,
 UprightFont=*-Regular ,
 BoldFont=*-SemiBold ,
-ItalicFont=Heuristica-Italic ,
+ItalicFont=NotAtAllOfficialIt.ttf,
 BoldItalicFont=Heuristica-BoldItalic
 ]
 
@@ -296,8 +319,8 @@ ItalicFont=*-It ,
 BoldItalicFont=*-BoldIt
 ]
 
-\sectionfont{\centering\normalfont\normalsize\underline}
-\subsectionfont{\normalsize\normalfont}
+\sectionfont{\bfseries\normalsize}
+\subsectionfont{\normalfont\normalsize}
 \subsubsectionfont{\normalfont\normalsize}
 
 \renewcommand{\thesection}{\arabic{section}.}
@@ -312,7 +335,7 @@ BoldItalicFont=*-BoldIt
 % Chapter display following NYU's ugly guidelines
 \renewcommand{\thechapter}{\Roman{chapter}}
 \titleformat{\chapter}[display]
-{\normalfont\normalsize\centering}
+{\bfseries\normalsize\centering}
 {\singlespacing\MakeUppercase
   \chaptertitlename~\Roman{chapter}}{0em}
 {\singlespacing\normalsize\MakeUppercase}
@@ -636,6 +659,8 @@ BoldItalicFont=*-BoldIt
 
 %--------------------------- other things ---------------------------------
 
+\newcommand\TODO[1]{ \textcolor{red}{[TODO: #1]} }
+\newcommand\citesomething{ \textsuperscript{\textcolor{blue}{(citation needed)}} }
 
 %:-------------------------- page numbers: roman+arabic -----------------------
 
