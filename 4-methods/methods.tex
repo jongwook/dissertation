@@ -5,8 +5,8 @@
 \label{ch:methods}
 
 The chapter outlines the prospective methodologies for this thesis and discusses the expected challenges in the proposed research directions.
-It is unavoidable that the content of this chapter includes a certain degree of abstractness and ambiguity, because, as in most machine learning research, there is no predefined procedure for performing the research, and the very goal of this study lies on finding a methodology that works.
-In light of this, the following section illustrates the high-level ideas, and then the perspectives on generative models and the concept of disentanglement is presented, followed by the description of the datasets to be used in the research.
+It is unavoidable that the content of this chapter includes a certain degree of abstractness and ambiguity, because, as in most machine learning research, there is no predefined protocol for performing the research, and the very goal of this study lies on finding a methodology that works.
+In light of this, the following section illustrates the high-level ideas, and the perspectives on generative models and the concept of disentanglement are presented, followed by the description of the datasets to be used in the research.
 
 
 \section{The High-Level Ideas}
@@ -32,29 +32,39 @@ It is more efficient in terms of both time and space complexity to perform data 
 
 \section{Generative Models and Learning Disentangled Representations}
 
-% - revisit definitions
-%   - we distinguish the data and (possibly latent) labels using their dimensions and desired properties
-%   - use a relaxed definition
-% - representation learning
-%   - definition, desired properties
-% - why disentanglement is important
-%   - human brains have the ability to do it
-%   - without it, it's hard to say AI actually understood anything
-% - how generative models can help
-%   - more capacity (# neurons in brain vs number of seconds)
-% - literature review
-%   - InfoGAN
-%   - PCA, Matrix Factorization, etc.
-%   - information dropout
-%   - Donahue
-%   - Matrix
-% - strategies
-%   - domain adversarial
-%   - Donahue's disentanglement gan
+\TODO{section outline:}
 
+\begin{itemize}
+	\item revisit the definition of generative model
+	\item we will use a relaxed definition for the term `generative':
+	\item distinguish data and label as:
+	\begin{itemize}
+		\item data: high-dimensional, observed raw, entangled information
+		\item label: low-dimensional, often requiring manual annotations, disentangled information
+	\end{itemize}
+	\item representation learning and manifold learning
+	\item what we need is: disentanglement
+	\begin{itemize}
+		\item literature review on disentanglement:
+		\item \cite{brahma2016disentanglement}
+		\item PCA, ICA, Matrix Factorization, etc.
+		\item \cite{chen2016infogan}, \cite{achille2018information}, \cite{donahue2017gan}
+	\end{itemize}
+	\item why generative models are suitable for this
+	\item planned strategies
+	\begin{itemize}
+		\item \cite{ganin2015domain}
+		\item \cite{donahue2017gan}
+	\end{itemize}
+	\item expected challenges
+	\begin{itemize}
+		\item data dimension
+		\item flood of GAN models
+	\end{itemize}
+\end{itemize}
 \section{Datasets}
 
 The experiments are based on a few publicly and commercially available datasets including RWC Music Database \cite{goto2003rwc}, MedleyDB \cite{bittner2014medleydb}, and Vienna Symphonic Library of orchestral sounds as studied in \cite{humphrey2011nlse}.
 In future studies, the NSynth Dataset published recently by Google's Magenta project \cite{engel2017nsynth} is also planned to be used, as the dataset contains additional kinds of instruments and comes with more accurate annotations.
 
-\TODO{Rachel's new dataset, show statistics; proprietary; symbolic datasets}
+\TODO{Add MusicNet and more, show statistics; possibility of using proprietary software instruments like in Logic Pro; symbolic music datasets}

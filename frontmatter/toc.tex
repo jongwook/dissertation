@@ -1,0 +1,16 @@
+%: ----------------------- contents ------------------------
+% levels are: 0 - chapter, 1 - section, 2 - subsection, 3 - subsubsection
+\setcounter{secnumdepth}{3} % organisational level that receives a numbers (NYU Steinhardt recommends level 0, which is pretty hideous)
+\setcounter{tocdepth}{1}    % print table of contents for level 2
+
+{
+	\small 
+	\tableofcontents            % print the table of contents
+	%\addcontentsline{toc}{section}{continued}
+	%: ----------------------- list of figures/tables ------------------------
+	
+	%\clearpage
+	%\listoftables                   % print list of tables
+	\clearpage
+	\listoffigures                  % print list of figures
+}

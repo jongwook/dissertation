@@ -1,11 +1,14 @@
 %!TEX root = ../dissertation.tex
 
 \graphicspath{{5-pilot/figures/}}
-\chapter{Pilot Studies}
+\newcommand\firstpilottitle{ Convolutional Representation for Pitch Estimation }
+\chapter[Pilot Study 1: \newline \firstpilottitle]{~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Pilot Study 1: \newline\vspace{-0.5em}\newline \firstpilottitle}
 \label{ch:pilot}
 
 
-This chapter provides some preliminary results of the two ongoing projects toward the direction of the thesis. While not directly being a part of the overall system as described in Figure \ref{fig:grand}, these experiments are expected to provide valuable insights about what convolutional neural network and deep generative models can learn from music audio signals, and how their architecture should be designed to maximize the effectiveness.
+In this chapter, a preliminary research result toward the direction of the thesis is presented, focusing on a pitch tracking algorithm based on one-dimensional convolutional neural networks.
+While not directly being a part of the overall system as described in Figure \ref{fig:grand}, these experiments are expected to provide valuable insights about what convolutional representations can learn from music audio signals, and how their architecture should be designed to maximize the effectiveness.
+The work in the following sections are featured in \cite{kim2018crepe}.
 
 
 \section{Introduction}\label{sec:introduction}
@@ -16,7 +19,7 @@ Pitch estimation is also important for speech analysis, where prosodic aspects s
 
 Pitch is defined as a subjective quality of perceived sounds and does not precisely correspond to the physical property of the fundamental frequency \cite{hartmann1997signals}.
 However, apart from a few rare exceptions, pitch can be quantified using fundamental frequency, and thus they are often used interchangeably outside psychoacoustical studies. 
-For convenience, we will also use the two terms interchangeably throughout this paper.
+For convenience, the two terms are interchangeably throughout this chapter.
 
 Computational methods for monotonic pitch estimation have been studied for more than a half-century \cite{noll1967cepstrum}, and many reliable methods have been proposed since.
 Earlier methods commonly employ a certain candidate-generating function, accompanied by pre- and post-processing stages to produce the pitch curve.
@@ -30,15 +33,13 @@ One possible explanation for this is that since fundamental frequency is a low-l
 This, however, is not always the case, and even top performing algorithms like pYIN can still produce noisy results for challenging audio recordings such as a sound of uncommon instruments or a pitch curve that fluctuates very fast.
 This is particularly problematic for tasks that require a flawless f0 estimation, such as using the output of a pitch tracker to generate reference annotations for melody and multi-f0 estimation \cite{salamon2017analysis,bittner2017deepsalience}.
 
-In this paper, we present a novel, data-driven method for monophonic pitch tracking based on a deep convolutional neural network operating on the time-domain signal.
-We show that our approach, CREPE (Convolutional  Representation  for  Pitch  Estimation), obtains state-of-the-art results, outperforming heuristic approaches such as pYIN and SWIPE while being more robust to noise too.
-We further show that CREPE is highly precise, maintaining over 90\% raw pitch accuracy even for a strict evaluation threshold of just 10 cents.
-The Python implementation of our proposed approach, along with a pre-trained model of CREPE are made available online\footnote{\texttt{https://github.com/marl/crepe}} for easy utilization and reproducibility.
+In this chapter, a novel, data-driven method for monophonic pitch tracking based on a deep convolutional neural network operating on the time-domain signal is presented.
+This approach, CREPE (Convolutional  Representation  for  Pitch  Estimation), obtains state-of-the-art results, outperforming heuristic approaches such as pYIN and SWIPE while being more robust to noise too.
+It is further shown that CREPE is highly precise, maintaining over 90\% raw pitch accuracy even for a strict evaluation threshold of just 10 cents.
+The Python implementation of the proposed approach, along with a pre-trained model of CREPE are made available online\footnote{\texttt{https://github.com/marl/crepe}} for easy utilization and reproducibility.
 
 \section{Architecture}
 
-\setlength{\belowcaptionskip}{-5pt}
-\captionsetup[figure]{skip=5pt}
 \begin{figure*}
 	\includegraphics[width=\textwidth]{architecture.pdf}
 	\caption{The architecture of the CREPE pitch tracker. The six convolutional layers operate directly on the time-domain audio signal, producing an output vector that approximates a Gaussian curve as in Equation \ref{eqn:gaussian}, which is then used to derive the exact pitch estimate as in Equation \ref{eqn:resulting}.}
@@ -56,7 +57,7 @@ Cent is a unit representing musical intervals relative to a reference pitch $f_{
 \begin{equation}
 \cent(f) = 1200 \cdot \log_2 \frac{f}{f_{\mathrm{ref}}},
 \end{equation}
-where we use $f_{\mathrm{ref}} = 10 \mathrm{~Hz}$ throughout our experiments. 
+where $f_{\mathrm{ref}} = 10 \mathrm{~Hz}$ throughout the experiments. 
 This unit provides a logarithmic pitch scale where 100 cents equal one semitone.
 The 360 pitch values are denoted as $\cent_1, \cent_2, \cdots, \cent_{360}$ and are selected so that they cover six octaves with 20-cent intervals between C1 and B7, corresponding to 32.70 Hz and 1975.5 Hz. 
 The resulting pitch estimate $\hat{\cent}$ is the weighted average of the associated pitches $\cent_i$ according to the output $\hat{\mathbf{y}}$, which gives the frequency estimate in Hz:
@@ -100,7 +101,6 @@ To evaluate the algorithms under more realistic (but still controlled) condition
 This dataset consists of 230 tracks with 25 instruments, totaling 15.56 hours of audio, and henceforth referred to as MDB-stem-synth.
 
 
-%\captionsetup[figure]{skip=0pt}
 \begin{figure*}[b!]
 	\includegraphics[width=\textwidth]{noise.pdf}
 	\caption{Pitch tracking performance when additive noise signals are present. The error bars are centered at the average raw pitch accuracies and span the first standard deviations. With brown noise being a notable exception, CREPE shows the highest noise robustness in general. }
@@ -122,7 +122,7 @@ We use four different noise sources provided by the ADT: pub, white, pink, and b
 The pub noise is an actual recording of the sound in a crowded pub, 
 and the white noise is a random signal with a constant power spectral density over all frequencies.
 The pink and brown noise have the highest power spectral density in low frequencies, and the densities fall off at 10 dB and 20 dB per decade respectively.
-We used seven different signal-to-noise ratio (SNR) values: $\infty$, 40, 30, 20, 10, 5, and 0 dB.
+Seven different signal-to-noise ratio (SNR) values are used: $\infty$, 40, 30, 20, 10, 5, and 0 dB.
 
 
 \subsection{Results}
@@ -132,11 +132,11 @@ We used seven different signal-to-noise ratio (SNR) values: $\infty$, 40, 30, 20
 Table \ref{tbl:accuracy50} shows the pitch estimation performance tested on the two datasets.
 On the RWC-synth dataset, CREPE yields a close-to-perfect performance where the error rate is lower than the baselines by more than an order of magnitude.
 While these high accuracy numbers are encouraging, those are achievable thanks to the highly homogeneous timbre of the dataset.
-In order to test the generalizability of the algorithms on a more timbrally diverse dataset, we evaluated the performance on the MDB-stem-synth dataset as well.
+In order to test the generalizability of the algorithms on a more timbrally diverse dataset, the performance is evaluated on the MDB-stem-synth dataset as well.
 It is notable that the degradation of performance from RWC-synth is more significant for the baseline algorithms, implying that CREPE is more robust to complex timbres compared to pYIN and SWIPE.
 
-Finally, to see how the algorithms compare under scenarios where any deviation in the estimated pitch from the true value could be detrimental, in Table \ref{tbl:thresholds} we report the RPA at lower evaluation tolerance thresholds of 10 and 25 cents as well as the RPA at the standard 50 cents threshold for reference.
-We see that as the threshold is decreased, the difference in performance becomes more accentuated, with CREPE 
+Finally, to see how the algorithms compare under scenarios where any deviation in the estimated pitch from the true value could be detrimental, Table \ref{tbl:thresholds} reports the RPA at lower evaluation tolerance thresholds of 10 and 25 cents as well as the RPA at the standard 50 cents threshold for reference.
+The table indicates that as the threshold is decreased, the difference in performance becomes more accentuated, with CREPE 
 %maintaining near-perfect RPA for RWC-synth while the others degrade significantly.
 outperforming by over 8 percentage points when the evaluation tolerance is lowered to 10 cents.
 This suggests that CREPE is especially preferable when even minor deviations from the true pitch should be avoided as best as possible.
@@ -146,26 +146,22 @@ Obtaining highly precise pitch annotations is perceptually meaningful for transc
 \subsubsection{Noise Robustness}
 
 Noise robustness is key to many applications like speech analysis for mobile phones or smart speakers, or for live music performance.
-In Figure \ref{fig:noise} we show how the pitch estimation performance is affected when an additive noise is present in the input signal.
+Figure \ref{fig:noise} shows how the pitch estimation performance is affected when an additive noise is present in the input signal.
 CREPE maintains the highest accuracy for all SNR levels for pub noise and white noise, and for all SNR levels except for the highest level of pink noise.
 Brown noise is the exception where pYIN's performance is almost unaffected by the noise.
 This can be attributed to the fact that brown noise has most of its energy at low frequencies, to which the YIN algorithm (on which pYIN is based) is particularly robust.
 
-To summarize, we confirmed that CREPE performs better in all cases where the SNR is below 10 dB while the performance varies depending on the spectral properties of the noise when the noise level is higher, which indicates that our approach can be reliable under a reasonable amount of additive noise.
+To summarize, CREPE performs better in all cases where the SNR is below 10 dB while the performance varies depending on the spectral properties of the noise when the noise level is higher, which indicates that this approach can be reliable under a reasonable amount of additive noise.
 CREPE is also more stable, exhibiting consistently lower variance in performance compared to the baseline algorithms.
 
 
-\setlength{\belowcaptionskip}{-0pt}
 \begin{table}[t]
 	\begin{center}
-		\setlength{\tabcolsep}{0.5em}
-		\renewcommand{\arraystretch}{1.3}
 		\begin{tabular}{c|c||c|c|c} \hline
 			\multicolumn{1}{c}{Dataset} & \multicolumn{1}{c}{Metric} & \multicolumn{1}{c}{CREPE} & \multicolumn{1}{c}{pYIN} & \multicolumn{1}{c}{SWIPE} \\ \hline
-			\renewcommand{\arraystretch}{1.8}
-			\multirow{2}{*}{\parbox[c]{1cm}{\centering RWC-synth}} & RPA & \textbf{0.999$\pm$0.002} & 0.990$\pm$0.006& 0.963$\pm$0.023 \\ \cline{2-5}
+			\multirow{2}{*}{RWC-synth} & RPA & \textbf{0.999$\pm$0.002} & 0.990$\pm$0.006& 0.963$\pm$0.023 \\ \cline{2-5}
 			& RCA & \textbf{0.999$\pm$0.002} & 0.990$\pm$0.006& 0.966$\pm$0.020 \\ \hline \hline
-			\multirow{2}{*}{\parbox[c]{1cm}{\centering \begin{spacing}{0.75} MDB-stem-synth \end{spacing}}} & RPA & \textbf{0.967$\pm$0.091} & 0.919$\pm$0.129& 0.925$\pm$0.116 \\ \cline{2-5}
+			\multirow{2}{*}{MDB-stem-synth} & RPA & \textbf{0.967$\pm$0.091} & 0.919$\pm$0.129& 0.925$\pm$0.116 \\ \cline{2-5}
 			& RCA & \textbf{0.970$\pm$0.084} & 0.936$\pm$0.092& 0.936$\pm$0.100 \\ \hline
 		\end{tabular}
 	\end{center}
@@ -175,17 +171,15 @@ CREPE is also more stable, exhibiting consistently lower variance in performance
 
 \begin{table}[t]
 	\begin{center}
-		\setlength{\tabcolsep}{0.4em}
-		\renewcommand{\arraystretch}{1.3}
 		\begin{tabular}{c|c||c|c|c} \hline
 			\multicolumn{1}{c}{Dataset} & \multicolumn{1}{c}{Threshold} &  \multicolumn{1}{c}{CREPE} & \multicolumn{1}{c}{pYIN} & \multicolumn{1}{c}{SWIPE} \\ \hline
 			
-			\multirow{3}{*}{\parbox[c]{1cm}{\centering RWC-synth}} 
+			\multirow{3}{*}{RWC-synth} 
 			& 50 cents & \textbf{0.999$\pm$0.002} & 0.990$\pm$0.006 & 0.963$\pm$0.023 \\ \cline{2-5}
 			& 25 cents & \textbf{0.999$\pm$0.003} & 0.972$\pm$0.012 & 0.949$\pm$0.026 \\ \cline{2-5}
 			& 10 cents & \textbf{0.995$\pm$0.004} & 0.908$\pm$0.032 & 0.833$\pm$0.055 \\ \hline \hline
 			
-			\multirow{3}{*}{\parbox[c]{1cm}{\centering MDB-stem-synth}} 
+			\multirow{3}{*}{MDB-stem-synth}
 			& 50 cents & \textbf{0.967$\pm$0.091} & 0.919$\pm$0.129 & 0.925$\pm$0.116 \\ \cline{2-5}
 			& 25 cents & \textbf{0.953$\pm$0.103} & 0.890$\pm$0.134 & 0.897$\pm$0.127 \\ \cline{2-5}
 			& 10 cents & \textbf{0.909$\pm$0.126} & 0.826$\pm$0.150 & 0.816$\pm$0.165 \\ \hline
@@ -195,12 +189,10 @@ CREPE is also more stable, exhibiting consistently lower variance in performance
 	\label{tbl:thresholds}
 \end{table}
 
-\setlength{\belowcaptionskip}{-8pt}
-\captionsetup[figure]{skip=3pt}
 \begin{figure*}[t]
-	\begin{minipage}{0.48\textwidth}
+	\begin{minipage}{\columnwidth}
 		\begin{center}
-			\includegraphics[width=\columnwidth]{firstlayer-45.pdf}
+			\includegraphics[width=0.8\columnwidth]{firstlayer-45.pdf}
 		\end{center}
 		\vspace{-10pt}
 		\caption{
@@ -209,10 +201,10 @@ CREPE is also more stable, exhibiting consistently lower variance in performance
 		}
 		\label{fig:firstlayer}
 	\end{minipage}
-	~~~~~~
-	\begin{minipage}{0.48\textwidth}
+	\\ \vspace{2em} \\ 
+	\begin{minipage}{\columnwidth}
 		\begin{center}
-			\includegraphics[width=\columnwidth]{per-track-inst-45.pdf}
+			\includegraphics[width=0.8\columnwidth]{per-track-inst-45.pdf}
 		\end{center}
 		\vspace{-10pt}
 		\caption{
@@ -226,9 +218,9 @@ CREPE is also more stable, exhibiting consistently lower variance in performance
 
 \subsubsection{Model Analysis}
 
-To gain some insight into the CREPE model, in Figure \ref{fig:firstlayer} we visualize the spectra of the 1024 convolutional filters in the first layer of the neural network, with histograms of the ground-truth frequencies to the right of each plot.
+To gain some insight into the CREPE model, Figure \ref{fig:firstlayer} visualizes the spectra of the 1024 convolutional filters in the first layer of the neural network, with histograms of the ground-truth frequencies to the right of each plot.
 It is noticeable that the filters learned from the RWC-synth dataset have the spectral density concentrated between 600 Hz and 1500 Hz, while the ground-truth frequencies are mostly between 100 Hz and 600 Hz.
-This indicates that the first convolutional layer in our model learns to distinguish the frequencies of the overtones rather than the fundamental frequency.
+This indicates that the first convolutional layer in the model learns to distinguish the frequencies of the overtones rather than the fundamental frequency.
 These filters focusing on overtones are also visible for MDB-stem-synth, where peak frequencies of the filters range well above the f0 distribution of the dataset, but in this case, the majority of the filters overlap with the ground-truth distribution, unlike RWC-synth.
 A possible explanation for this is that since the timbre in RWC-synth is fixed and identical for all tracks, the model is able to obtain a highly accurate estimate of the f0 by modeling its harmonics.
 Conversely, when the timbre is heterogeneous and more complex, as is the case for MDB-stem-synth, the model cannot rely solely on the harmonic structure and requires filters that capture the f0 periodicity directly in addition to the harmonics.
@@ -237,7 +229,7 @@ In both cases, this suggests that the neural network can adapt to the distributi
 \subsubsection{Performance by Instrument}
 
 The MDB-stem-synth dataset contains 230 tracks from 25 different instruments, where electric bass (58 tracks) and male singer (41 tracks) are the most common while there are instruments that occur in only one or two tracks.
-In Figure \ref{fig:per-track} we plot the performance of CREPE on each of the 230 tracks, with respect to the instrument of each track.
+Figure \ref{fig:per-track} plots the performance of CREPE on each of the 230 tracks, with respect to the instrument of each track.
 It is notable that the model performs worse for the instruments with higher average frequencies, but the performance is also dependent on the timbre.
 CREPE performs particularly worse on the tracks with the dizi, a Chinese transverse flute, because the tracks came from the same artist, and they are all placed in the same split.
 This means that for the fold in which the dizi tracks are in the test set, the training and validation sets do not contain a single dizi track, and the model fails to generalize to this previously unseen timbre.
@@ -248,75 +240,20 @@ Unsurprisingly, the model performs well on test tracks whose timbre and frequenc
 
 \section{Discussions and Conclusion}
 
-In this paper, we presented a novel data-driven method for monophonic pitch tracking based on a deep convolutional neural network operating on time-domain input, CREPE.
-We showed that CREPE obtains state-of-the-art results, outperforming pYIN and SWIPE on two datasets with homogeneous and heterogeneous timbre respectively.
-Furthermore, we showed that CREPE remains highly accurate even at a very strict evaluation threshold of just 10 cents.
-We also showed that in most cases CREPE is more robust to added noise.
+This chapter presented a novel data-driven method for monophonic pitch tracking based on a deep convolutional neural network operating on time-domain input, CREPE.
+CREPE obtains state-of-the-art results, outperforming pYIN and SWIPE on two datasets with homogeneous and heterogeneous timbre respectively.
+Furthermore, CREPE remains highly accurate even at a very strict evaluation threshold of just 10 cents.
+It is also shown that in most cases CREPE is more robust to added noise.
 
 
-Ideally, we want the model to be invariant to all transformations that do not affect pitch, such as changes due to distortion and reverberation.
-Some invariance can be induced by the architectural design of the model, such as the translation invariance induced by pooling layers in our model as well as in deep image classification models.
+Ideally, it is desirable to have the model invariant to all transformations that do not affect pitch, such as changes due to distortion and reverberation.
+Some invariance can be induced by the architectural design of the model, such as the translation invariance induced by pooling layers in the model as well as in deep image classification models.
 However, it is not as straightforward to design the model architecture to specifically ignore other pitch-preserving transformations.
-While it is still an intriguing problem to build an architecture to achieve this, we could use data augmentation to generate transformed and degraded inputs that can effectively make the model learn the invariance.
+While it is still an intriguing problem to build an architecture to achieve this, one could use data augmentation to generate transformed and degraded inputs that can effectively make the model learn the invariance.
 The robustness of the model could also be improved by applying pitch-shifts as data augmentation \cite{mcfee2015muda} to cover a wider pitch range for every instrument.
 In addition to data augmentation, various sources of audio timbre can be obtained from software instruments; NSynth \cite{engel2017nsynth} is an example where the training dataset is generated from the sound of software instruments.
 
 
 Pitch values tend to be continuous over time, but CREPE estimates the pitch of every frame independently without using any temporal tracking, unlike pYIN which exploits this by using an HMM to enforce temporal smoothness.
-We can potentially improve the performance of CREPE even further by enforcing temporal smoothness.
-In the future, we plan to do this by means of adding recurrent architecture to our model, which could be trained jointly with the convolutional front-end in the form of a convolutional-recurrent neural network (CRNN).
-
-
-\section{Pitch Estimation using Time-Domain Convolutional Neural Network}
-
-\TODO{Update with CREPE contents}
-
-The first project concerns the problem of monophonic pitch estimation.
-To date the best performing techniques, such as the pYIN algorithm \cite{mauch2014pyin}, are based on a combination of DSP pipelines and heuristics.
-While such techniques perform very well on average, there remain many cases in which they fail to correctly estimate the pitch or determine when a pitched sound is present.
-For example, pYIN algorithms are relatively accurate for male and female singing voices, but the accuracy drops to near 0 for piccolo flute sounds.
-This motivates a data-driven approach for pitch estimation, where the model can learn different methods to estimate the pitch depending on the individual instrument or timbre.
-
-\begin{figure}
-	\includegraphics[width=\textwidth]{crepe.png}
-	\caption{Frequency estimation as produced by pYIN (cyan) and the proposed time-domain convolutional neural network (red), superimposed over the ground truth (yellow) and the spectrogram. CNN performs close to pYIN without any temporal processing.}\label{fig:crepe}
-\end{figure}
-
-Using a deep convolutional neural network with 6 convolutional layers with batch normalizations, ReLU activations, and dropouts, the model could achieve comparable but yet slightly lower raw pitch accuracy (90.3\%) than pYIN (94.6\%) on a subset of MedleyDB \cite{bittner2014medleydb} melodies.
-The resulting pitch traces of CNN and pYIN is shown in Figure \ref{fig:crepe}.
-Unlike pYIN, no postprocessing operations for temporal smoothing is applied in the CNN result.
-It suggests that a better performance should be achievable, using more sophisticated models such as convolutional recurrent neural network (CRNN) or dilated convolutions and training from more diverse training dataset.
-
-
-\section{Generative Adversarial Network of Orchestral Instrument Sounds}
-
-\TODO{Update with PEGAN contents}
-
-As seen in Section \ref{sec:deeplearning}, the recent surge of GAN variants have shown many promising results in computer vision.
-To examine the potential applicability of a GAN model in music, a few attempts were made to train GANs that learns from musical sounds, in the form of raw audio waveforms and magnitude spectrograms.
-A difference between audio and images is that audio has much more high-dimensional data than the typical images used in deep learning.
-Time domain signals have tens of thousands of numbers for a second of audio, and a typical resolution of a magnitude spectrogram ranges from 512 to 1024 vertical pixels where many image datasets for deep learning is under 96 pixels.
-Despite this difficulty, a careful design using mode regularized generative adversarial network (MRGAN) \cite{che2016mrgan} could achieve a stable convergence of 512-by-64 images of magnitude spectrograms, as shown in Figure \ref{fig:gan}.
-
-\begin{figure}
-	\centering
-	\includegraphics[width=0.55\textwidth]{gan.jpg}
-	\caption{Spectrogram images generated by mode regularized generative adversarial network (MRGAN) %\cite{che2016mrgan} trained on instrumental sounds of Vienna symphonic library
-	}\label{fig:gan}
-\end{figure}
-
-Future work in this project includes quantifying how the manifold learned by the GAN is informative in predicting various qualities of the sound, by combining the model with other GAN variants like InfoGAN \cite{chen2016infogan} or ACGAN \cite{odena2016acgan}.
-Using NSynth dataset will also help in getting more insights of GAN's ability, since it is more organized and comes with more consistent annotations than Vienna Symphonic Library.
-
-
-
-
-
-
-\section{Conclusions}\label{sec:conclusions}
-
-By combining deep learning's prodigious capacity to process multimedia data and the practically unlimited source of training data generated by software instruments and data augmentation, this proposal has presented a solid plan toward a better automatic music transcription system.
-Many data-driven methods for music information retrieval have shown that they can perform better than the traditional, heuristic-based methods when provided with enough data for training, and this work will develop further on that, with the help of deep generative models and the huge scale of training data.
-These have been only very recently made possible, because of the availability of hardware and software for deep learning at the required scale, as well as the success of the deep generative models especially generative adversarial networks.
-This leads to the conclusion that all of the hardware, software, techniques, and the data are pointing to the possibility of deep generative models for automatic music transcription, making 2017 a very good year to research automatic music transcription again.
-
+One may potentially improve the performance of CREPE even further by enforcing temporal smoothness.
+Future work includes achieving this by means of adding recurrent architecture to the model, which could be trained jointly with the convolutional front-end in the form of a convolutional-recurrent neural network (CRNN).

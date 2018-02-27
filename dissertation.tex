@@ -40,103 +40,50 @@
 \widowpenalty=10000
 \clubpenalty=10000
 
-%: ----------------------- generate cover page ------------------------
-%\setstretch{1.2}
-\maketitle  % command to print the title page with above variables
-% \makecopyright
-
-%: ----------------------- abstract ------------------------
-
+\include{frontmatter/cover}
 % \include{frontmatter/abstract}
 
-%: ----------------------- tie in front matter ------------------------
 \doublespacing
 % \include{frontmatter/dedication}
 % \include{frontmatter/acknowledgement}
 \singlespacing
 
-%: ----------------------- contents ------------------------
-% levels are: 0 - chapter, 1 - section, 2 - subsection, 3 - subsubsection
-\setcounter{secnumdepth}{3} % organisational level that receives a numbers (NYU Steinhardt recommends level 0, which is pretty hideous)
-\setcounter{tocdepth}{2}    % print table of contents for level 2
-
-{
-	\small 
-	\tableofcontents            % print the table of contents
-	%\addcontentsline{toc}{section}{continued}
-	%: ----------------------- list of figures/tables ------------------------
-	
-	%\clearpage
-	%\listoftables                   % print list of tables
-	\clearpage
-	\listoffigures                  % print list of figures
-}
-
-%: ----------------------- glossary ------------------------
-
-% Tie in external source file for definitions: /frontmatter/glossary.tex
-% Glossar entries can also be defined in the main text. See glossary.tex
-
-%\include{frontmatter/glossary}
-%\makeglossaries
-%\clearpage
-%\printglossaries
-
-\chapterbegin
-
-%: ----------------------- epigraph ------------------------
+\include{frontmatter/toc}
+% \include{frontmatter/glossary}
 % \include{frontmatter/epigraph}
 
-%: --------------------------------------------------------------
-%:                  MAIN DOCUMENT SECTION
-% --------------------------------------------------------------
-
-% the main text starts here with the introduction, 1st chapter,...
-
+\chapterbegin
 \mainmatter
 \doublespacing
 
 %: ----------------------- subdocuments ------------------------
-
-% Parts of the thesis are included below. Rename the files as required.
-% But take care that the paths match. You can also change the order of appearance by moving the include commands.
 
 \include{1-introduction/introduction}
 \include{2-deeplearning/deeplearning}
 \include{3-mir/mir}
 \include{4-methods/methods}
 \include{5-pilot/pilot}
-
-% -------------------------------------------------------------- 
-%:                  BACK MATTER: appendices, refs,..
-% --------------------------------------------------------------
-
-% the back matter: appendix and references close the thesis
-
+\include{6-pilot/pilot}
+\include{7-conclusions/conclusions}
 
 %: ----------------------- bibliography ------------------------
-
 {
-%\clearpage
 \onehalfspacing
 \renewcommand{\bibfont}{\small}
 \renewcommand{\bibname}{Bibliography} % changes the header; default: Bibliography
-\printbibliography
+\printbibliography[heading=bibintoc]
 }
 
-%: ------ appendices----------------------------------------
-%\appendixbegin
-%\include{backmatter/appendices}
+%: ----------------------- appendices --------------------------
+% \appendixbegin
+% \include{backmatter/appendices}
 
 %: --------------------------- index ---------------------------
-
-%\clearpage
+% \clearpage
 % \begin{footnotesize}
 % \cleardoublepage % ensure the right page
 % \phantomsection % sets an anchor
 % \printindex
 % \end{footnotesize}
-
-
 
 \end{document}

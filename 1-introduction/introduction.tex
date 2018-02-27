@@ -113,7 +113,7 @@ The final transcription model, however, should be made generalizable to arbitrar
 The goal of automatic transcription is at a lower level than the tasks like chord recognition and melody tracking, which may incur even more subjective disagreements caused by the imprecise definitions of chords and melodies.
 While pitch is relatively precisely defined in this sense, the mathematical definition of fundamental frequency still cannot be applied for all pitched sounds.
 The Shepard tone \cite{shepard1964circularity} is one of the most notable examples where the pitch of a harmonic sound fails to be consistently mapped to a fundamental frequency.
-Polyphonic music contains a mixture of sounds with an indefinite number of notes being played simultaneously; even the most experienced musician may not be able to identify every note, and the audio mixture may not have contained the sufficient information to convey all notes in the first place.
+Polyphonic music contains a mixture of sounds with an indefinite number of notes being played simultaneously; even the most experienced musicians may not be able to identify every note, and the audio mixture may not have contained the sufficient information to convey all notes in the first place.
 It would be unreasonable to expect anyone to perfectly transcribe all notes in the score of an orchestral music from an audio file, but it would be sensible for a trained musician to produce a version of score that, when played by the same orchestra, sounds indistinguishable to the original recording.
 Considering these limitations, passing this ``transcriptional Turing test'', rather than achieving the 100\% accuracy on a certain dataset, should be the ultimate goal of automatic music transcription, at which point it can be said to have a human-level intelligence on this task.
 Meanwhile, this study will focus on improving the objective metrics without need of subjective experiments, toward the point where the accuracy of automatic transcription becomes comparable to human's.
@@ -125,10 +125,10 @@ Meanwhile, this study will focus on improving the objective metrics without need
 The nature of music transcription is multifold; to create a complete transcription, one has to identify all instruments, beats, dynamics, and the pitch traces for every instrument present in the music, and it is still far from achieving the human-level accuracy despite the decades of research in each of these subtasks.
 The need for study arises naturally, not only because this is an intriguing problem in the interdiscipline of music and technology that has remained unsolved for decades, but also because the solution to this problem can provide practical benefits to many applications including, but not limited to, music recommender systems, music search engines, and compositional aid software.
 The task of automatic music transcription shares many common values with other machine learning tasks, such as image segmentation, machine translation, and speech recognition, in a sense that the core task is to build an intelligent system that can extract and process semantics that are conveyed in complex signals.
-This is the essence of artificial intelligence (AI)
+This is an essence of artificial intelligence (AI)
 --- a system that perceives its environment and takes actions that maximizes the utility \cite{russell2009ai} --- 
-where the signals coming from the environment is complex multimedia data and understanding the semantics of them is a necessity to perform well.
-Therefore, the problem of automatic music transcription is not just an intriguing task in music technology, but will also be a key component of the AI-enabled future society, constituting a musical brain of AI.
+where an intelligent system has to understand the semantics of complex data coming from the environment in order to perform well in its tasks.
+To this end, the problem of automatic music transcription is not just an intriguing task in music technology, but will also be a key component of the AI-enabled future society, constituting a musical brain of AI in the form of advanced machine musicianship \cite{rowe2003musicianship}.
 
 
 This thesis aims to design and develop improved methods for automatic music transcription with deeper computational understanding of musical semantics, leveraging the recent technological breakthroughs in the area of deep learning and big data.
@@ -150,4 +150,5 @@ For decades, there have been numerous research projects toward automatic music t
 To place this proposal in the context of this continuum of research, Chapter \ref{ch:mir} provides a review of the standard methods and the current state of the art of automatic music transcription research.
 Chapter \ref{ch:methods} presents the tentative pipeline that describes the specific methods and datasets for the proposed automatic music transcription research.
 The pipeline incorporates deep learning and music signal processing methods as well as other important components including data augmentation, software instruments, audio synthesis, and music language models.
-Subsequently, some results of the preliminary experiments in this direction of research, including a monotonic pitch estimator based on time-domain convolutional neural network and a generative adversarial network trained on log-magnitude spectrograms of instrument note samples, are introduced in Section \ref{ch:pilot}.
+Subsequently, some results of the preliminary experiments in this direction of research, including a monotonic pitch estimator based on time-domain convolutional neural network and a generative adversarial network trained on log-magnitude spectrograms of instrument note samples, are introduced in Section \ref{ch:pilot} and \ref{ch:pilot2}.
+Section \ref{ch:conclusions} concludes this proposal with a brief summary of the document.

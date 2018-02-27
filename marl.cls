@@ -28,6 +28,7 @@
 \usepackage{epsf} 
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{bm}
 \usepackage{graphics} % for improved inclusion of graphics
 
 %\usepackage{wrapfig} % to include figure with text wrapping around it
@@ -46,7 +47,7 @@
 \usepackage{ wasysym }
 
 \usepackage[none]{hyphenat}
-\flushbottom
+%\flushbottom
 \setlength{\parskip}{0pt plus 6pt}
 \setlength{\baselineskip}{12pt plus 1pt minus 0.5pt}
 
@@ -280,7 +281,7 @@
 
 \AtBeginDocument{%
   \preto\section{\addtocontents{toc}{\vskip 0.4em}}
-  \preto\subsection{\addtocontents{toc}{\vskip 0.2em}}
+%  \preto\subsection{\addtocontents{toc}{\vskip 0.2em}}
 }
 
 %:-------------------------- Heading Formats -----------------------
@@ -293,12 +294,11 @@
 \usepackage{hyperref}
 
 \setmainfont{SourceSerifPro}[
-Path=fonts/ ,
-Extension=.otf ,
-UprightFont=*-Regular ,
-BoldFont=*-SemiBold ,
+Path=fonts/,
+UprightFont=*-Regular.otf,
+BoldFont=*-SemiBold.otf,
 ItalicFont=NotAtAllOfficialIt.ttf,
-BoldItalicFont=Heuristica-BoldItalic
+BoldItalicFont=Heuristica-BoldItalic.otf
 ]
 
 \setsansfont{SourceSansPro}[
