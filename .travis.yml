@@ -33,5 +33,6 @@ deploy:
   keep-history: false
   local-dir: result
   verbose: true
+  edge: true
   on:
     branch: gh-pages
