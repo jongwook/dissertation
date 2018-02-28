@@ -34,5 +34,6 @@ deploy:
   github-token: $GITHUB_TOKEN
   keep-history: false
   local-dir: result
+  verbose: true
   on:
     branch: gh-pages
