@@ -32,7 +32,7 @@
 \hfuzz=50pt
 \makeindex
 
-\addbibresource{library/library.bib}
+%\addbibresource{library/library.bib}
 \renewcommand{\doublespacing}{\setstretch{1.5}}
 
 \begin{document}
@@ -70,9 +70,11 @@
 %: ----------------------- bibliography ------------------------
 {
 \onehalfspacing
-\renewcommand{\bibfont}{\small}
-\renewcommand{\bibname}{Bibliography} % changes the header; default: Bibliography
-\printbibliography
+%\renewcommand{\bibfont}{\small}
+%\renewcommand{\bibname}{Bibliography} % changes the header; default: Bibliography
+%\printbibliography
+\small
+\bibliography{library/library} 
 }
 
 %: ----------------------- appendices --------------------------

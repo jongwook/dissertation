@@ -132,88 +132,92 @@
 \usepackage[xindy]{imakeidx}
 \usepackage{makeidx}
 \usepackage{xpatch}
-\usepackage[
-	style=authoryear,
-	dashed=false,
-	backend=bibtex,
-	url=false,
-	doi=false,
-	eprint=false,
-	uniquename=false,
-	uniquelist=false,
-	hyperref=true,
-	backref=true,
-	mincitenames=1,
-	maxcitenames=2,
-	maxbibnames=1000
-]{biblatex}
+
+\usepackage[nosectionbib]{apacite}
+\bibliographystyle{apacite}
+\let\cite\shortcite
+%\usepackage[
+%	style=authoryear,
+%	dashed=false,
+%	backend=bibtex,
+%	url=false,
+%	doi=false,
+%	eprint=false,
+%	uniquename=false,
+%	uniquelist=false,
+%	hyperref=true,
+%	backref=true,
+%	mincitenames=1,
+%	maxcitenames=2,
+%	maxbibnames=1000
+%]{biblatex}
 
 \xpatchnameformat{labelname}{\ifciteseen}{\ifnumcomp{\value{listtotal}}{>}{\value{maxnames}}}{}{}
-
 \setlength\bibitemsep{2\itemsep}
-\DeclareFieldFormat{apacase}{#1}
-\DeclareSourcemap{
-	\maps[datatype=bibtex]{
-		\map{
-			\step[fieldset=abstract, null]
-			\step[fieldset=month, null]
-			\step[fieldset=ISBN, null]
-			\step[fieldset=url, null]
-			\step[fieldset=institution, null]
-		}
-	}
-}
-\DeclareCiteCommand{\cite}[\mkbibparens]
-{\usebibmacro{prenote}}
-{\usebibmacro{citeindex}%
-	\printtext[bibhyperref]{\usebibmacro{cite}}}
-{\multicitedelim}
-{\usebibmacro{postnote}}
 
-\DeclareCiteCommand*{\cite}[\mkbibparens]
-{\usebibmacro{prenote}}
-{\usebibmacro{citeindex}%
-	\printtext[bibhyperref]{\usebibmacro{citeyear}}}
-{\multicitedelim}
-{\usebibmacro{postnote}}
+%\DeclareFieldFormat{apacase}{#1}
+%\DeclareSourcemap{
+%	\maps[datatype=bibtex]{
+%		\map{
+%			\step[fieldset=abstract, null]
+%			\step[fieldset=month, null]
+%			\step[fieldset=ISBN, null]
+%			\step[fieldset=url, null]
+%			\step[fieldset=institution, null]
+%		}
+%	}
+%}
+%\DeclareCiteCommand{\cite}[\mkbibparens]
+%{\usebibmacro{prenote}}
+%{\usebibmacro{citeindex}%
+%	\printtext[bibhyperref]{\usebibmacro{cite}}}
+%{\multicitedelim}
+%{\usebibmacro{postnote}}
 
-\DeclareCiteCommand{\parencite}[\mkbibparens]
-{\usebibmacro{prenote}}
-{\usebibmacro{citeindex}%
-	\printtext[bibhyperref]{\usebibmacro{cite}}}
-{\multicitedelim}
-{\usebibmacro{postnote}}
+%\DeclareCiteCommand*{\cite}[\mkbibparens]
+%{\usebibmacro{prenote}}
+%{\usebibmacro{citeindex}%
+%	\printtext[bibhyperref]{\usebibmacro{citeyear}}}
+%{\multicitedelim}
+%{\usebibmacro{postnote}}
 
-\DeclareCiteCommand*{\parencite}[\mkbibparens]
-{\usebibmacro{prenote}}
-{\usebibmacro{citeindex}%
-	\printtext[bibhyperref]{\usebibmacro{citeyear}}}
-{\multicitedelim}
-{\usebibmacro{postnote}}
+%\DeclareCiteCommand{\parencite}[\mkbibparens]
+%{\usebibmacro{prenote}}
+%{\usebibmacro{citeindex}%
+%	\printtext[bibhyperref]{\usebibmacro{cite}}}
+%{\multicitedelim}
+%{\usebibmacro{postnote}}
 
-\DeclareCiteCommand{\footcite}[\mkbibfootnote]
-{\usebibmacro{prenote}}
-{\usebibmacro{citeindex}%
-	\printtext[bibhyperref]{ \usebibmacro{cite}}}
-{\multicitedelim}
-{\usebibmacro{postnote}}
+%\DeclareCiteCommand*{\parencite}[\mkbibparens]
+%{\usebibmacro{prenote}}
+%{\usebibmacro{citeindex}%
+%	\printtext[bibhyperref]{\usebibmacro{citeyear}}}
+%{\multicitedelim}
+%{\usebibmacro{postnote}}
 
-\DeclareCiteCommand{\footcitetext}[\mkbibfootnotetext]
-{\usebibmacro{prenote}}
-{\usebibmacro{citeindex}%
-	\printtext[bibhyperref]{\usebibmacro{cite}}}
-{\multicitedelim}
-{\usebibmacro{postnote}}
+%\DeclareCiteCommand{\footcite}[\mkbibfootnote]
+%{\usebibmacro{prenote}}
+%{\usebibmacro{citeindex}%
+%	\printtext[bibhyperref]{ \usebibmacro{cite}}}
+%{\multicitedelim}
+%{\usebibmacro{postnote}}
 
-\DeclareCiteCommand{\textcite}
-{\boolfalse{cbx:parens}}
-{\usebibmacro{citeindex}%
-	\printtext[bibhyperref]{\usebibmacro{textcite}}}
-{\ifbool{cbx:parens}
-	{\bibcloseparen\global\boolfalse{cbx:parens}}
-	{}%
-	\multicitedelim}
-{\usebibmacro{textcite:postnote}}
+%\DeclareCiteCommand{\footcitetext}[\mkbibfootnotetext]
+%{\usebibmacro{prenote}}
+%{\usebibmacro{citeindex}%
+%	\printtext[bibhyperref]{\usebibmacro{cite}}}
+%{\multicitedelim}
+%{\usebibmacro{postnote}}
+
+%\DeclareCiteCommand{\textcite}
+%{\boolfalse{cbx:parens}}
+%{\usebibmacro{citeindex}%
+%	\printtext[bibhyperref]{\usebibmacro{textcite}}}
+%{\ifbool{cbx:parens}
+%	{\bibcloseparen\global\boolfalse{cbx:parens}}
+%	{}%
+%	\multicitedelim}
+%{\usebibmacro{textcite:postnote}}
 
 %:-------------------------- Glossary/Abbrev./Symbols -----------------------
 \usepackage[nomain,xindy, toc, acronym]{glossaries}
