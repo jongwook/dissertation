@@ -2,7 +2,8 @@ sudo: required
 language: generic
 before_install:
   - export TZ=America/New_York
-  - sudo apt-get install texlive-binaries
+  - sudo apt-get -qq update
+  - sudo apt-get install -y texlive-binaries texlive-xetex
 script:
   - mkdir -p result
   - xelatex -synctex=1 -interaction=nonstopmode dissertation.tex
