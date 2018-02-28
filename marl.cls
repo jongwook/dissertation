@@ -83,6 +83,7 @@
 %\setlength{\columnsep}{20pt} % space between columns; default 10pt quite narrow
 \usepackage[nottoc]{tocbibind} % correct page numbers for bib in TOC, nottoc suppresses an entry for TOC itself
 \usepackage{textcase}
+\usepackage[useregional]{datetime2}
 \usepackage{prettyref}
 \newrefformat{ch}{Chapter~\ref{#1}}
 \newrefformat{tab}{Table~\ref{#1}}
@@ -132,8 +133,7 @@
 \usepackage{makeidx}
 \usepackage{xpatch}
 \usepackage[
-	bibstyle=authoryear,
-	citestyle=verbose,
+	style=authoryear,
 	dashed=false,
 	backend=bibtex,
 	url=false,
@@ -144,7 +144,7 @@
 	hyperref=true,
 	backref=true,
 	mincitenames=1,
-	maxcitenames=1,
+	maxcitenames=2,
 	maxbibnames=1000
 ]{biblatex}
 
@@ -663,6 +663,7 @@ BoldItalicFont=*-BoldIt
 
 %--------------------------- other things ---------------------------------
 
+\definecolor{RED}{rgb}{1,0,0}
 \newcommand\TODO[1]{ \textcolor{red}{[TODO: #1]} }
 \newcommand\citesomething{ \textsuperscript{\textcolor{blue}{(citation needed)}} }
 
