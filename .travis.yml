@@ -1,3 +1,4 @@
+language: bash
 install:
   # Silent install from conda docs
   # https://conda.io/docs/user-guide/install/macos.html#install-macos-silent
@@ -23,6 +24,7 @@ install:
 cache:
   directories:
     - $HOME/miniconda
+    - $HOME/.cache
 script:
  - mkdir -p result
  - tectonic ./dissertation.tex --print -o result -r 2
@@ -36,4 +38,4 @@ deploy:
   verbose: true
   edge: true
   on:
-    branch: gh-pages
+    branch: master
