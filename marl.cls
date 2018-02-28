@@ -300,7 +300,7 @@
 \setmainfont{SourceSerifPro}[
 Path=fonts/,
 UprightFont=*-Regular.otf,
-BoldFont=*-SemiBold.otf,
+BoldFont=*-Semibold.otf,
 ItalicFont=NotAtAllOfficialIt.ttf,
 BoldItalicFont=Heuristica-BoldItalic.otf
 ]
