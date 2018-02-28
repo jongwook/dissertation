@@ -83,7 +83,7 @@
 %\setlength{\columnsep}{20pt} % space between columns; default 10pt quite narrow
 \usepackage[nottoc]{tocbibind} % correct page numbers for bib in TOC, nottoc suppresses an entry for TOC itself
 \usepackage{textcase}
-\usepackage[useregional]{datetime2}
+\usepackage{datetime}
 \usepackage{prettyref}
 \newrefformat{ch}{Chapter~\ref{#1}}
 \newrefformat{tab}{Table~\ref{#1}}
