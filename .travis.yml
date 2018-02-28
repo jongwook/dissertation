@@ -1,4 +1,4 @@
-language: bash
+language: generic
 install:
   # Silent install from conda docs
   # https://conda.io/docs/user-guide/install/macos.html#install-macos-silent
@@ -34,7 +34,6 @@ deploy:
   github-token: $GITHUB_TOKEN
   keep-history: false
   local-dir: result
-  repo: jongwook/dissertation-proposal
   verbose: true
   on:
     branch: master
