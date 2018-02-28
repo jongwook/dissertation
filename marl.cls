@@ -132,14 +132,17 @@
 \usepackage{makeidx}
 \usepackage{xpatch}
 \usepackage[
-	style=apa,
-	backend=biber,
+	bibstyle=authoryear,
+	citestyle=verbose,
+	dashed=false,
+	backend=bibtex,
 	url=false,
 	doi=false,
 	eprint=false,
 	uniquename=false,
 	uniquelist=false,
 	hyperref=true,
+	backref=true,
 	mincitenames=1,
 	maxcitenames=1,
 	maxbibnames=1000
@@ -156,6 +159,7 @@
 			\step[fieldset=month, null]
 			\step[fieldset=ISBN, null]
 			\step[fieldset=url, null]
+			\step[fieldset=institution, null]
 		}
 	}
 }
