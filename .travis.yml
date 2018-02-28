@@ -36,6 +36,5 @@ deploy:
   local-dir: result
   repo: jongwook/dissertation-proposal
   verbose: true
-  edge: true
   on:
     branch: master
