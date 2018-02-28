@@ -27,7 +27,7 @@ cache:
     - $HOME/miniconda
 script:
  - mkdir -p result
- - tectonic ./dissertation.tex --print -o result
+ - tectonic ./dissertation.tex --print -o result -r 2
 deploy:
   provider: pages
   skip-cleanup: true
