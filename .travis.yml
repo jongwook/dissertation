@@ -3,9 +3,12 @@ language: generic
 before_install:
   - export TZ=America/New_York
   - sudo apt-get -qq update
-  - sudo apt-get install -y texlive-binaries texlive-xetex
+  - sudo apt-get install -y texlive-binaries texlive-xetex texlive-latex-extra texlive-latex-recommended biber texlive-bibtex-extra biblatex
 script:
   - mkdir -p result
+  - xelatex -synctex=1 -interaction=nonstopmode dissertation.tex
+  - bibtex dissertation
+  - xelatex -synctex=1 -interaction=nonstopmode dissertation.tex
   - xelatex -synctex=1 -interaction=nonstopmode dissertation.tex
   - mv dissertation.pdf result/
 deploy:
