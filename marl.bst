@@ -4663,13 +4663,23 @@ FUNCTION {thesis}
       % journal not empty => published (e.g., Dissertation Abstracts Int.)
       %
   journal empty$
-    { format.btitle.vol.edition output.dot.new.block
-        %
-        % pop default unpublished thesis, top is default published thesis
-        %
-      swap$ pop$
-      format.type.school
-      address   connect.with.comma.check
+    { pop$
+      type         empty$
+      school       empty$ and
+      originalyear empty$ and
+      { pop$
+      ""
+      }
+      { format.type.school
+      originalyear   connect.with.comma.check
+      parenthesize.check
+      }
+      if$
+      format.aetitle.check
+      swap$    connect.with.space.check
+      "title"  title warning.if.empty
+      title    format.atitle.connect   output.new.block
+      pages    format.journal.vol.num.pages.check
     }
         %
         % pop default published thesis, top is default unpublished thesis

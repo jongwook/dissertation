@@ -13,14 +13,13 @@ Being able to accurately identify all musical events from audio and transcribe t
 Enabling an automatic conversion between musical audio and symbolic notations, automatic music transcription opens up many new possibilities, including the applications listed in Subsection \ref{ch:introduction}.\ref{sec:applications}.
 
 
-As previously stated, due to the complexity and difficulty of creating a completely end-to-end music transcription system, many existing approaches focus on a specific subtask of the problem \cite{casey2008mir}, e.g. extracting onsets and beats, recognizing timbre and instruments, tracking monophonic and polyphonic pitches, or separating audio sources from a mixture.
+Due to the complexity and difficulty of creating a completely end-to-end music transcription system, many existing approaches focus on a specific subtask of the problem \cite{casey2008mir}, e.g. extracting onsets and beats, recognizing timbre and instruments, tracking monophonic and polyphonic pitches, or separating audio sources from a mixture.
 Each of these subtasks poses interesting goals and applications even without the lofty goal of end-to-end music transcription, which are subproblems of \emph{music information retrieval} (MIR).
 Although this term has existed since 1960s \cite{kassler1966mir}, it was only after the late 1990s when active research on this area has spun off from computer music and computational musicology literature.
 During the last two decades, numerous sophisticated and novel approaches for each of these subproblems have been introduced, that have continuously improved the performance in terms of the accuracy in predicting the correct annotations.
 This chapter starts by introducing the standard pipeline of music information retrieval that are commonly employed in most MIR models and reviews the state-of-the-art techniques in each area relevant to music transcription.
 The purpose of this chapter is not to provide an all-encompassing survey over the history of MIR research but to show a clear common pattern over the areas of MIR where the machine learning models have been evolving from simple heuristics based on hand-crafted features to sophisticated deep learning models with millions of parameters.
-Due to the recent popularity of deep learning models, many methods employing deep neural networks are referenced in this chapter, and 
-The concepts and the formulation of those models such as convolutional newral networks (CNN) and recurrent neural networks (RNN) are given in Chapter \ref{ch:deeplearning}.
+Many methods employing deep neural networks are referenced in this chapter, and the concepts and the formulation of those models such as convolutional newral networks (CNN) and recurrent neural networks (RNN) are described in Chapter \ref{ch:deeplearning}.
 
 
 \section{The Standard Pipeline}
@@ -40,11 +39,12 @@ Taking discrete Fourier transforms on the frames produces a \emph{short-time Fou
 Spectrograms give very rich information about the audio; for example, the contour of melodies and the dynamics of music are usually identifiable from the spectrogram image.
 Spectrograms are expressive enough to be used as an output of sound synthesis or a source separation algorithm, and the corresponding audio signals can be reconstructed without incurring significant perceptual inconsistencies \cite{griffin1984lim, leroux2010spectrogram}.
 However, the dimensionality of a spectrogram is still quite high, making it computationally prohibitive to run many algorithms directly on an STFT or a spectrogram.
-This necessitated further transformations by the means of filterbanks, such as \emph{Mel-Frequency Cepstral Coefficients} (MFCC) \cite{logan2000mfcc} by applying the Mel filterbank which is inspired by the human auditory perception, followed by taking the first few DCT components that contain independent factors describing the spectral shape.
+This necessitated further transformations by the means of filterbanks, such as \emph{Mel-Frequency Cepstral Coefficients} (MFCC) \cite{logan2000mfcc} by applying the Mel filterbank inspired by the human auditory perception and taking the first few DCT components that contain independent factors describing the spectral shape.
 \emph{Constant-Q transform} (CQT) \cite{schorkhuber2010cqt} uses a filterbank where the center frequencies of filters have a constant Q factor, which is the ratio between the center frequency and the 3 dB bandwidth of a filter.
-By configuring CQT to produce 12 filters per octave, it is possible to obtain the coefficients corresponding to each musical tone, and to fold the representation to produce a \emph{chromagram} \cite{bello2005chromagram}.
-To extract the beat and tempo information, a heuristic function, such as the first-order difference of the time-domain log energy function or the \emph{spectral flux} that measures the total energy increase over the STFT frequency bins, is applied to formulate a novelty curve, which measures energy bursts typically present in the onsets of notes \cite{bello2005onset}.
-The onset information can then be further processed to obtain tempo information via \emph{tempogram} \cite{cemgil2000tempogram} or cyclic tempogram \cite{grosche2010tempogram}.
+By configuring CQT to produce 12 filters per octave, it is possible to obtain the coefficients corresponding to each musical tone, and to fold the representation to produce a \emph{chromagram} \cite{harte2005chromagram}.
+To extract the beat and tempo information, a heuristic function, such as the first-order difference of the time-domain log energy function or the \emph{spectral flux} that measures the total energy increase over the STFT frequency bins, is applied to formulate a novelty curve.
+This curve can then be used to measure energy bursts that are typically present in the onsets of notes \cite{bello2005onset}.
+The onset information can be further processed to obtain tempo information via \emph{tempogram} \cite{cemgil2000tempogram} or cyclic tempogram \cite{grosche2010tempogram}.
 
 
 Once an appropriate set of features are obtained, the next steps for MIR algorithms typically involve applying a classification model.
@@ -56,24 +56,28 @@ Since finding a better feature representation played a crucial role in earlier M
 More recent approaches have successfully eliminated some or all feature transformation stages in the standard MIR pipeline by training a deep model to learn the feature from the spectrogram or audio waveforms.
 Applications of deep learning arose in virtually all types of MIR tasks, including melody extraction \cite{bittner2017deepsalience}, beat tracking \cite{vogl2017drum}, and genre classification \cite{oramas2017genre}.
 Apart from a small number of end-to-end approaches, most deep learning models for music still rely on predefined feature transforms such as STFT or CQT, because those features make it easier for a model to learn meaningful concepts without overfitting, using a smaller amount of parameters and thus using less powerful hardware.
-In theory, however, any feature extraction stage induces a loss of information, and it suggests that the best-performing model would benefit most from the raw audio data.
+%In theory, however, any feature extraction stage induces a loss of information, and it suggests that the best-performing model would benefit most from the raw audio data.
+
+Having covered the general approaches in MIR, the following sections provide more in-depth literature reviews on the different subtasks relevant to automatic music transcription, starting from the simplest problem of monophonic picth tracking.
 
 
-\section{Mophonoic Pitch Tracking}
+\section{Monophonic Pitch Tracking}\label{sec:monophonic}
 
-Estimating the fundamental frequency (f0) of a monophonic audio signal, also known as pitch tracking or pitch estimation, is a long-standing topic of research in audio signal processing.
-Pitch estimation plays an important role in music signal processing, where monophonic pitch tracking is used as a method to generate pitch annotations for multi-track datasets \cite{bittner2014medleydb} or as a core component of melody extraction systems \cite{bosch2014melody, mauch2015computer}. 
-Pitch estimation is also important for speech analysis, where prosodic aspects such as intonations may reflect various features of speech \cite{zubizarreta1998prosody}.
+Estimating the fundamental frequency (f0) of a monophonic audio signal, also known as pitch tracking or pitch estimation, is one of the simplest but a long-standing topic of research in audio signal processing.
+Pitch estimation plays an important role outside of automatic music transcription as well, where monophonic pitch tracking can be used as a method to generate pitch annotations for multi-track datasets \cite{bittner2014medleydb} or as a core component of melody extraction systems \cite{bosch2014melody, mauch2015computer}.
 
-Pitch is defined as a subjective quality of perceived sounds and does not precisely correspond to the physical property of the fundamental frequency \cite{hartmann1997signals}.
-However, apart from a few rare exceptions, pitch can be quantified using fundamental frequency, and thus they are often used interchangeably outside psychoacoustical studies. 
-For convenience, the two terms are interchangeably throughout this chapter.
+%Pitch is defined as a subjective quality of perceived sounds and does not precisely correspond to the physical property of the fundamental frequency \cite{hartmann1997signals}.
+%However, apart from a few rare exceptions, pitch can be quantified using fundamental frequency, and thus they are often used interchangeably outside psychoacoustical studies. 
+%For convenience, the two terms are interchangeably throughout this chapter.
 
 Computational methods for monotonic pitch estimation have been studied for more than a half-century \cite{noll1967cepstrum}, and many reliable methods have been proposed since.
 Earlier methods commonly employ a certain candidate-generating function, accompanied by pre- and post-processing stages to produce the pitch curve.
 Those functions include the cepstrum \cite{noll1967cepstrum}, the autocorrelation function (ACF) \cite{dubnowski1976acf}, the average magnitude difference function (AMDF) \cite{ross1974amdf}, the normalized cross-correlation function (NCCF) as proposed by RAPT \cite{talkin1995rapt} and PRAAT \cite{boersma1993praat}, and the cumulative mean normalized difference function as proposed by YIN \cite{decheveigne2002yin}. More recent approaches include SWIPE \cite{camacho2008swipe}, which performs template matching with the spectrum of a sawtooth waveform, and 
 pYIN \cite{mauch2014pyin}, a probabilistic variant of YIN that uses a Hidden Markov Model (HMM) to decode the most probable sequence of pitch values.
 According to a few comparative studies, the state of the art is achieved by YIN-based methods \cite{von2010comparison, babacan2013comparative}, with pYIN being the best performing method to date \cite{mauch2014pyin}.
+
+While these methods work well for monophonic audio, it is not enough for general music transcription, where multiple concurrent notes and sound sources are present.
+To address this situation, the next section reviews the techniques for tracking multiple pitches.
 
 
 \section{Multiple Fundamental Frequency Estimation}
@@ -95,22 +99,21 @@ The idea of using generative models to predict multiple fundamental frequencies 
 Using deep generative models is expected to help overcoming this limitation, since deep learning methods is known to be excellent in learning embeddings and manifolds that are generalizable to different tasks and domains.
 
 
-\section{Source Separation and Music Translation}
+\section{Source Separation and Music Translation}\label{sec:separation}
 
-\begin{itemize}
-	\item From blind to guided \cite{vincent2013separation}: defined as convolution; shares applications with AMT -- music editing, 3D sound rendering, and audio information retrieval
-	\item AMT and SS \cite{plumbley2002transcription}
-	\item Score-informed overview \cite{ewert2014separation} CNN based - \cite{miron2017sourceseparation}
-	%%
-	\item Structural information \cite{rafii2013separation, liutkus2012separation}
-	\item Robust PCA \cite{huang2012separation}
-	\item distinguish timbral features: Singing voice \cite{li2007separation, jansson2017separation} and HPSS \cite{ono2010hpss}
-	\item source-filter modeling \cite{ozerov2007separation,durrieu2011separation}
-	\item proposed approach resembles timbral + source filter
-\end{itemize}
+Source separation refers to the task of separating sound sources from a mixture signal, and is closely related to automatic music transcription, because it provides a means to separate each instrument sources from multi-instrument music.
+This problem is also called as a \emph{cocktail party problem}, based on humans' ability to focus on a single voice at a noisy cocktail party.
+Sound source separation has been a popular research topic since the seminal work on \emph{auditory scene analysis} by \citeA{bregman1990asa}, from which stemmed computational auditory scene analaysis (CASA) \cite{brown1994casa}, a problem of using computational models to analyze an auditory scene, identifying the sources and location of all nearby sounds.
+In this sense, automatic music transcription and sound source separation are particular aspects of auditory scene analysis \cite{plumbley2002transcription}, and source separation enables similar kinds of applications to AMT, such as music editing, 3D sound rendering, and information retrieval systems.
 
 
-A closely related problem to source separation is audio translation, which concerns mapping input audio to a corresponding output with some desired properties, such as speech with reduced noise, singing voice separated from music, or the same speech in the voice of a different speaker.
+\emph{Blind source separation} refers to the situation where no information about the sources or the mixing process is known \cite{bell1995blind}, whereas \emph{informed source separation} \cite{vincent2013separation} concerns the case where some level of side information is available, e.g. the presence of a score \cite{ewert2014separation}.
+Blind sound source separation has to resort to using purely statistical approaches such as indepenent component analysis \cite{saruwatari2006ica} or robust PCA \cite{huang2012separation}, whereas informed source separation can leverage the knowledge on the musical structure \cite{rafii2013separation, liutkus2012separation} or the timbral differences of the sources \cite{li2007separation,ono2010hpss} for better separation.
+Probabilistic models for source separation \cite{ozerov2007separation,leglaive2016prior} have also been developed, and source-filter modeling \cite{heittola2009separation,durrieu2011separation} is a generative approach which separately models a source that creates a sound and a filter that shapes the timbre.
+The proposed AMT model is similar to source-filter models in a sense that it describes the generative process of each sound, but also relates to timbre-informed source separation models \cite{miron2018thesis}, because it needs to learn the concept of timbre to produce per-instrument piano rolls.
+
+
+A closely related problem to source separation is audio translation, which concerns mapping input audio to a corresponding output with some desired properties, such as speech with reduced noise, singing voice separated from music, or the same speech content in the voice of a different speaker.
 \citeA{barry2018style} applied the style transfer algorithm \cite{gatys2015style} to an ensemble of STFT, CQT, and Mel spectrograms, to transfer musical styles capturing harmonic, rhythmic, and timbral elements.
 The \emph{U-Net} architecture \cite{ronneberger2015unet} uses an encoder-decoder framework with skip connections between the hidden layers at the same level of abstraction to perform image translation, and a singing voice separation model can be trained using this architecture \cite{jansson2017separation}.
 The encoder-decoder architecture with skip connections can also be trained with GAN objectives, and a few audio translation models working on spectrograms have been developed; examples include singing voice separation \cite{fan2017svsgan, stoller2017separation}, source separation \cite{subakan2017gan}, and speech enhancement \cite{pascual2017segan, donahue2017segan}.
@@ -138,25 +141,18 @@ A GAN architecture using one-dimensional convolutions called \emph{WaveGAN} was 
 The 1-D output does not require phase reconstruction, and it was able to achieve a better perceptual quality than the audio reconstructed using 2-D GANs.
 As shown in the paper, training of 1-D GANs is much more susceptible to the choice of the GAN objective than the 2-D GANs, and training GAN for longer audio sequences and extending it as a tool for disentanglement of latent semantic information or a conditional audio synthesis framework remains as a challenge.
 
-\section{Music Language Models}
+\section{Music Language Models for Symbolic Music Generation}
 
 Symbolic music processing refers to the techniques for processing music at a symbolic level, such as in the form of sheet music, MIDI signals, or piano roll representations.
 Problems in this domain includes optical music recognition \cite{rebelo2012omr}, algorithmic composition \cite{fernandez2013ai}, and computational music theory \cite{hamanaka2013computational}, while the subject most relevant to music transcription research would be \emph{music language models}.
-A music language model refers to a statistical model, often being a generative model, that encodes music theoretic knowledge to describe the structural composition and arrangement of musical elements \cite{patel2010musiclanguage}, similarly to how computational linguists build language models to describe the structure of natural languages.
+A music language model is a statistical model, often a generative model, that encodes music theoretic knowledge to describe the structural composition and arrangement of musical elements \cite{patel2010musiclanguage}, similarly to how computational linguists build language models to describe the structure of natural languages.
 A well-designed music language model can be an important component for a generative model for music, because it can serve as a prior for latent representations and can be combined with conditional synthesis models or software instruments to produce audio.
+As a side note, there are two distinct objectives for symbolic music generation systems --- style imitation and genuine composition \cite{nierhaus2009composition} --- among with this thesis only focuses on the former, aiming at informing the transcription model about music theoretic knowledge rather than imagining a new type of musical art.
 
 The first systematic approach of applying a linguistic theory to music was the \emph{generative theory of tonal music} \cite{lerdahl1983gttm}, which was inspired by Noam Chomsky's generative grammar \cite{chomsky1966generative} and was influential in music theory, music psychology, and cognitive musicology.
-Computational methods for music language models applies the same idea using statistical natural language processing techniques.
-
-\begin{itemize}
-	\item dual objectives: style imitation + new artistic approach (we = former)
-	\item Hidden Markov Models \cite{farbood2001markov}
-	\item Generative Grammars \cite{chemilier2001grammar}
-	\item Genetic Algorithms \cite{miranda2007evolutionary}
-	\item Cellular Automata \cite{burraston2004automata}
-\end{itemize}
-
-\TODO{Strengthen connections}, such as a recurrent neural network to build a music language models \cite{sigtia2014lm}.
+Music language models implement this idea using computational methods, typically involving statistical models that are also used in natural language processing.
+These include many kinds of approaches for symbolic music generation, such as hidden Markov models \cite{farbood2001markov}, generative grammars \cite{chemilier2001grammar}, cellular automata \cite{burraston2004automata}, and genetic algorithms \cite{miranda2007evolutionary}.
+More recently, deep learning models such as a recurrent neural network to build a music language models \cite{sigtia2014lm} has also been proposed.
 The latest approaches to generate realistic sound music sequences in the symbolic domain include an application of variational autoencoder \cite{teng2017generating,tikhonov2017generation}, and a generative adversarial network \cite{yang2017midinet}.
 
 \section{Summary}
