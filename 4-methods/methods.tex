@@ -86,7 +86,7 @@ The experiments for each subproblem are designed to follow the corresponding low
 This task is the primary objective of this thesis, by building a bidirectional connection between the domain of audio signals and the domain of piano roll representations.
 The three subtasks are designed to gradually expand the two domains, from a fixed-length monophonic notes to multi-instrument polyphonic music.
 
-\paragraph{Disentangling Pitch and Timbre}\mbox{}
+\mbox{}\\\noindent\emph{Disentangling Pitch and Timbre}\mbox{}
 
 For the first subtask, fixed-length monophonic signals are assumed.
 As \citeA{engel2017nsynth} studied the entanglement of pitch and timbre using the WaveNet architecture, the goal of this subtask is to build a deep generative model that can separately control pitch and timbre.
@@ -100,7 +100,7 @@ A shortcoming of this architecture is that each pitch values are considered as s
 	\label{fig:pegan}
 \end{figure}
 
-\paragraph{Extending to Polyphony and Variable-Length Audio}\mbox{}
+\mbox{}\\\noindent\emph{Extending to Polyphony and Variable-Length Audio}\mbox{}
 
 The next goal is to extend the generative model to deal with polyphony and variable-length audio.
 In order to generalize to an arbitrary length in time, the latent representation needs to include the time dimension in addition to the pitch and timbre factors.
@@ -111,7 +111,7 @@ In order for the model to learn to separate different timbres and pitches, the t
 Such setup may not have a straightforward training scheme, in which case incorporating a clustering techniques such as expectation-maximization can be helpful.
 It may be also necessary to limit the number of polyphony or instruments to have a computationally feasible solution.
 
-\paragraph{Obtaining Piano Rolls from the Embeddings}\mbox{}
+\mbox{}\\\noindent\emph{Obtaining Piano Rolls from the Embeddings}\mbox{}
 
 This task is on the ultimate problem of obtaining the per-instrument piano roll representations.
 In order to achieve this, a model connecting the event-level representation to the latent embedding space is required.
@@ -121,7 +121,7 @@ In order to achieve this, a model connecting the event-level representation to t
 This subproblem concerns the secondary objective of this thesis, of using the generative component of the AMT model for data augmentation.
 These tasks are auxiliary to the main objective and are also less technically challenging, while they are designed to work in conjunction with the AMT model.
 
-\paragraph{Software Instrument and Audio Post-Processing}\mbox{}
+\mbox{}\\\noindent\emph{Software Instrument and Audio Post-Processing}\mbox{}
 
 This task is to reconfirm the effectiveness of data augmentation, by feeding additional training dataset consisting of sounds generated using software instruments and audio post-processing techniques.
 While the audio degradation toolbox \cite{mauch2013adt} and MUDA \cite{mcfee2015muda} could provide some facilities for data augmentation, software instruments are usually packaged using specialized APIs, such as VST3 or Audio Units \cite{pirkle2014synthesizer}.
@@ -129,12 +129,12 @@ While the audio degradation toolbox \cite{mauch2013adt} and MUDA \cite{mcfee2015
 In some sense, by building a generative model based on a specific dataset, the model essentially serves as a software instrument.
 
 
-\paragraph{Incorporating a Music Language Model}\mbox{}
+\mbox{}\\\noindent\emph{Incorporating a Music Language Model}\mbox{}
 
 This subtask concerns the application of a music language model that serves as a sensible prior to the output of the generative AMT model.
 Designing a music language model itself is an intriguing problem, but for the purpose of this thesis, existing music sequence generation models such as MidiNet \cite{yang2017midinet} or MuseGan \cite{dong2017musegan} can be incorporated.
 
-\paragraph{Positive Feedback Cycle between Transcription and Augmentation}\mbox{}
+\mbox{}\\\noindent\emph{Positive Feedback Cycle between Transcription and Augmentation}\mbox{}
 
 This last task would be an integration of all of the above methods, to build an architecture where the improved generative model serves as a better augmentation tool, which helps the AMT model achieve improved transcription performance.
 
