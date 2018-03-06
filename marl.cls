@@ -134,7 +134,7 @@
 \usepackage{xpatch}
 
 \usepackage[nosectionbib]{apacite}
-\bibliographystyle{apacite}
+\bibliographystyle{marl}
 \let\cite\shortcite
 %\usepackage[
 %	style=authoryear,

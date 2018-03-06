@@ -9,11 +9,11 @@
 \chapter{Deep Learning and Deep Generative Models}\label{sec:deeplearning}
 \label{ch:deeplearning}
 
-Since recently, a family of machine learning research under the buzzword \emph{deep learning} has incurred many groundbreaking changes to the world of artificial intelligence, making the long-waited dream of the \emph{artificial general intelligence} (AGI) \footnote{a loosely defined term referring to human-level intelligence, i.e. an AI system that can solve complex problems in various, even previously-unseen domains with self-understanding and autonomous self-control. \cite{goertzel2007agi}} look not so distant in the future.
+Since recently, a family of machine learning research under the term \emph{deep learning} has incurred many groundbreaking changes to the world of artificial intelligence, making the long-waited dream of the \emph{artificial general intelligence} (AGI) \footnote{a loosely defined term referring to human-level intelligence, i.e. an AI system that can solve complex problems in varied and possibly previously-unseen domains with self-understanding and autonomous self-control. \cite{goertzel2007agi}} look not so distant in the future.
 The impact of deep learning has been so dramatic that many successful applications of deep learning like DeepMind's AlphaGo outplaying the human Go champion and Google's neural machine translation have became familiar to the general public.
-The core idea of using artificial neural networks to process complex information traces back to the earliest days of computing \cite{kleene1951representation}, but it has long been considered less effective than alternative methods, such as support vector machines or probabilistic graphical models.
-Since around 2010, it has been increasingly shown that neural networks can substantially outperform those other approaches and have much more capability for further improvements, and that the lower performance of neural networks in the past was merely due to insufficient data, the lack of computational power, and some numerical tricks that have not been employed before.
-This finding has opened the era of deep learning, a term coined after the fact that neural networks often employ multiple layers of learned feature transformations, and is continuing to innovate virtually all fields of science and engineering, including, of course, music technology.
+The core idea of using artificial neural networks to process complex information traces back to the earliest days of computing \cite{kleene1951representation} but has long been considered less effective than alternative methods, such as support vector machines or probabilistic graphical models.
+Since around 2010, it has been increasingly shown that neural networks can substantially outperform those other approaches and have much more capability for further improvements, and that the lower performance of neural networks in the past was merely due to insufficient data, the lack of computational power, and some numerical tricks that had not been employed before.
+This finding has opened the era of deep learning --- a term coined after the fact that neural networks often employ multiple layers of learned feature transformations --- and is continuing to innovate virtually all fields of science and engineering, including, of course, music technology.
 
 This chapter reviews the essential concepts and terminologies of deep learning, from the basic architectures and techniques to the most recent advances in deep generative models.
 The purpose of this chapter is to present a historical perspective toward deep generative models and to provide a motivation for building music transcription systems upon them in the proposed research.
@@ -46,27 +46,28 @@ There are various options to this operation including whether to pad the input o
 The 2-D convolution is suitable for image data, where the initial $C$ can be the 3 RGB channels of color images, while the similarly-defined 1-D and 3-D convolutions are more often used with time-series and video data respectively.
 
 Using convolutional layers results in a fewer number of parameters to learn in each layer than the equivalent multilayer perceptron, allowing deeper models for the same total number of parameters.
-LeNet \cite{lecun1995lenet} for digit classification is what pioneered the technique of using convolutional layers in neural networks, and it is an essential building block of the majority of deep learning methods, including the models that surpassed the human-level accuracy in the ImageNet Large Scale Visual Recognition Challenge (ILSVRC) \cite{krizhevsky2012imagenet, simonyan2014vgg, szegedy2015googlenet, he2016resnet}.
+LeNet \cite{lecun1995lenet} for digit classification is what pioneered the technique of using convolutional layers in neural networks, which has become an essential building block of the majority of deep learning methods.
+Such models include those that surpassed the human-level accuracy in the ImageNet Large Scale Visual Recognition Challenge (ILSVRC) \cite{krizhevsky2012imagenet, simonyan2014vgg, szegedy2015googlenet, he2016resnet}.
 A standard practice of building a CNN is to stack a multiple convolutional layers along with pooling layers to obtain a compact feature repesentation, which is fed to a multi-layer perceptron as in Equation \ref{eqn:mlp} to produce output.
 The layers of MLP are called fully connected or dense layers, because unlike the convolutional layers, the weight matrix used in the matrix multiplication associates every pair of the input and output features.
 \emph{Fully convolutional networks}, which omit the fully connected layers that are typically placed at the last stages of neural networks, do not require a fixed input and output size and are known to perform well for image segmentation \cite{shelhamer2017fcn}.
-Using the ability of deep convolutional layers extracting complex semantic information from images, many artistic applications have been developed, such as the transfer of artistic style from one image to another \cite{gatys2015style}, and a captivating transformation of images using neural network weights known as \emph{Deep Dream} \cite{mahendran2016deepdream}.
+Using the ability of deep convolutional layers to extract complex semantic information from images, many artistic applications have been developed, such as the transfer of artistic style from one image to another \cite{gatys2015style}, and a captivating transformation of images using neural network weights known as \emph{Deep Dream} \cite{mahendran2016deepdream}.
 
 
-A network with cyclic connections is called a \emph{recurrent neural network} (RNN), and has been successfully applied to modeling sequence data.
+A network with cyclic connections is called a \emph{recurrent neural network} (RNN), and has been successfully applied to modeling sequential data.
 Because it is hard for a recurrent neural network to propagate long-range dependencies through a chain of recurrent connections, specific recurrent units called long short-term memory (LSTM) \cite{hochreiter1997lstm} and gated recurrent unit (GRU) \cite{cho2014seq2seq} are devised to resolve the problem and are considered essential for recurrent neural networks.
 A formulation of recurrent neural network called the sequence-to-sequence model \cite{cho2014seq2seq,sutskever2014seq2seq}, which can model a mapping from variable-length input to variable-length output, is well known to be very effective for machine translation, and is deployed in production in Google's translation services \cite{wu2016google}.
-An important technique for building recurrent neural networks is \emph{attention} \cite{bahdanau2014attention}, which allows the network to focus on a specific part of a sequence.
+An important technique for building recurrent neural networks is \emph{attention} \cite{bahdanau2014attention}, which allows the network to focus on specific parts of a sequence for generating outputs.
 The attention mechanism is shown to be effective in tasks including not only machine translation as in the original paper, but also in image description generation \cite{karpathy2017desc}, speech recognition \cite{chorowski2015speech}, and question answering \cite{sukhbaatar2015memory}.
 
 \emph{Reinforcement learning} is a formulation of machine learning where a software agent takes actions in an environment to maximize the reward given according to the actions \cite{sutton2018reinforcement}.
 This formulation is inspired by behaviorist psychology and is well-suited for environments that require explorations by the agent, such as robotics and games.
-Deep Q-Network (DQN) \cite{mnih2015dqn} is a neural network model designed for reinforcement learning, which has been successfully applied to automatically playing Atari games \cite{mnih2013atari} and the agent playing the game of Go that surpassed the human level \cite{silver2016alphago}.
+Deep Q-Network (DQN) \cite{mnih2015dqn} is a neural network model designed for reinforcement learning, which has been successfully applied to automatically playing Atari games \cite{mnih2013atari} and the agent playing the game of Go that surpassed the human level of skill \cite{silver2016alphago}.
 
 
 \section{Performance Optimization Techniques}
 
-The success of deep learning was possible not only because of the architectural design of deeper models and the hardware capable of supporting such models, but also thanks to the numerous elaborate techniques and clever tricks that enabled previously impossible performances.
+The success of deep learning was possible not only because of the architectural design of deeper models and the hardware capable of supporting such models, but also due to the numerous elaborate techniques and clever tricks that enabled previously impossible performances.
 
 Training a neural network involves optimization of its parameters, e.g. the weights $W$ in Equation \ref{eqn:perceptron}-\ref{eqn:mlp} and the kernels $K_{cd}$ in Equation \ref{eqn:convnet}, which typically requires the gradient of the loss function, i.e. the partial derivatives with respect to all of the model's parameters.
 It is feasible to manually derive the gradient for simple models, but for deep neural networks it is often too complex and error-prone to calculate the derivative by hand.
@@ -94,8 +95,9 @@ As with any other machine learning methods, overfitting is a problem to overcome
 While directly adding a L1 or L2 regularization term of weights is possible, a few cleverer tricks for preventing overfitting have been devised and widely employed, and they are treated as regularization methods in a wider sense.
 \emph{Dropout} \cite{srivastava2014dropout} is a simple yet powerful regularization method that turns off a random subset of activations during the training process.
 Because the network has to learn how to make accurate predictions using only a random subset of its components, the training becomes more robust and less susceptible to overfitting.
-\emph{Batch normalization} \cite{ioffe2015batchnorm} is a method to reduce what the covariance shift of activations, by performing normalization for each training mini-batch so that the activations of each layer have zero mean and unit variance, and is also known to improve the generalizability of the trained model.
-Despite being relatively new, dropout and batch normalization are drop-in methods that can be added to most deep architectures with almost no changes to code and yet significantly improve the performance, and are thus included almost by default in the majority of newer deep models.
+\emph{Batch normalization} \cite{ioffe2015batchnorm} is a method to reduce what the covariance shift of activations, by performing normalization for each training mini-batch so that the activations of each layer have zero mean and unit variance.
+It has also been empirically shown to improve the generalizability of the trained model.
+Despite being relatively new, dropout and batch normalization are drop-in methods that can be added to most deep architectures with almost no changes to code and yet significantly improve the performance and are thus included almost by default in the majority of newer deep models.
 \emph{Scaled exponential linear units} (SELU) \cite{klambauer2017selu} use a special activation function that induces a self-normalizing property over layers, making the activations have zero mean and unit variance without using batch normalization explicitly.
 
 
@@ -118,7 +120,7 @@ While these simple models work effectively to a certain degree with a well-craft
 \emph{Probabilistic graphical models} (PGM) specify the structural dependencies between random variables using graphs, with nodes representing random variables and connections between them representing their dependencies.
 The graphs can have directed or undirected connections to formulate the joint probability distributions of the variables.
 \emph{Hidden Markov models} (HMM) \cite{rabiner1989hmm} and \emph{latent Dirichlet allocation} (LDA) \cite{blei2003lda} are special cases of directed probabilistic graphical models, also called \emph{Bayesian networks}, and are widely used for sequence modeling and topic modeling, respectively.
-Undirected graphical models are also called \emph{Markov random fields} (MRF), and have many applications in image processing, typically by having connections between nodes corresponding to adjacent pixels.
+Undirected graphical models, also called \emph{Markov random fields} (MRF), have many applications in image processing, typically by having connections between nodes corresponding to adjacent pixels.
 Undirected graphical models where every pair of nodes has a connection are called \emph{Boltzmann machines} and are capable of learning internal representations of data.
 
 \subsection{Early Deep Generative Models and Autoregressive Models}
@@ -139,7 +141,7 @@ The autoencoder architecture are shown to be effective at encoding the latent re
 
 
 Autoencoders are not generative models in a strict sense, because, while its decoder part can produce data samples from their latent representations, it lacks the ability to randomly sample the points in the latent dimensions that corresponds to the data distribution.
-\emph{Variational autoencoders} (VAE) \cite{kingma2013vae} fix this problem by restricting the posterior latent distribution to be Gaussian.
+\emph{Variational autoencoders} (VAE) \cite{kingma2013vae} address this problem by restricting the posterior latent distribution to be Gaussian.
 This is achieved by variational inference, reformulating the evidence lower bound (ELBO) of the data log-likelihood as:
 \begin{equation}\label{eqn:vae}
 \log p(\bm{x}) \ge \mathcal{L}(p_\theta, q_\phi) = \mathbb{E}_{q_\phi(\bm{z}|\bm{x})} [\log p_\theta(\bm{x}|\bm{z})] - \mathrm{KL}(q_\phi(\bm{z}|\bm{x}) || p(\bm{z})),
@@ -185,7 +187,7 @@ LAPGAN \cite{denton2015lapgan} is the first GAN formulation to generate 64$\time
 DCGAN \cite{radford2015dcgan} provides a simpler method of training convolutional GANs by following a list of architectural choices, making adversarial training of 64$\times$64 images possible only using one generator and one discriminator.
 Together with Improved GAN \cite{salimans2016improved} which proposed now-standard tricks such as feature matching, minibatch discrimination, historical averaging, and one-sided label smoothing to generate 128$\times$128 images, the DCGAN architecture is employed by virtually all subsequent GAN applications.
 For photo-realistic images synthesis in a higher resolution, StackGAN \cite{zhang2017stackgan2} uses a multi-stage GAN architecture to synthesize 256$\times$256 images, and progressive growing of GANs \cite{karras2017pggan} uses a training scheme that gradually switches to larger GANs to generated photo-realistic images of size 1024$\times$1024.
-The GAN architecture is also applicable to 3-D \cite{wu2016gan} and 1-D \cite{donahue2018wavegan} synthesis.
+The GAN architecture is also applicable to 3-D \cite{wu2016gan} and 1-D \cite{donahue2018wavegan} synthesis, suitable for generation of video and audio data, respectively.
 
 
 \subsection{The GAN Zoo}
@@ -200,7 +202,7 @@ Based on WGAN's observation that Lipschitz continuity of GAN is beneficial, spec
 Wasserstein distance is not an $f$-divergence but a special case of integral probability metrics (IPM), which also includes maximum mean discrepancy (MMD) distance, on which MMD GAN \cite{li2017mmdgan} and Distributional Adversarial Networks (DAN) \cite{li2017dan} are based.
 Fisher GAN \cite{mroueh2017fishergan} and Sobolev GAN \cite{mroueh2018gan} are also IPM-based GAN models.
 
-Least-Square GAN (LSGAN) \cite{mao2017lsgan} uses least-square losses instead, and also can be trained with gradient penalty \cite{mao2017effectiveness} which achieves a training stability similar to WGAN-GP's.
+Least-Square GAN (LSGAN) \cite{mao2017lsgan} uses least-square losses instead, and also can be trained with gradient penalty \cite{mao2017effectiveness} which achieves a training stability similar to that of WGAN-GP.
 Energy-Based GAN (EBGAN) \cite{zhao2017ebgan} views the discriminator as an energy function that puts low energy near the data manifold, and uses an autoencoder to model the discriminator. Boundary Equilibrium GAN (BEGAN) \cite{berthelot2017began} extends the EBGAN architecture using Wasserstein distance to balance the generator and discriminator during training.
 CoulombGAN \cite{unterthiner2017coulomb} formulates the GAN setup in terms of a potential field of charged particles, and DRAGAN \cite{kodali2017gan} poses GAN training as a regret minimization problem in online learning.
 Unrolled GAN \cite{metz2016unrolled} uses a surrogate objective function for the more stable generator updates, which approximates the optimal discriminator in the generator's perspective.
@@ -237,7 +239,7 @@ where $d$ is a distance metric defined in the data space.
 Adversarial generator-encoder (AGE) networks \cite{ulyanov2017age} achieve a comparable quality to other GANs using only two components, the generator and the encoder, without the discriminator.
 
 
-\subsection{Fusing GAN with Variational Autoencoder}
+\subsection{Fusing GANs with Variational Autoencoders}
 
 The idea of combining the autoencoder architecture and adversarial training gave birth to new kinds of deep generative models.
 Adversarial Autoencoders (AAE) \cite{makhzani2015aae} jointly train a standard autoencoder and an adversarial network that regularizes the posterior distribution to be Gaussian.
@@ -256,7 +258,7 @@ GAN has been successfully applied to many other tasks, including image super-res
 
 \subsection{Evaluation of Generated Samples}
 
-Unlike discriminative models that can be evaluated using well-defined metrics, it is not as straightforward to evaluate the performance of generative models.
+Unlike discriminative models that can be evaluated using well-defined metrics, it is not as straightforward to evaluate the performance of generative models \cite{theis2015evaluation}.
 Structural similarity (SSIM) \cite{wang2004ssim} and its multi-scale extension MS-SSIM \cite{wang2003msssim} can measure the similarity between two images using luminance, contrast, and structure information, and are commonly used for measuring intra-class diversity \cite{odena2016acgan}.
 This metric can be useful for assessing the mode collapsing problem, but is less useful if the dataset is already diverse \cite{fedus2018equilibrium}.
 
@@ -266,7 +268,7 @@ Assuming that meaningful images would have a low-entropy conditional label distr
 \exp \left ( \mathbb{E}_{\bm{x}} \Big[ \textrm{KL} \left ( p(y|\bm{x}) || p(y) \right ) \Big] \right ).
 \end{equation}
 For the domains other than natural images, Inception score can be calculated using a different classifier; in \cite{donahue2018wavegan} for example, an Inception score using an audio classifier is used to evaluate the quality of generated audio excerpts.
-While Inception scores correlate well with human perception, a drawback of is that the distribution of real data is not considered in the calculation, for a metric measuring how realistic the generated samples are.
+While Inception scores correlate well with human perception, a drawback of this is that the distribution of real data is not considered in the calculation, which is problematic for a metric measuring how realistic the generated samples are.
 
 Fréchet Inception distance (FID) \cite{heusel2017ttur} address this problem and provides a distance metric between the data distribution and model distribution.
 FID is defined using the activations of a coding layer of the Inception-v3 model, \texttt{pool\_3} to be specific, as the Fréchet distance between multivariate Gaussian approximations of the two distributions:
@@ -277,10 +279,16 @@ where $\bm{\mu}_i$ and $C_i$ are the mean vector and the covariance matrix of th
 
 \subsection{Theories on GAN Convergence}
 
-\TODO{review:}
+The formulation of GAN training and ways to overcome its instability have been studied from various angles.
+\citeA{mohamed2016implicit} generalized the GAN objective function to a wider range of implicit generative models, and \citeA{fedus2018equilibrium} studied the relations of the divergence function and the equilibrium.
+\citeA{arjovsky2017principled} and \citeA{kodali2017gan} studied the training dynamics of GANs around the local equilibria and its relation to the mode collapse problem, and \citeA{daskalakis2018gan} used optimistic mirror descent to reduce the cycling behavior in GAN training.
+\citeA{mescheder2017gan} observed that the training is locally convergent when all eigenvalues of the Jacobian have negative real-part.
+\citeA{nagarajan2017local} showed that with an absolute continuity assumption on the data and generator distributions ensure this case, but \citeA{sonderby2016amortised} confirmed that this assumption does not necessarily hold in general.
 
-\cite{arjovsky2017principled}, \cite{kodali2017gan}, \cite{nagarajan2017local}, \cite{daskalakis2018gan}, \cite{mohamed2016implicit}, \cite{fedus2018equilibrium}, \cite{arora2017gan,arora2018gan}, \cite{mescheder2017gan,mescheder2018convergence}
+Despite these advances in theoretical understanding, many of these studies are inconclusive, and there is not yet a out-of-the-box method that can make a GAN always converge.
+Unfortunately, the best practice at the moment is to carefully monitor the divergences and the Jacobian to determine if the training is leading to a convergence.
+
 
 \section{Summary}
-
-\TODO{summarize}
+This chapter provided a comprehensive introduction to deep learning and deep generative models, with an emphasis on generative adversarial networks.
+The fast progress of the research on deep generative models, together with the clear trend toward data-driven MIR research as discussed in Chapter \ref{ch:mir}, motivates further research on deep generative models for music transcription.

@@ -30,6 +30,8 @@ dissertation.pdf
 *.run.xml
 *.acr
 *.alg
+*.ilg
+*.ind
 
 # Packages #
 ############

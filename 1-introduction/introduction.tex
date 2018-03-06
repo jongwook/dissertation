@@ -40,7 +40,7 @@ To this end, the goal of this thesis is to study representation learning methods
 
 \begin{figure}[t]
 	\includegraphics[width=\textwidth]{autoencoder.pdf}
-	\caption{A generative model has to know all of necessary information required to reconstruct the audio data, including pitch, timbre, loudness, and duration. Generative models can be jointly trained with an encoder that finds those semantic information, giving a transcriber-synthesizer pair; more detail on Subsection \ref{ch:deeplearning}-\ref{subsec:gan-encoder}.}
+	\caption{A generative model has to know all of necessary information required to reconstruct the audio data, including pitch, timbre, loudness, and duration. Generative models can be jointly trained with an encoder that finds those semantic information, giving a transcriber-synthesizer pair; more detail on Subsection \ref{ch:deeplearning}.\ref{subsec:gan-encoder}.}
 	\label{fig:autoencoder}
 \end{figure}
 
@@ -108,7 +108,7 @@ In this sense, while not being the primary research objective of the thesis, eff
 	\item \textbf{Generative Model}: A model that is capable of generating data points that are coherent to supplied training examples.
 \end{itemize}
 
-\section{Delimitations/Limitations}
+\section{Delimitations/Limitations}\label{sec:limitations}
 
 Because of the sophisticated and open-ended nature of automatic music transcription, it is necessary to define the scope of the tasks and data that this thesis will be concerned with.
 The purpose of this section is to provide those limitations, and it discusses the scope of music that the proposed AMT system can process, the required capability of symbolic music processing, and the need for the perceptual studies regarding the validity of AMT systems.
@@ -199,7 +199,7 @@ In order to bolster the need for this study, this section starts by introducing 
 A brief perspective on AMT is presented in the context of wider AI research, followed by the organization of the chapters.
 
 
-\subsection{Applications of Automatic Music Transcription}
+\subsection{Applications of Automatic Music Transcription}\label{sec:applications}
 
 Many applications of the techniques in the realm of automatic music transcription is on interactive music systems.
 \citeA{vercoe1984performer} suggested a quest for a \emph{synthetic performer}, which can listen, perform, and learn in the context of live performance, and automatic \emph{real-time accompaniment} \cite{dannenberg1985accompaniment} based on dynamic programming was one of the first demonstrations of AMT techniques in interactive music systems.
@@ -218,7 +218,7 @@ Such database can also facilitate a large-scale musicological analysis \cite{abd
 
 Being ``generative'' means that a model is capable of generating new samples in the domain of the original data.
 Generation in the symbolic domain creates new musical scores, and a generative model in the audio domain creates audio waveform.
-These two kinds of generative systems are familiar to computer music artists are referred to as algorithmic composition \cite{fernandez2013ai} and sound synthesis \cite{cook2002synthesis} models.
+These two kinds of generative systems are familiar to computer music artists and are referred to as algorithmic composition \cite{fernandez2013ai} and sound synthesis \cite{cook2002synthesis} models.
 This thesis defines the term ``generative model'' more specifically, as in Section \ref{sec:definitions}, as a model that can learn the distribution of the provided data and can sample new samples in the original distribution.
 This differs from the term ``generative'' used in computer music in a sense that it aims to accurately model and learn to regenerate the real-world audio to be used in music transcription, rather than focusing on artistic aspects of generating new kinds of sounds and music.
 
@@ -240,7 +240,7 @@ Generative models are a branch of unsupervised learning, because it does not req
 Inherently, unsupervised learning is less well-defined than supervised learning, and this is the reason why unsupervised learning is sometimes synonymous with clustering, because finding clusters is usually as much an unsupervised learning system can do.
 However, a recent success of deep learning introduced a new breed of generative models, enabling an end-to-end generation of complex data such as photos and audio signals.
 \emph{Generative adversarial network} (GAN) \cite{goodfellow2014gan} is the most notable among them, and its performance in generating realistic images has been improving at an extraordinary pace, as shown in Figure \ref{fig:generative-evolution}.
-Combined with the various techniques for manipulating the semantic information in GANs as will be introduced in Section \ref{ch:deeplearning}-\ref{sec:gan}, this hints at a completely new kinds of generative methodologies for audio processing.
+Combined with the various techniques for manipulating the semantic information in GANs as will be introduced in Section \ref{ch:deeplearning}.\ref{sec:gan}, this hints at a completely new kinds of generative methodologies for audio processing.
 
 
 In this context, this thesis aims to design and develop improved methods for automatic music transcription with a deeper understanding of musical semantics powered by deep generative models.
