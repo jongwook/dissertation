@@ -6,7 +6,7 @@
 % the code below specifies where the figures are stored
 \graphicspath{{3-deeplearning/figures/}}
 
-\chapter{Deep Learning in a Nutshell}\label{sec:deeplearning}
+\chapter{Deep Learning and Deep Generative Models}\label{sec:deeplearning}
 \label{ch:deeplearning}
 
 Since recently, a family of machine learning research under the buzzword \emph{deep learning} has incurred many groundbreaking changes to the world of artificial intelligence, making the long-waited dream of the \emph{artificial general intelligence} (AGI) \footnote{a loosely defined term referring to human-level intelligence, i.e. an AI system that can solve complex problems in various, even previously-unseen domains with self-understanding and autonomous self-control. \cite{goertzel2007agi}} look not so distant in the future.
@@ -218,7 +218,7 @@ sAll of the above architectures use conditional latent components concatenated t
 \cite{miyato2018cgan} overcomes this by performing projections on the feature space of the discriminator, successfully demonstrating conditional image synthesis on the 1,000 classes of images of the ILSVRC dataset \cite{russakovsky2015imagenet}.
 
 
-\subsection{GANs with Encoder}
+\subsection{GANs with Encoder}\label{subsec:gan-encoder}
 
 While the generator can produce data samples from latent vectors, the default GAN formulation does not provide means to obtain the latent vector corresponding to the given data sample.
 This task is usually referred to as inference in GAN literature, and many architectures have been proposed to achieve this.

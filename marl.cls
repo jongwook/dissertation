@@ -331,7 +331,8 @@ BoldItalicFont=*-BoldIt
 \subsectionfont{\normalfont\normalsize}
 \subsubsectionfont{\normalfont\normalsize}
 
-\renewcommand{\thesection}{\arabic{section}.}
+\renewcommand\cftsecaftersnum{.} 
+\renewcommand{\thesection}{\arabic{section}}
 \renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
 \renewcommand{\thesubsubsection}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}}
 

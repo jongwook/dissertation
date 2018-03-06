@@ -28,6 +28,8 @@ dissertation.pdf
 *.synctex
 *.bcf
 *.run.xml
+*.acr
+*.alg
 
 # Packages #
 ############
