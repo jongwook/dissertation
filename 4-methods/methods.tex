@@ -118,16 +118,13 @@ In order to achieve this, a model connecting the event-level representation to t
 
 \subsection{Generative Model as Augmentation}
 
-This subproblem concerns the secondary objective of this thesis, of using the generative component of the AMT model for data augmentation.
+This subproblem concerns the second objective of this thesis: using the generative component of the AMT model for data augmentation.
 These tasks are auxiliary to the main objective and are also less technically challenging, while they are designed to work in conjunction with the AMT model.
 
 \mbox{}\\\noindent\emph{Software Instrument and Audio Post-Processing}\mbox{}
 
 This task is to reconfirm the effectiveness of data augmentation, by feeding additional training dataset consisting of sounds generated using software instruments and audio post-processing techniques.
-While the audio degradation toolbox \cite{mauch2013adt} and MUDA \cite{mcfee2015muda} could provide some facilities for data augmentation, software instruments are usually packaged using specialized APIs, such as VST3 or Audio Units \cite{pirkle2014synthesizer}.
-
-In some sense, by building a generative model based on a specific dataset, the model essentially serves as a software instrument.
-
+The audio degradation toolbox \cite{mauch2013adt} and MUDA \cite{mcfee2015muda} can be utilized for simple data augmentation, and software instruments, usually packaged with specialized APIs, such as VST3 or Audio Units \cite{pirkle2014synthesizer}, can be programmed to generate various ranges of sounds to be augmented.
 
 \mbox{}\\\noindent\emph{Incorporating a Music Language Model}\mbox{}
 
@@ -143,8 +140,8 @@ This last task would be an integration of all of the above methods, to build an 
 
 Regretfully, the above descriptions of the experimental designs do not fully specify the model architecture and representation, because the biggest challenges lie on finding the exact architecture and representation that works.
 One such challenge is the size of the representation; generative adversarial networks are the only deep generative models that have meaningfully generated images larger than 128$\times$128 pixels, however the training dynamics of GANs become increasingly unstable as the size of the representation gets larger.
-In order to train a GAN that deals with a sufficient size of audio representation, it may be necessary to employ more intricate architecture such as progressive growing \cite{karras2017pggan}.
-Another obstacle is the flood of GAN models, making it even more difficult to determine the correct architecture to work with.
+In order to train a GAN that deals with a sufficient size of audio representation, it may be necessary to employ more intricate architectures such as progressive growing \cite{karras2017pggan}.
+Another obstacle is the flood of GAN models, making it difficult to determine the correct architecture to work with.
 Deeper theoretical understanding and empirical knowledge on GAN training would be required.
 
 \section{Evaluation}
@@ -169,7 +166,7 @@ The open-source implementation in the \texttt{mir\_eval} package \cite{raffel201
 
 \section{Datasets}
 
-In order to comply with the assumptions on the scope of music discussed in Section \ref{ch:introduction}.\ref{sec:limitations}, datasets that contain non-vocal harmonic instrumental sounds without excessive variations in timbre are desirable.
+Based on the assumptions on the scope of music discussed in Section \ref{ch:introduction}.\ref{sec:limitations}, datasets that contain non-vocal harmonic instrumental sounds without excessive variations in timbre are desirable.
 For early experiments, the NSynth Dataset published recently by Google's Magenta project \cite{engel2017nsynth} is appropriate, as the dataset contains additional kinds of instruments and comes with more accurate annotations.
 As discussed above, open-source and commercial software instruments and effects can also be used.
 
