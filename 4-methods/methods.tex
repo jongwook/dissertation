@@ -48,9 +48,9 @@ Some deep generative models such as cGAN \cite{mirza2014conditional} can be form
 \begin{equation}\label{eqn:label-conditional-distribution}
 p(\mathbf{x} | \mathbf{y}).
 \end{equation}
-Some may argue that this is not a true generative modeling, because the definition does not distinguish which among $\mathbf{x}$ and $\mathbf{y}$ is the label, and Equation \ref{eqn:label-conditional-distribution} is equivalent to Equation \ref{eqn:data-conditional-distribution}, making it a discriminative model.
+Some may argue that this is not a true generative modeling, because the definition does not distinguish which among $\mathbf{x}$ and $\mathbf{y}$ is the label, so Equation \ref{eqn:label-conditional-distribution} should also describe a discriminative model as Equation \ref{eqn:data-conditional-distribution} does.
 
-In this thesis, a relaxed definition of ``generative model'' will be used to classify those models as also generative, by distinguishing the data and label as:
+In this thesis, a relaxed definition of ``generative model'' will be used to classify those models as also generative, by distinguishing data and labels as:
 \begin{itemize}
 	\item \textbf{data}: a higher-dimensional entity that is typically observed as-is and consists of entangled representations from which it is harder to extract useful information.
 	\item \textbf{label}: a lower-dimensional entity which often requires manual annotations to obtain and consists of disentangled representations from which it is easier to extract useful information.
@@ -58,17 +58,17 @@ In this thesis, a relaxed definition of ``generative model'' will be used to cla
 By using this definition, a model that only performs conditional synthesis can still be called a generative model.
 
 As emphasized in the introduction, disentanglement is the key to effectively obtaining the desired labels for AMT.
-In the \citeA{bengio2013representation} concluded that the most robust feature learning should ``\emph{disentangle as many factors as possible, discarding as little information about the data as is practical}''.
+In the overview paper on representation learning, \citeA{bengio2013representation} concluded that the most robust feature learning should ``\emph{disentangle as many factors as possible, discarding as little information about the data as is practical}''.
 The main hypothesis of this thesis is that generative models fit well to this objective, since they have to know all factors required for generation and have to minimize the information loss at the same time.
 % The statical models for disentanglement are similar to the techniques for source separation covered in Section \ref{ch:mir}.\ref{sec:separation}, because source separation is essentially a disentanglement problem of different sources.
 Deep learning models are considered to be doing particularly well in performing disentanglement, as they can learn high-level concepts from just pixel- or sample-level data examples.
 \citeA{brahma2016disentanglement} studied the features learned in different layers in a deep model and observed that deeper layers gradually unfold and flatten the data distribution, building a disentangled representation.
-However, it does not necessarily mean that the factors in deeper layers contain completely isolated information of interest.
+However, it does not necessarily mean that the factors in deeper layers always contain completely isolated information of interest.
 
 For this reason, inducing disentanglement in deep generative models has recently become an intriguing area of research.
-InfoGAN \cite{chen2016infogan} performs disentanglement in an unsupervised manner by maximizing the mutual information between a portion of latent factors and the observation.
+InfoGAN \cite{chen2016infogan} is one of the most notable models that performs disentanglement in an unsupervised manner by maximizing the mutual information between a portion of latent factors and the observation.
 Information dropout \cite{achille2018information} is a generalization of the standard Dropout technique that obtains more disentangled factors.
-FactorVAE \cite{kim2018factor} is 
+FactorVAE \cite{kim2018factor} is a VAE model that encourages the factors in variational posterior to be independent.
 Other examples include DNA-GAN \cite{xiao2017dnagan} which is inspired by the mechanism of gene expression,
 and semantically decomposed GAN (SD-GAN) \cite{donahue2017gan} which learns to distinguish variations in two domains by training with pairs of data examples belonging to the same category.
 
@@ -90,9 +90,9 @@ The three subtasks are designed to gradually expand the two domains, from a fixe
 
 For the first subtask, fixed-length monophonic signals are assumed.
 As \citeA{engel2017nsynth} studied the entanglement of pitch and timbre using the WaveNet architecture, the goal of this subtask is to build a deep generative model that can separately control pitch and timbre.
-A preliminary architecture implementing this idea is shown in Figure \ref{fig:pegan}, which does not produced a stable convergence at the moment.
-Domain-adversarial training \cite{ganin2015domain} and semantically decomposed GAN \cite{donahue2017gan} could be helpful in succesfully training the proposed setup.
-Another shortcoming of this setup is that each pitch values are considered as a separate categories, and it could be overcome by an improved setup for conditional synthesis, such as the projection discriminator \cite{miyato2018cgan}.
+A preliminary architecture implementing this idea is shown in Figure \ref{fig:pegan}.
+Domain-adversarial training \cite{ganin2015domain} and semantically decomposed GAN \cite{donahue2017gan} could be helpful in stable training of the proposed setup.
+A shortcoming of this architecture is that each pitch values are considered as separate categories, and it could be overcome by an improved methods for conditional synthesis, such as the projection discriminator \cite{miyato2018cgan}.
 
 \begin{figure}
 	\includegraphics[width=\textwidth]{PEGAN.pdf}
