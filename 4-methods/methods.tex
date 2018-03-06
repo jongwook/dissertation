@@ -6,7 +6,7 @@
 
 The chapter outlines the prospective methodologies for this thesis and discusses the expected challenges in the proposed research directions.
 It is unavoidable that the content of this chapter includes a certain degree of abstractness and ambiguity, because, as in most machine learning research, there is no predefined protocol for performing the research, and the very goal of this study lies on finding a methodology that works.
-In light of this, the following section illustrates the high-level ideas, and the perspectives on generative models and the concept of disentanglement are presented, followed by the description of the datasets to be used in the research.
+In light of this, the following section illustrates the high-level ideas, and the perspectives on generative models and the concept of disentanglement are presented, followed by the description of the evaluation metrics and the datasets to be used in the research.
 
 
 \section{The High-Level Ideas}
@@ -23,11 +23,11 @@ While the techniques such as batch normalization and using diagonal covariance m
 making the components have a fully disentangled semantic information remains an active area of research.
 The next section discusses the possible methods for disentanglement in the context of deep generative models.
 
-The proposed transcription system is not only powered by deep generative models and music language models, but also by a few other important techniques that will make the implementation possible to be realized.
-Data augmentation is a method for increasing the quantity of available data using transformations that does not alter or deterministically alter the label, and has been successfully applied to image classification tasks  \cite{krizhevsky2012imagenet}. MUDA \cite{mcfee2015muda} provides a software framework for augmenting musical audio, which supports pitch shift, time stretch, background noise, and dynamic range compression.
-It would be also possible augment the data by filtering with the impulse responses according to various room acoustics, adding reverberations to the audio.
-Combined with the audio sources from various software instruments and sample libraries, these methods for audio augmentation can greatly increase the effective size of training data, and will help the deep model to more accurately learn the distribution of the real-world musical sounds.
-It is more efficient in terms of both time and space complexity to perform data augmentation on-the-fly instead of storing precomputed data, because the size of data increases combinatorially depending on the available augmentation schemes.
+%The proposed transcription system is not only powered by deep generative models and music language models, but also by a few other important techniques that will make the implementation possible to be realized.
+%Data augmentation is a method for increasing the quantity of available data using transformations that does not alter or deterministically alter the label, and has been successfully applied to image classification tasks  \cite{krizhevsky2012imagenet}. MUDA \cite{mcfee2015muda} provides a software framework for augmenting musical audio, which supports pitch shift, time stretch, background noise, and dynamic range compression.
+%It would be also possible augment to the data by filtering with the impulse responses according to various room acoustics, adding reverberations to the audio.
+%Combined with the audio sources from various software instruments and sample libraries, these methods for audio augmentation can greatly increase the effective size of training data, and will help the deep model to more accurately learn the distribution of the real-world musical sounds.
+%It is more efficient in terms of both time and space complexity to perform data augmentation on-the-fly instead of storing precomputed data, because the size of data increases combinatorially depending on the available augmentation schemes.
 
 
 \section{Generative Models and Learning Disentangled Representations}
