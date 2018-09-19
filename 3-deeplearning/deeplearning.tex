@@ -216,7 +216,7 @@ Conditional GAN (cGAN) \cite{mirza2014conditional} is an architecture where the 
 Auxiliary Classifier GAN (AC-GAN) \cite{odena2016acgan} is an extension to cGAN in which the discriminator can also serve as a classifier.
 InfoGAN \cite{chen2016infogan} can perform conditional generation in a completely unsupervised manner, i.e. without using class labels during training, by maximizing the mutual information between a subset of the latent variables and the observations.
 
-sAll of the above architectures use conditional latent components concatenated to the other feature components, which makes training a conditional GAN with a large number of classes difficult.
+All of the above architectures use conditional latent components concatenated to the other feature components, which makes training a conditional GAN with a large number of classes difficult.
 \cite{miyato2018cgan} overcomes this by performing projections on the feature space of the discriminator, successfully demonstrating conditional image synthesis on the 1,000 classes of images of the ILSVRC dataset \cite{russakovsky2015imagenet}.
 
 
@@ -229,7 +229,7 @@ Adversarially learned inference (ALI) \cite{dumoulin2017ali} and Bidirectional G
 \min_{G,~E} \max_{D} \Big[ \mathbb{E}_{\bm{x} \sim p_{\mathrm{data}}} {\log D(E(\bm{x}), \bm{x})} + \mathbb{E}_{\bm{z} \sim p_{\bm{z}}} \log \left ( 1 - D(z, G(\bm{z})) \right ) \Big].
 \end{equation}
 
-ALICE \cite{li2017alice} resolves the non-identifiability problem present in ALI that , by adding a conditional entropy regularization term, and bidirectional conditional GAN (BCGAN) \cite{jaiswal2017bcgan} combines BiGAN with cGAN to perform both inference and conditional synthesis.
+ALICE \cite{li2017alice} resolves the non-identifiability problem present in ALI that \TODO{state the drawbacks}, by adding a conditional entropy regularization term, and bidirectional conditional GAN (BCGAN) \cite{jaiswal2017bcgan} combines BiGAN with cGAN to perform both inference and conditional synthesis.
 Mode regularized GAN (MRGAN) \cite{che2016mrgan} has a similar setup of jointly training an encoder network and uses a regularization term on the generator loss that discourages mode collapse:
 \begin{equation}\label{eqn:mrgan}
 \min_{G,~E} \Big[ - \mathbb{E}_{\bm{z} \sim p_{\bm{z}}} [ \log  D(G(\bm{z})) ]
