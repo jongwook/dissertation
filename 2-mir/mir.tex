@@ -14,12 +14,12 @@ Enabling an automatic conversion between musical audio and symbolic notations, a
 
 
 Due to the complexity and difficulty of creating a completely end-to-end music transcription system, many existing approaches focus on a specific subtask of the problem \cite{casey2008mir}, e.g. extracting onsets and beats, recognizing timbre and instruments, tracking monophonic and polyphonic pitches, or separating audio sources from a mixture.
-Each of these subtasks poses interesting goals and applications even without the lofty goal of end-to-end music transcription, which are subproblems of \emph{music information retrieval} (MIR).
+Each of these subtasks poses interesting goals and applications even without the lofty goal of end-to-end music transcription, and they are classified as subproblems of \emph{music information retrieval} (MIR).
 Although this term has existed since 1960s \cite{kassler1966mir}, it was only after the late 1990s when active research on this area has spun off from computer music and computational musicology literature.
 During the last two decades, numerous sophisticated and novel approaches for each of these subproblems have been introduced, that have continuously improved the performance in terms of the accuracy in predicting the correct annotations.
 This chapter starts by introducing the standard pipeline of music information retrieval that are commonly employed in most MIR models and reviews the state-of-the-art techniques in each area relevant to music transcription.
-The purpose of this chapter is not to provide an all-encompassing survey over the history of MIR research but to show a clear common pattern over the areas of MIR where the machine learning models have been evolving from simple heuristics based on hand-crafted features to sophisticated deep learning models with millions of parameters.
-Many methods employing deep neural networks are referenced in this chapter, and the concepts and the formulation of those models such as convolutional newral networks (CNN) and recurrent neural networks (RNN) are described in Chapter \ref{ch:deeplearning}.
+The purpose of this chapter is to provide a survey over the history of MIR research related to automatic music transcription, as well as to show a clear common pattern over the areas of MIR where the machine learning models have been evolving from simple heuristics based on hand-crafted features to sophisticated deep learning models with millions of parameters.
+Many methods employing deep neural networks are referenced in this chapter, and the concepts and the formulation of those models such as convolutional newral networks (CNN) and recurrent neural networks (RNN) are described in detail in Chapter \ref{ch:deeplearning}.
 
 
 \section{The Standard Pipeline}
@@ -76,7 +76,7 @@ Those functions include the cepstrum \cite{noll1967cepstrum}, the autocorrelatio
 pYIN \cite{mauch2014pyin}, a probabilistic variant of YIN that uses a Hidden Markov Model (HMM) to decode the most probable sequence of pitch values.
 According to a few comparative studies, the state of the art is achieved by YIN-based methods \cite{von2010comparison, babacan2013comparative}, with pYIN being the best performing method to date \cite{mauch2014pyin}.
 
-While these methods work well for monophonic audio, it is not enough for general music transcription, where multiple concurrent notes and sound sources are present.
+While these methods work well for monophonic audio, they are not enough for general music transcription where multiple concurrent notes and sound sources are present.
 To address this situation, the next section reviews the techniques for tracking multiple pitches.
 
 
@@ -91,7 +91,7 @@ Another major technique for polyphonic music transcription is \emph{non-negative
 While some approaches \cite{gao2017nmf} based on NMF performs close to the state of the art, it has a drawback of having to obtain duplicate pitch templates for multiple instruments \cite{bertin2010nmf}.
 Other data-driven approaches include probabilistic models based on dynamic Bayesian networks \cite{raczynski2013dynamic} and hierarchical graphical models \cite{pesek2017hierarchical}, and deep learning models using convolutional neural networks \cite{bittner2017deepsalience}, recurrent neural networks \cite{bock2012rnn,sigtia2016endtoend}, and most recently an architecture combining convolutional and bidirectional recurrent neural networks \cite{hawthorne2018piano}.
 
-With the state of the art nearing the perfect accuracies \cite{ewert2017transcription} on the MAPS dataset \cite{emiya2010multipitch} which have been the standard evaluation dataset for piano transcription algorithms, more systematic assessments of transcription models have recently been proposed.
+With the state of the art nearing the perfect accuracies \cite{ewert2017admm} on the MAPS dataset \cite{emiya2010smoothness} which have been the standard evaluation dataset for piano transcription algorithms, more systematic assessments of transcription models have recently been proposed.
 These include the study of invariance under data augmentation \cite{thickstun2017invariances} and the entanglement of note representations that may prevent accurate predictions for unseen combinations of notes \cite{kelz2017entanglement}.
 
 In \cite{li2017infinite}, the idea of using on-the-fly synthesized training dataset for piano transcription was explored, using a simple fully-connected neural network operating on the CQT representation.

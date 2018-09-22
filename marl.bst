@@ -3434,7 +3434,6 @@ FUNCTION {format.btitle.no.dot}
     { duplicate$
       % Two arguments: Title twice: (1) don't change case; (2) change case
       "\APACrefbtitle {" swap$ * "} {" * swap$
-      "t" change.case$
       * "}" *
     }
   if$

@@ -153,7 +153,7 @@ The simplest metric is the frame-level accuracy, which measures the portion of t
 \end{equation}
 where TP, FP, and FN refers to true positives, false positives, and false negatives, respectively.
 
-Additional evaluation metrics have been proposed in \cite{poliner2007piano} to reflect three different types of transcription errors, a missed error where the system fails to predict a pitch at all, a substitution error where a different F0 is predicted, and a false alarm where the system predicts a pitch that is not actually present:
+Additional evaluation metrics have been proposed in \cite{poliner2007discriminative} to reflect three different types of transcription errors, a missed error where the system fails to predict a pitch at all, a substitution error where a different F0 is predicted, and a false alarm where the system predicts a pitch that is not actually present:
 \begin{eqnarray}
 E_{tot} & = & \frac{\sum_{t=1}^T \max ( N_{ref}(t), N_{sys}(t) ) - N_{corr}(t)}{\sum_{t=1}^T N_{ref}(t)}, \\
 E_{sub} & = & \frac{\sum_{t=1}^T \min ( N_{ref}(t), N_{sys}(t) ) - N_{corr}(t)}{\sum_{t=1}^T N_{ref}(t)}, \\
@@ -170,4 +170,4 @@ Based on the assumptions on the scope of music discussed in Section \ref{ch:intr
 For early experiments, the NSynth Dataset published recently by Google's Magenta project \cite{engel2017nsynth} is appropriate, as the dataset contains additional kinds of instruments and comes with more accurate annotations.
 As discussed above, open-source and commercial software instruments and effects will also be used.
 
-In order to compare the performance of the proposed AMT model with existing transcription methods, the standard benchmark datasets containing polyphonic classical instruments such as MAPS \cite{emiya2010multipitch}, Bach10 \cite{duan2010bach10}, and MusicNet \cite{thickstun2017musicnet} are good choices.
+In order to compare the performance of the proposed AMT model with existing transcription methods, the standard benchmark datasets containing polyphonic classical instruments such as MAPS \cite{emiya2010smoothness}, Bach10 \cite{duan2010bach10}, and MusicNet \cite{thickstun2017musicnet} are good choices.
