@@ -202,7 +202,7 @@ Based on WGAN's observation that Lipschitz continuity of GAN is beneficial, spec
 Wasserstein distance is not an $f$-divergence but a special case of integral probability metrics (IPM), which also includes maximum mean discrepancy (MMD) distance, on which MMD GAN \cite{li2017mmdgan} and Distributional Adversarial Networks (DAN) \cite{li2017dan} are based.
 Fisher GAN \cite{mroueh2017fishergan} and Sobolev GAN \cite{mroueh2018gan} are also IPM-based GAN models.
 
-Least-Square GAN (LSGAN) \cite{mao2017lsgan} uses least-square losses instead, and also can be trained with gradient penalty \cite{mao2017effectiveness} which achieves a training stability similar to that of WGAN-GP.
+Least-Square GAN (LSGAN) \cite{mao2017lsgan} uses least-square losses instead, and also can be trained with gradient penalty \cite{mao2018effectiveness} which achieves a training stability similar to that of WGAN-GP.
 Energy-Based GAN (EBGAN) \cite{zhao2017ebgan} views the discriminator as an energy function that puts low energy near the data manifold, and uses an autoencoder to model the discriminator. Boundary Equilibrium GAN (BEGAN) \cite{berthelot2017began} extends the EBGAN architecture using Wasserstein distance to balance the generator and discriminator during training.
 CoulombGAN \cite{unterthiner2017coulomb} formulates the GAN setup in terms of a potential field of charged particles, and DRAGAN \cite{kodali2017gan} poses GAN training as a regret minimization problem in online learning.
 Unrolled GAN \cite{metz2016unrolled} uses a surrogate objective function for the more stable generator updates, which approximates the optimal discriminator in the generator's perspective.

@@ -4046,10 +4046,7 @@ FUNCTION {format.orig.note}
 FUNCTION {fin.entry}
 { doi empty$
     { output.end.block }
-    { output.new.block
-      format.doi
-      output.end.block
-    }
+    { output.end.block }
   if$
   "\PrintBackRefs{\CurrentBib}" write$ newline$
   test

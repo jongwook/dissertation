@@ -111,7 +111,7 @@
              bookmarksnumbered = true,
              breaklinks = true,
              linktoc = all,
-             % pagebackref,
+             pagebackref,
              colorlinks = true,
              allcolors = black,
              % linkcolor = red,
@@ -122,6 +122,14 @@
              hyperfootnotes=false,
              hyperfigures
              ]{hyperref}
+
+\renewcommand*{\backref}[1]{}
+\renewcommand*{\backrefalt}[4]{\color{RoyalBlue}{%
+		\ifcase #1 Not cited.%
+		\or #2.%
+		\else #2.%
+		\fi%
+	}}
 
 \DeclareGraphicsExtensions{.png, .jpg, .jpeg, .pdf, .gif} %GIF doesn't work??
 \usepackage[xetex]{graphicx}
@@ -299,7 +307,6 @@
 \usepackage{sectsty}
 \usepackage[normalem]{ulem}
 \usepackage{blindtext}
-\usepackage{hyperref}
 
 \setmainfont{SourceSerifPro}[
 Path=fonts/,
