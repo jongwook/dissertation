@@ -229,7 +229,8 @@ Adversarially learned inference (ALI) \cite{dumoulin2017ali} and Bidirectional G
 \min_{G,~E} \max_{D} \Big[ \mathbb{E}_{\bm{x} \sim p_{\mathrm{data}}} {\log D(E(\bm{x}), \bm{x})} + \mathbb{E}_{\bm{z} \sim p_{\bm{z}}} \log \left ( 1 - D(z, G(\bm{z})) \right ) \Big].
 \end{equation}
 
-ALICE \cite{li2017alice} resolves the non-identifiability problem present in ALI that \TODO{state the drawbacks}, by adding a conditional entropy regularization term, and bidirectional conditional GAN (BCGAN) \cite{jaiswal2017bcgan} combines BiGAN with cGAN to perform both inference and conditional synthesis.
+ALICE \cite{li2017alice} resolves the non-identifiability problem present in ALI where the learned distribution may be unsuitable for a given application, by adding a conditional entropy regularization term.
+Bidirectional conditional GAN (BCGAN) \cite{jaiswal2017bcgan} combines BiGAN with cGAN to perform both inference and conditional synthesis.
 Mode regularized GAN (MRGAN) \cite{che2016mrgan} has a similar setup of jointly training an encoder network and uses a regularization term on the generator loss that discourages mode collapse:
 \begin{equation}\label{eqn:mrgan}
 \min_{G,~E} \Big[ - \mathbb{E}_{\bm{z} \sim p_{\bm{z}}} [ \log  D(G(\bm{z})) ]

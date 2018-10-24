@@ -22,21 +22,7 @@ The purpose of this chapter is to provide a survey over the history of MIR resea
 Many methods employing deep neural networks are referenced in this chapter, and the concepts and the formulation of those models such as convolutional newral networks (CNN) and recurrent neural networks (RNN) are described in detail in Chapter \ref{ch:deeplearning}.
 
 
-\section{Feature Extraction and Common Principles}
-
-\iffalse % TODO? Common techniques and other trends
-\begin{itemize}
-	\item Feature engineering: standard pipeline + Summary ACF \cite{tolonen2000multipitch}, specmurt \cite{saito2008specmurt}, bispectrum \cite{argenti2011bispectral}, auditory model (Klapuri chapter 8)
-	\item joint versus iterative
-	\item HMM post-processing / LSTM/RNN decoding \cite{ewert2017admm}
-	\item smoothness principle
-	\item music language models as prior
-	\item note modeling
-	\begin{itemize}
-		\item onset/offset, attack/decay, temporal evolution
-	\end{itemize}
-\end{itemize}
-\fi
+\section{Feature Extraction and Basic Assumptions}
 
 Audio data is huge in volume; a typical audio track contains 44,100 real-numbered samples per second, and sometimes even more.
 Therefore, computational methods for extracting musical information from audio usually contains a pipeline of feature extraction stages to reduce the volume and increase the interpretability of input data, as shown in Figure \ref{fig:pipeline}.
@@ -44,8 +30,13 @@ The pipeline includes a few techniques widely used in speech processing, as well
 
 
 While there are many MIR tasks that operate on the track level, such as music recommendation, tagging, and genre classification, most subtasks of music transcription involve the prediction of labels that are dependent on time, operating either in the sample-level or frame-level.
-Frames are created by taking a series of overlapping short-time audio segments, where the length of a segment typically ranges from 10 to 50 milliseconds, and optionally multiplying them by a windowing function.
-Taking discrete Fourier transforms on the frames produces a \emph{short-time Fourier transform} (STFT), and the magnitude of an STFT gives a \emph{spectrogram}.
+Frames are created by taking a series of overlapping short-time audio segments, where the length of a segment typically ranges from 10 to 50 milliseconds, and optionally multiplying them by a window function.
+Taking discrete Fourier transforms on the frames produces a \emph{short-time Fourier transform} (STFT), and the squared magnitude of an STFT gives a \emph{spectrogram}; 
+i.e. for a signal $x[n]$ and a window function $w[n]$:
+\begin{eqnarray}
+\textbf{STFT}\{x[n]\}(m, \omega) & = & \sum_{n = -\infty}^{\infty} x[n] w[m-n] e^{-j \omega n}, \\
+\textbf{Spectrogram}\{x[n]\}(m, \omega) & = & \big | \textbf{STFT}\{x[n]\}(m, \omega) \big |^2.
+\end{eqnarray}
 Spectrograms give very rich information about the audio; for example, the contour of melodies and the dynamics of music are usually identifiable from the spectrogram image.
 Spectrograms are expressive enough to be used as an output of sound synthesis or a source separation algorithm, and the corresponding audio signals can be reconstructed without incurring significant perceptual inconsistencies \cite{griffin1984lim, leroux2010spectrogram}.
 However, the dimensionality of a spectrogram is still quite high, making it computationally prohibitive to run many algorithms directly on an STFT or a spectrogram.
@@ -58,34 +49,37 @@ However, the dimensionality of a spectrogram is still quite high, making it comp
 This necessitated further transformations by the means of filterbanks, such as \emph{Mel-Frequency Cepstral Coefficients} (MFCC) \cite{logan2000mfcc} by applying the Mel filterbank inspired by the human auditory perception and taking the first few DCT components that contain independent factors describing the spectral shape.
 \emph{Constant-Q transform} (CQT) \cite{schorkhuber2010cqt} uses a filterbank where the center frequencies of filters have a constant Q factor, which is the ratio between the center frequency and the 3 dB bandwidth of a filter.
 By configuring CQT to produce 12 filters per octave, it is possible to obtain the coefficients corresponding to each musical tone, and to fold the representation to produce a \emph{chromagram} \cite{harte2005chromagram}.
+Tonnetz \cite{harte2006tonnetz} is a 6-dimensional feature space signifying harmonic relationships, and more sophisticated feature extractors include the summary ACF \cite{tolonen2000multipitch}, Specmurt \cite{saito2008specmurt}, and bispectrums \cite{argenti2011bispectral}.
+
+
 To extract the beat and tempo information, a heuristic function, such as the first-order difference of the time-domain log energy function or the \emph{spectral flux} that measures the total energy increase over the STFT frequency bins, is applied to formulate a novelty curve.
 This curve can then be used to measure energy bursts that are typically present in the onsets of notes \cite{bello2005onset}.
 The onset information can be further processed to obtain tempo information via \emph{tempogram} \cite{cemgil2000tempogram} or cyclic tempogram \cite{grosche2010tempogram}.
 
-Once an appropriate set of features are obtained, the next steps for MIR algorithms typically involve applying a classification model, probabilistic inference, or other task-specific algorithms.
-% Examples of classification models include random forests, support vector machines (SVM), and Gaussian mixture model (GMM) classifiers that have been applied to music tagging \cite{ness2009tag}, melody extraction \cite{bittner2015contour}, and genre classification \cite{tzanetakis2002genre} tasks.
-
-% smoothness principle
-\textit{Hidden Markov models (HMM)} are widely employed for modeling sequence data such as chord progressions \cite{cho2010chord} as well as to smooth the sequence output as a post-processing step \cite{khadkevich2009hmm}, often paired with Gaussian mixture models as the emission probability distribution.
-Since finding a better feature representation played a crucial role in earlier MIR systems, many approaches focused on engineering sophisticated feature transformations \cite{harte2006tonnetz} and devising clever pre- and post-processing steps \cite{oudre2009chord}.
+Meanwhile, many recent approaches have successfully eliminated some or all feature transformation stages in the standard MIR pipeline by training a deep model directly on spectrograms or audio waveforms.
+Applications of deep learning arose in virtually all types of MIR tasks, including melody extraction \cite{bittner2017deepsalience}, beat tracking \cite{vogl2017drum}, and genre classification \cite{oramas2017genre}, and outperformed previous feature-based approaches.
+Apart from a small number of end-to-end approaches, most deep learning models for music still rely on predefined feature transforms such as STFT or CQT, because those features leverage the prior knowledge that music signals are often harmonically sparse and make it easier for a model to learn meaningful concepts without overfitting, using a smaller number of parameters and hence being achievable in a limited hardware capacity.
+However, any feature extraction stage induces a loss of information, and the best-performing model would benefit most from the raw audio data, given enough amount of training data and hardware \cite{pons2018tagging}.
 
 
-More recent approaches have successfully eliminated some or all feature transformation stages in the standard MIR pipeline by training a deep model to learn the feature from the spectrogram or audio waveforms.
-Applications of deep learning arose in virtually all types of MIR tasks, including melody extraction \cite{bittner2017deepsalience}, beat tracking \cite{vogl2017drum}, and genre classification \cite{oramas2017genre}.
-Apart from a small number of end-to-end approaches, most deep learning models for music still rely on predefined feature transforms such as STFT or CQT, because those features make it easier for a model to learn meaningful concepts without overfitting, using a smaller amount of parameters and thus using less powerful hardware.
-%In theory, however, any feature extraction stage induces a loss of information, and it suggests that the best-performing model would benefit most from the raw audio data.
+As is the case for feature extraction, musical prior knowledge is often applied to the algorithmic design of models as well, such as the assumption that sudden changes in music is rare and most changes happen gradually.
+In the time domain, median filtering \cite{oudre2009chord} is a simple heuristic that can suppress spurious changes, and \textit{Hidden Markov models (HMM)} are widely employed for modeling sequence data such as chord progressions \cite{cho2010chord} as well as to smooth sequence outputs as a post-processing step \cite{khadkevich2009hmm}.
+In a higher level, prior knowledge about musical notes can be incorporated more specifically. These approaches include detecting onsets and offsets \cite{benetos2011polyphonic}, modeling attacks and decays \cite{cheng2016attackdecay}, and more generally the temporal evolution of notes \cite{cogliati2015temporal}.
+In the frequency domain, the \textit{spectral smoothness principle} states that the spectral envelopes of real sounds tend to be slowly varying as a function of frequency \cite{klapuri2003multiple}.
+The principle has been implemented in a number of ways, such as a moving-average filter for iterative source estimation and separation \cite{klapuri2003multiple}, a score function for F0 candidate \cite{yeh2010mffe}, and a low-order autoregressive overtone modeling \cite{emiya2010smoothness}.
 
-Having covered the general approaches in MIR, the following sections provide more in-depth literature reviews on the different subtasks relevant to automatic music transcription, starting from the simplest problem of monophonic picth tracking.
+In this section, we have reviewed the common approaches for feature extraction and a few basic assumptions, which are inspired by musicological or mathematical knowledge on the musical signal and formulated in conjunction with the algorithmic design of specific models for each subtask.
+The following sections provide more in-depth literature reviews on the different subtasks relevant to automatic music transcription, starting from the simplest problem of monophonic picth tracking.
 
 
 \section{Monophonic Pitch Tracking}\label{sec:monophonic}
 
-Estimating the fundamental frequency (f0) of a monophonic audio signal, also known as pitch tracking or pitch estimation, is one of the simplest but a long-standing topic of research in audio signal processing.
+Estimating the fundamental frequency (F0) of a monophonic audio signal, also known as pitch tracking or pitch estimation, is one of the simplest but a long-standing topic of research in audio signal processing.
 Pitch estimation plays an important role outside of automatic music transcription as well, where monophonic pitch tracking can be used as a method to generate pitch annotations for multi-track datasets \cite{bittner2014medleydb} or as a core component of melody extraction systems \cite{bosch2014melody, mauch2015computer}.
 
-%Pitch is defined as a subjective quality of perceived sounds and does not precisely correspond to the physical property of the fundamental frequency \cite{hartmann1997signals}.
-%However, apart from a few rare exceptions, pitch can be quantified using fundamental frequency, and thus they are often used interchangeably outside psychoacoustical studies. 
-%For convenience, the two terms are interchangeably throughout this chapter.
+On a side note, pitch is defined as a subjective quality of perceived sounds and does not precisely correspond to the physical property of the fundamental frequency \cite{hartmann1997signals}.
+However, apart from a few rare exceptions, pitch can be quantified using fundamental frequency, and thus they are often used interchangeably in the MIR literature outside psychoacoustical studies. 
+Since differentiating the physical and the perceptual aspects of pitch is a non-goal, the two terms are interchangeably throughout this thesis as well.
 
 Computational methods for monotonic pitch estimation have been studied for more than a half-century \cite{noll1967cepstrum}, and many reliable methods have been proposed since.
 Earlier methods commonly employ a certain candidate-generating function, accompanied by pre- and post-processing stages to produce the pitch curve.
@@ -104,8 +98,13 @@ The task is commonly referred to as \emph{multiple fundamental frequency estimat
 This task is in some sense a superset of other MIR tasks like onset detection, beat tracking, chord recognition, and melody extraction,
 since the frequency tracking task has to indicate the onset of every sound, and tracking chords and melodies becomes much easier when the correct annotations for all pitch values are available.
 
+
+%%% Early approachs including blackboard systems
+
 Early approaches for polyphonic pitch tracking are often based on rather strict assumptions on the types of timbre and the number of polyphony in the audio to be transcribed \cite{moorer1977transcription,piszczalski1977transcription}. Blackboard systems \cite{martin1996blackboard,dixon2000piano} are one of the first methods that enabled polyphonic transcription to work under milder assumptions, by integrating both signal processing and musicological knowledge into hierarchical problem abstraction. Limitations of the blackboard approach include the overall complexity and the exhaustive searches required by the system. Accordingly, later approaches often use statistical models or factorization-based methods to more efficiently capture pitch information.
 
+
+%%% NMF and its variants
 
 \textit{Non-negative matrix factorization (NMF)} \cite{lee1999nmf,lee2001nmf} refers to an algorithm that finds two matrices that factorize a given matrix, where the elements of all three matrices are non-negative.
 Due to the simplicity of the algorithm and the applicability of the non-negative setup to magnitude spectrograms, many MFFE algorithms using NMF have been introduced.
@@ -114,11 +113,15 @@ The NMF model was extended by incorporating sparsity loss \cite{cont2006realtime
 With carefully designed regularizers and the \textit{alternating direction method of multipliers (ADMM)} for training NMF, \citeA{ewert2016admm,ewert2017admm} achieved close-to-perfect accuracy for piano transcription in a studio setting.
 
 
+%%% PLSA (aka PLSI or PLCA)
+
 A probabilistic approach closely related to NMF is \textit{probabilistic latent semantic analysis (PLSA)} \cite{hofmann1999plsa}, a simple probabilistic graphical model that factorizes the joint probability distribution of time and frequency into conditional distributions involving a latent semantic factor.
 PLSA is is equivalent to NMF when the KL divergence is minimized under $L_1$ normalization \cite{gaussier2005plsa,ding2008equiv}, while the probabilistic framework enables statistical learning and introducing transformation invariances \cite{smaragdis2006latent}.
 In \cite{smaragdis2009relative,benetos2012latent}, a shift-invariant extension to PLSA has been applied to multi-instrument MFFE by using a convolution over constant-Q spectrograms.
 \citeA{grindlay2010subspace} proposed an extension to PLSA based on the \textit{subspace NMF} algorithm \cite{grindlay2009eigeninstruments} for multi-instrument MFFE, incorporating additional parameters for instrument sources and possible pitch values.
 
+
+%%% Bridging to general (Bayesian) probabilistic methods
 
 Many probabilistic models for music transcription employ a Bayesian framework, in which the audio signal is modeled using a probability distribution conditional on unobserved variables such as the note frequencies and timing.
 The transcription is then performed through Bayesian inference on those parameters, using either \textit{Markov-chain Monte Carlo (MCMC)} or \textit{variational inference}.
@@ -132,11 +135,15 @@ A nonparametric Bayesian model proposed in \cite{yoshii2012nonparametric} employ
 Bayesian models provide a powerful tool connecting the whole generative process of music, but usually suffer from the high computational cost and the complexity of the algorithm.
 
 
+%%% Simple data-driven classification models
+
 Unlike the aforementioned approaches which incorporate as much prior knowledge on the music as possible, discriminative models employ a simple approach of learning a direct mapping between the audio features and the labels from large training data, making minimal assumptions on the acoustical or musical structure.
 This data-driven approach is made possible by the availability of large datasets and increased computational capabilities.
 \textit{Support vector machines (SVM)} were commonly used in earlier discriminative approaches, by constructing one-versus-all SVM classifiers on STFT magnitudes \cite{poliner2007discriminative}, on learned features using \textit{deep belief networks (DBN)} \cite{nam2011classification}, or on the result of NMF \cite{weninger2013nmf}.
 While being flexible and straightforward to be applied on any features of choice, SVMs have high time and space complexities which limit the size of training dataset and hence the capability of the model.
 
+
+%%% Neural networks and deep learning
 
 Advances in deep learning enabled neural networks to serve an alternative to SVMs for discriminative transcription.
 Music transcription models based on neural networks are relatively recent phenomena starting since 2012, with a notable exception of \citeA{marolt1999nn,marolt2004connectionist}.
@@ -150,10 +157,16 @@ and a \textit{convolutional-recurrent neural networks (CRNN)} \cite{thome2017crn
 % deep salience \cite{bittner2017deepsalience}
 % music language model \cite{wang2018mlm}
 
-With the state of the art nearing the perfect accuracies \cite{ewert2017admm} on the MAPS dataset \cite{emiya2010smoothness} which have been the standard evaluation dataset for piano transcription algorithms, more systematic assessments of transcription models have recently been proposed.
-These include the study of invariance under data augmentation \cite{thickstun2017invariances} and the entanglement of note representations that may prevent accurate predictions for unseen combinations of notes \cite{kelz2017entanglement}.
 
-In \cite{li2017infinite}, the idea of using on-the-fly synthesized training dataset for piano transcription was explored, using a simple fully-connected neural network operating on the CQT representation.
+%%% 
+
+With the state of the art nearing the perfect accuracies \cite{ewert2017admm} on the MAPS dataset \cite{emiya2010smoothness} which have been the standard evaluation dataset for piano transcription algorithms, more systematic assessments of transcription models have recently been proposed.
+These include the study of invariance under data augmentation \cite{thickstun2017invariances}, the entanglement of note representations that may prevent accurate predictions for unseen combinations of notes \cite{kelz2017entanglement}, and a musically inspired evaluation metric that also takes account of voice separation and harmonic analysis \cite{mcleod2018eval}.
+
+
+%%% generating dataset and (deep) generative models
+
+\citeA{li2017infinite} explored the idea of using on-the-fly synthesized training dataset for piano transcription, using a simple fully-connected neural network operating on the CQT representation.
 The idea of using generative models to predict multiple fundamental frequencies is also not new \cite{dubois2005harmonic,cemgil2006generative}, but the authors relied on manually designed generative models for sound generation, which limits the expressibility and the generalizability of the model.
 Using deep generative models can be a direction for overcoming these limitations, since the recent neural network approaches for audio generation are capable of producing highly realistic sounds.
 Chapter \ref{ch:deeplearning} will review deep generative models for audio in detail.
@@ -180,7 +193,7 @@ The encoder-decoder architecture with skip connections can also be trained with 
 
 
 
-\section{Machine Learning Models for Music Synthesis and Translation}
+\section{Machine Learning Models for Music Synthesis}
 
 The recent deep generative have been very successful in synthesizing breathtakingly high-quality audio signals.
 We would want the synthesized music and audio signals to capture the long-term dependencies such as beats, measures, and chord progressions that ranges up to a few seconds, while the raw audio signals typically have the order of 10 thousand sameples per second.
