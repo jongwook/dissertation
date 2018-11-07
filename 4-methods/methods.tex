@@ -72,7 +72,17 @@ FactorVAE \cite{kim2018factor} is a VAE model that encourages the factors in var
 Other examples include DNA-GAN \cite{xiao2017dnagan} which is inspired by the mechanism of gene expression,
 and semantically decomposed GAN (SD-GAN) \cite{donahue2017gan} which learns to distinguish variations in two domains by training with pairs of data examples belonging to the same category.
 
-While there is no silver bullet yet, these studies suggest that principled considerations for achieving disentanglement should be made during the architectural design and experiments for this thesis.
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{ae-architecture.pdf}
+\caption{Stemming from the autoencoder architecture in Figure \ref{fig:autoencoder}, This thesis will consider a time-pitch-timbre latent representation as depicted above. The network will be trained to make the latent representation have disentangled information of time, pitch, and timbre along each dimension.}
+\label{fig:time-pitch-timbre-ae}
+\end{figure}
+
+To apply the idea of disentanglement to the goals of this thesis, an autoencoder architecture with a three-dimensional latent representation is considered, as shown in Figure \ref{fig:time-pitch-timbre-ae}.
+Information dependent to time, pitch, and timbre is encoded in the corresponding dimension this representation.
+It is an extension of the usual time-frequency representation for music, adding another dimension that corresponds to timbre, along which any information that should not be distinguishable in terms of time and frequency is contained.
+For this network to obtain such representation, this thesis aims to design a special training scheme that can disentangle the time-, pitch-, and timbre-dependent information from audio, and arrange the components along each dimension.
 
 
 \section{Methods}
@@ -88,9 +98,9 @@ The three subtasks are designed to gradually expand the two domains, from a fixe
 
 \mbox{}\\\noindent\emph{Disentangling Pitch and Timbre}\mbox{}
 
-For the first subtask, fixed-length monophonic signals are assumed.
+For the first subtask, fixed-length monophonic signals are assumed, to first disregard the time-related information and focus on disentangling pitch and timbre.
 As \citeA{engel2017nsynth} studied the entanglement of pitch and timbre using the WaveNet architecture, the goal of this subtask is to build a deep generative model that can separately control pitch and timbre.
-A preliminary architecture implementing this idea is shown in Figure \ref{fig:pegan}.
+A preliminary architecture implementing this idea is shown in Figure \ref{fig:pegan} where the pitch-related and timbre-related embedding is concatenated to convey information about a monophonic note.
 Domain-adversarial training \cite{ganin2015domain} and semantically decomposed GAN \cite{donahue2017gan} could be helpful in stable training of the proposed setup.
 A shortcoming of this architecture is that each pitch values are considered as separate categories, and it could be overcome by an improved methods for conditional synthesis, such as the projection discriminator \cite{miyato2018cgan}.
 
@@ -105,16 +115,30 @@ A shortcoming of this architecture is that each pitch values are considered as s
 The next goal is to extend the generative model to deal with polyphony and variable-length audio.
 In order to generalize to an arbitrary length in time, the latent representation needs to include the time dimension in addition to the pitch and timbre factors.
 This is in a similar manner where \citeA{engel2017nsynth} used a generative model trained on 4-second clips to synthesize audio of a longer length.
-The fully convolutional architecture \cite{shelhamer2017fcn} may be appropriate for dealing with variable-length inputs and outputs.
+The fully convolutional architecture \cite{shelhamer2017fcn} will be appropriate for dealing with variable-length inputs and outputs.
 
-In order for the model to learn to separate different timbres and pitches, the transcription model may contain an addition operation which mixes multiple sources corresponding to each instrument and each note.
-Such setup may not have a straightforward training scheme, in which case incorporating a clustering techniques such as expectation-maximization can be helpful.
-It may be also necessary to limit the number of polyphony or instruments to have a computationally feasible solution.
+In order to incorporate polyphony in addition to the variable-length time, a three-dimensional latent representation shown in Figure \ref{fig:time-pitch-timbre-ae} will be employed.
+More specifically, this representation will be constructed so that a Euclidean projection along a certain direction in the timbre dimension will result in a time-frequency representation corresponding to the specific timbre;
+this idea is depicted in Figure \ref{fig:latent-projection}.
+The inverse of the projection --- finding a timbre vector corresponding to each time-frequency bin --- can be considered as a process of learning an embedding.
+An advantage of employing this framework is that it provides a straightforward way of incorporating the notion of multiple timbre and source separation through linear operations: when two dissimilar sounds are mixed, the corresponding timbre embedding will be a sum of the vectors corresponding to each of the two timbres.
+If the network is trained so that the embedding vectors of dissimilar timbres are encouraged to be orthogonal, the Euclidean projection along each vector will be able to perfectly reconstruct the time-frequency representation corresponding to each timbre.
+
+\begin{figure}
+	\includegraphics[width=\textwidth]{projection.pdf}
+	\caption{When the 3-D latent representation is projected to (i.e. dot-producted with) a timbre vector, the timbre dimension will collapse, and the remaining time and pitch dimensions will produce a time-frequency representation corresponding to the timbre represented in the timbre vector.}
+	\label{fig:latent-projection}
+\end{figure}
+
 
 \mbox{}\\\noindent\emph{Obtaining Piano Rolls from the Embeddings}\mbox{}
 
 This task is on the ultimate problem of obtaining the per-instrument piano roll representations.
-In order to achieve this, a model connecting the event-level representation to the latent embedding space is required.
+In order to achieve this, the transcription model has to learn the connection between the latent representation which assumes fixed, granular time steps and the symbolic piano-roll representation which will contain sparse, note-level events.
+A simple approach for this task is to perform median filtering or apply a hidden Markov model along the time domain to predict the presence or the absence of notes, on the predicted amplitude in the time-frequency representation.
+This will suppress spurious changes in the amplitudes and encourage the piano roll to have sustained notes.
+To further improve the predictive accuracy of the piano rolls, the model may consider employing recurrent neural networks as an alternative to median filtering.
+
 
 \subsection{Generative Model as Augmentation}
 
@@ -130,6 +154,7 @@ The audio degradation toolbox \cite{mauch2013adt} and MUDA \cite{mcfee2015muda} 
 
 This subtask concerns the application of a music language model that serves as a sensible prior to the output of the generative AMT model.
 Designing a music language model itself is an intriguing problem, but for the purpose of this thesis, existing music sequence generation models such as MidiNet \cite{yang2017midinet} or MuseGan \cite{dong2017musegan} can be incorporated.
+Music Transformer \cite{huang2018transformer} provides a music language model based on a self-attention mechanism, and is capable of generating better symbolic music sequences than RNN-based models.
 
 \mbox{}\\\noindent\emph{Positive Feedback Cycle between Transcription and Augmentation}\mbox{}
 
@@ -138,7 +163,7 @@ This last task would be an integration of all of the above methods, to build an 
 
 \subsection{Expected Challenges}
 
-Regretfully, the above descriptions of the experimental designs do not fully specify the model architecture and representation, because the biggest challenges lie on finding the exact architecture and representation that works.
+The biggest challenges lie on finding the exact combinations of model architecture and representation that works.
 One such challenge is the size of the representation; generative adversarial networks are the only deep generative models that have meaningfully generated images larger than 128$\times$128 pixels, however the training dynamics of GANs become increasingly unstable as the size of the representation gets larger.
 In order to train a GAN that deals with a sufficient size of audio representation, it may be necessary to employ more intricate architectures such as progressive growing \cite{karras2017pggan}.
 Another obstacle is the flood of GAN models, making it difficult to determine the correct architecture to work with.
@@ -146,14 +171,26 @@ Deeper theoretical understanding and empirical knowledge on GAN training would b
 
 \section{Evaluation}
 
+The primary method for evaluating the results of this thesis will be comparisons with other state-of-the-art methods such as the Onset and Frames \cite{hawthorne2018piano} model, Melodyne (a commercial music transcription software), and other recent models \cite{kelz2016framewise,ewert2017admm}.
+A fair comparison can be performed using the evaluation metrics described below.
+
 The performance of multiple fundamental frequency estimation in the form of piano rolls are evaluated in a number of different ways.
 The simplest metric is the frame-level accuracy, which measures the portion of the correct predictions 
 \begin{equation}
-\mathrm{Accuracy} = \frac{\sum_{t=1}^T TP(t)}{\sum_{t=1}^T \left ( TP(t) + FP(T) + FN(t) \right ) },
+\mathrm{Accuracy} = \frac{\sum_{t=1}^T TP(t)}{\sum_{t=1}^T \left ( TP(t) + FP(t) + FN(t) \right ) },
 \end{equation}
 where TP, FP, and FN refers to true positives, false positives, and false negatives, respectively.
+Other common metrics for binary classification can also be used:
+\begin{eqnarray}
+\textrm{Precision} & = & \frac{\sum_{t=1}^T TP(t)}{\sum_{t=1}^T \left ( TP(t) + FP(t) \right ) } \\
+\textrm{Recall} & = & \frac{\sum_{t=1}^T TP(t)}{\sum_{t=1}^T \left ( TP(t) + FN(t) \right ) } \\
+\textrm{F1} & = & \frac{2 \cdot \textrm{Precision} \cdot \textrm{recall}}{\textrm{Precision} + \textrm{Recall}}
+\end{eqnarray}
+There exist a trade-off between precision and recall, and the F1 score, being the harmonic mean of the two, gives a metric balancing between precision and recall.
+Another metric that serves the same purpose is the area under precision-recall curve (AUPRC), which measures the area under the curve connecting the (precision, recall) values along the possible trade-offs between (0, 1), predicting all notes as positive, and (1, 0), predicting all notes as negative.
 
-Additional evaluation metrics have been proposed in \cite{poliner2007discriminative} to reflect three different types of transcription errors, a missed error where the system fails to predict a pitch at all, a substitution error where a different F0 is predicted, and a false alarm where the system predicts a pitch that is not actually present:
+Additional evaluation metrics have been proposed in \cite{poliner2007discriminative} to distinguish three different types of transcription errors, a missed error where the system fails to predict a pitch at all, a substitution error where a different F0 is predicted, and a false alarm where it predicts a pitch that is not actually present:
+
 \begin{eqnarray}
 E_{tot} & = & \frac{\sum_{t=1}^T \max ( N_{ref}(t), N_{sys}(t) ) - N_{corr}(t)}{\sum_{t=1}^T N_{ref}(t)}, \\
 E_{sub} & = & \frac{\sum_{t=1}^T \min ( N_{ref}(t), N_{sys}(t) ) - N_{corr}(t)}{\sum_{t=1}^T N_{ref}(t)}, \\
@@ -163,6 +200,11 @@ E_{fa} & = &  \frac{\sum_{t=1}^T \max ( 0, N_{sys}(T) - N_{ref}(t) )}{\sum_{t=1}
 where $N_{ref}(t)$ the number of ground-truth f0s at frame $t$, $N_{sys}$ is the number of reported f0s, and $N_{corr}(t)$ is the number of correctly predicted f0s.
 These errors are useful, because they enable a comparison of multi-pitch estimation systems with respect to the different types of errors \cite{bay2009evaluation}.
 The open-source implementation in the \texttt{mir\_eval} package \cite{raffel2014mir_eval} will be used for convenience and reproducibility.
+A note-level metric called MV2H \cite{mcleod2018eval} considers metrical and harmonic structure of music and can be used as a supplementary evaluation metric.
+
+
+
+
 
 \section{Datasets}
 
@@ -170,4 +212,20 @@ Based on the assumptions on the scope of music discussed in Section \ref{ch:intr
 For early experiments, the NSynth Dataset published recently by Google's Magenta project \cite{engel2017nsynth} is appropriate, as the dataset contains additional kinds of instruments and comes with more accurate annotations.
 As discussed above, open-source and commercial software instruments and effects will also be used.
 
-In order to compare the performance of the proposed AMT model with existing transcription methods, the standard benchmark datasets containing polyphonic classical instruments such as MAPS \cite{emiya2010smoothness}, Bach10 \cite{duan2010bach10}, and MusicNet \cite{thickstun2017musicnet} are good choices.
+In order to compare the performance of the proposed AMT model with existing transcription methods, the standard benchmark datasets containing polyphonic classical instruments are planned to be used, such as MAPS \cite{emiya2010smoothness}, Bach10 \cite{duan2010bach10}, MusicNet \cite{thickstun2017musicnet}, and MAESTRO \cite{hawthorne2018maestro}, whose statistics are shown in Table \ref{tab:dataset-stats}.
+In addition to these datasets, freely available SoundFonts can be used for constructing additional training data with a variety of timbres.
+
+\begin{table}
+	\centering
+	\setstretch{1.0}
+	\begin{tabular}{|c|c|c|c|} \hline
+		Dataset & Instruments & Tracks & Total Length \\ \hline
+		MAPS & synthesized and recorded piano & 270 & 18.1 hours \\ \hline
+		Bach10 & violin, clarinet, saxophone, bassoon & 10 & 5.57 minutes \\ \hline
+		MusicNet & 11 orchestral instruments & 330 & 34.1 hours \\ \hline
+		MAESTRO & synthesized piano & 1184 & 172 hours \\ \hline
+	\end{tabular}
+	\vspace{1em}
+	\caption{Some statistics on the polyphonic music datasets planned to be used.}
+	\label{tab:dataset-stats}
+\end{table}
