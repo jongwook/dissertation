@@ -48,7 +48,7 @@
 \usepackage{hhline}
 \usepackage{textcomp}
 \usepackage{ wasysym }
-
+\usepackage{mathbbol}
 \usepackage[none]{hyphenat}
 %\flushbottom
 \setlength{\parskip}{0pt plus 6pt}
@@ -56,7 +56,7 @@
 
 \DeclareMathSymbol{\shortminus}{\mathbin}{AMSa}{"39}
 \renewcommand{\doublespacing}{\setstretch{1.5}}
-\newcommand{\mathbbm}[1]{\text{\usefont{U}{bbm}{m}{n}#1}}
+%\newcommand{\mathbbm}[1]{\text{\usefont{U}{bbm}{m}{n}#1}}
 
 \renewcommand{\L}{\mathcal{L}}
 \newcommand{\E}{\mathbb{E}}

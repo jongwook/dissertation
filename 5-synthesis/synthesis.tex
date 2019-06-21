@@ -73,10 +73,10 @@ We use a fixed step size in time, and the piano roll representation is encoded a
 The input to the neural network is a concatenation of two 88-dimensional piano roll representations, one for onsets and one for frames, comprising 176 dimensions in total:
 \begin{eqnarray*}
 	\mathbf{X} & =&  [~ \mathbf{X}^{\textrm{onset}} ~;~ \mathbf{X}^{\textrm{frame}} ~] \\
-	\mathbf{X}^{\textrm{onset}}_{p,t} &= & v_{\textrm{~the active note}} \cdot \mathbbm{1}_{\textrm{a note at pitch $p$ is \textit{first} active at time $t$}} \\
-	\mathbf{X}^{\textrm{frame}}_{p,t} &= & v_{\textrm{~the active note}} \cdot \mathbbm{1}_{\textrm{a note at pitch $p$ is active at time $t$}}
+	\mathbf{X}^{\textrm{onset}}_{p,t} &= & v_{\textrm{~the active note}} \cdot \mathbb{1}_{\textrm{a note at pitch $p$ is \textit{first} active at time $t$}} \\
+	\mathbf{X}^{\textrm{frame}}_{p,t} &= & v_{\textrm{~the active note}} \cdot \mathbb{1}_{\textrm{a note at pitch $p$ is active at time $t$}}
 \end{eqnarray*}
-\noindent where $\mathbbm{1}$ is the indicator function, and $v$ denotes the MIDI velocity scaled to $[0, 1]$.
+\noindent where $\mathbb{1}$ is the indicator function, and $v$ denotes the MIDI velocity scaled to $[0, 1]$.
 This input representation is inspired by \cite{hawthorne2017onsets} which showed that jointly training on onsets and frames performs better than using frame information only;
 similarly, we want the network to maximally utilize the onsets which have the most relevant information on the attack sounds, while still receiving the frame information.
 Another reason for using both onsets and frames is that, because of the time quantization, repeated notes become indistinguishable only using $\mathbf{X}^\textrm{frame}$ when an offset is too close to the subsequent onset.
