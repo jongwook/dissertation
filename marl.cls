@@ -39,6 +39,9 @@
 \usepackage[usenames, dvipsnames]{color}
 \usepackage[perpage]{footmisc}
 \usepackage{ifthen}
+\usepackage[algo2e]{algorithm2e} 
+\usepackage{booktabs}
+\usepackage{tabularx}
 \usepackage{arydshln}
 \usepackage{multicol} % for pages with multiple text columns, e.g. References
 \usepackage{multirow}
@@ -50,6 +53,9 @@
 %\flushbottom
 \setlength{\parskip}{0pt plus 6pt}
 \setlength{\baselineskip}{12pt plus 1pt minus 0.5pt}
+
+\DeclareMathSymbol{\shortminus}{\mathbin}{AMSa}{"39}
+\renewcommand{\doublespacing}{\setstretch{1.5}}
 
 \newenvironment{dedication}
 {\clearpage           % we want a new page

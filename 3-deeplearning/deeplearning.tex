@@ -2,8 +2,6 @@
 % this file is called up by thesis.tex
 % content in this file will be fed into the main document
 
-%: ----------------------- introduction file header -----------------------
-% the code below specifies where the figures are stored
 \graphicspath{{3-deeplearning/figures/}}
 
 \chapter{Deep Learning and Deep Generative Models}\label{sec:deeplearning}
@@ -250,7 +248,7 @@ $\alpha$-GAN \cite{rosca2017alphagan} is yet another method to combine the VAE a
 
 \subsection{Appilcations of GAN}
 
-Many image-to-image translation models have been developed using GANs. Pix2pix \cite{isola2016pix2pix} is trained on pairs of cross-domain images, and learns to translate images between the domains, e.g. satellite images to corresponding maps, day photos to night photos, and edges of images to the original.
+Many image-to-image translation models have been developed using GANs. Pix2pix \cite{isola2017pix2pix} is trained on pairs of cross-domain images, and learns to translate images between the domains, e.g. satellite images to corresponding maps, day photos to night photos, and edges of images to the original.
 DiscoGAN and CycleGAN \cite{kim2017discogan, zhu2017cyclegan} are capable of performing similar tasks, but does not require paired training samples, greatly expanding the ranges of datasets that can be used for training.
 StarGAN \cite{choi2017stargan} learns to translate between more than two domains.
 
