@@ -56,6 +56,17 @@
 
 \DeclareMathSymbol{\shortminus}{\mathbin}{AMSa}{"39}
 \renewcommand{\doublespacing}{\setstretch{1.5}}
+\newcommand{\mathbbm}[1]{\text{\usefont{U}{bbm}{m}{n}#1}}
+
+\renewcommand{\L}{\mathcal{L}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\x}{\mathbf{x}}
+\newcommand{\y}{\mathbf{y}}
+\newcommand{\z}{\mathbf{z}}
+\newcommand{\X}{\mathbf{X}}
+\newcommand{\Y}{\mathbf{Y}}
+
 
 \newenvironment{dedication}
 {\clearpage           % we want a new page

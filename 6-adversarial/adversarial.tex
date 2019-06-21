@@ -11,16 +11,6 @@
 \label{ch:adversarial}
 
 
-\renewcommand{\L}{\mathcal{L}}
-\newcommand{\E}{\mathbb{E}}
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\x}{\mathbf{x}}
-\newcommand{\y}{\mathbf{y}}
-\newcommand{\z}{\mathbf{z}}
-\newcommand{\X}{\mathbf{X}}
-\newcommand{\Y}{\mathbf{Y}}
-
-
 Automatic music transcription is considered to be one of the hardest problems in music information retrieval, yet recent deep learning approaches have achieved substantial improvements on transcription performance.
 These approaches commonly employ supervised learning models that predict various time-frequency representations, by minimizing element-wise losses such as the cross entropy function.
 However, applying the loss in this manner assumes conditional independence of each label given the input, and thus cannot accurately express inter-label dependencies.
@@ -121,7 +111,9 @@ More recent approaches are based on convolutional%neural networks
 
 Onsets and Frames~\cite{hawthorne2018onsetsframes} is a state-of-the-art piano transcription model that we use as our baseline.
 It uses multiple columns of convolutional and recurrent layers to predict onsets, offsets, velocities, and frame labels from the Mel spectrogram input, as shown in Figure~\ref{fig:onsetsframes}.
-Predicted onset and frame posteriors are then used for decoding the note sequences, where a threshold value is used to create binary onset and frame activations, and frame activations without the corresponding onsets are disregarded.
+Predicted onset and frame \def\x{{\mathbf x}}
+\def\L{{\cal L}}
+posteriors are then used for decoding the note sequences, where a threshold value is used to create binary onset and frame activations, and frame activations without the corresponding onsets are disregarded.
 
 
 As discussed above, most NMF- and NN-based methods, including Onsets and Frames, use an element-wise optimization objective which does not consider the inter-label dependencies.
