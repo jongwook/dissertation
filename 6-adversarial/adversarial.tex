@@ -78,7 +78,7 @@ This corresponds to appending hidden Markov models (HMMs) \cite{poliner2006discr
 The Markov assumption is effective for one-dimensional sequence prediction tasks, such as chord estimation~\cite{ni2012harmonic} and monophonic pitch tracking~\cite{mauch2014pyin}, but when predicting a two-dimensional representation, it still does not address the inter-label dependencies along the frequency axis.
 
 
-There exist a number of models in the computer vision literature that can express inter-label dependencies in two-dimensional predictions, such as the neural autoregressive distribution estimator (NADE)~\cite{larochelle2011nade}, PixelRNN~\cite{oord2016pixelrnn}, and PixelCNN~\cite{oord2016pixelrnn}.
+There exist a number of models in the computer vision literature that can express inter-label dependencies in two-dimensional predictions, such as the neural autoregressive distribution estimator (NADE)~\cite{larochelle2011nade}, PixelRNN~\cite{oord2016pixelrnn}, and PixelCNN~\cite{oord2016pixelcnn}.
 However, apart from a notable exception using a hybrid RNN-NADE approach~\cite{boulangerlewandowski2012temporal}, the effect of learning the joint posterior distribution for polyphonic music transcription has not been well studied.
 
 
@@ -140,7 +140,6 @@ We refer the readers to~\cite{goodfellow2016gan,creswell2017gan} for a comprehen
 
 The second term in Equation~\ref{eqn:gan} has near-zero gradients when $D(G(\z)) \approx 0$, which is usually the case in early training. To avoid this, a non-saturating variant of GAN is suggested in~\cite{goodfellow2014gan} where the generator is trained with the following optimization objective instead:
 \begin{equation}\label{eqn:nsgan}
-\small
 \max_{G}~ \E_{\z} \log D(G(\z)).
 \end{equation}
 The non-saturating GAN loss is used more often than the minimax loss in Equation \ref{eqn:gan} and is implemented by flipping the labels of fake data while using the same loss function.
@@ -226,18 +225,20 @@ When $\alpha = 0$, the Beta distribution becomes $\text{Bernoulli}(0.5)$ which r
 
 \setlength{\algomargin}{0em}
 \DontPrintSemicolon
+\SetInd{0.1em}{2em}
 \begin{algorithm2e}[b!]
 	\vspace{-0.3em}\noindent
-	\rule{\columnwidth}{0.75pt}\;
 	\label{alg:training}
 	\caption{Training of a \textit{mixup} Conditional GAN.}
-	\small\setstretch{1.05}
+	\setstretch{1.05}
+	\rule{\columnwidth}{0.75pt}\\
 	\KwIn{
 		Generator $G_\vartheta(\X)$ with initial parameters $\vartheta$, learning rate $\eta$, and loss function $\L_{\text{task}}(\hat{\Y}, \Y)$, discriminator $D_\varphi(\Y)$ with initial parameters $\varphi$, learning rate $\beta$, and loss function $\ell \in \{\text{BCE}, \text{MSE}\}$, batch size $m$, training data distribution $p(\X, \Y)$,  \texttt{pix2pix} weight $\nu$, \textit{mixup} strength $\alpha$.
 	}
+
 	\KwOut{Trained conditional generator $G_\vartheta(\X)$.}
 	\vspace{-0.5em}\noindent
-	\rule{\columnwidth}{0.5pt}\;
+	\rule{\columnwidth}{0.5pt}\\
 	%\vspace{-1em}
 	\While{$\varphi$ and $\vartheta$ have not converged}{
 		$\{(\X_i, \Y_i)\}_{i=1,\cdots,m} \leftarrow m \text{ samples from } p(\X, \Y)$\;
@@ -259,7 +260,7 @@ When $\alpha = 0$, the Beta distribution becomes $\text{Bernoulli}(0.5)$ which r
 
 \textit{mixup} is readily applicable to the binary classification task of GAN discriminators.
 In our conditional GAN setup, we have an additional advantage of having paired samples of a real label $\Y$ and a fake label $\hat{\Y} = G(\X)$, which allow us to replace Equation \ref{eqn:simple-cgan} with:
-\begin{equation}\label{eqn:mixup-gan}\small
+\begin{equation}\label{eqn:mixup-gan}
 \min_{G} \max_{D} \mathbb{E}_{\X,\Y,\lambda} \Big [ - \ell (D(\lambda \Y + (1 - \lambda) G(\X) ), \lambda) \Big ].
 \end{equation}
 where $\ell(p, y) = - y \log p - (1-y) \log (1-p)$ is the binary cross entropy (BCE) function.
@@ -288,33 +289,61 @@ Also, to train a least-squares GAN (Equation \ref{eqn:lsgan}) instead, we can si
 		Training sequence length & 327,680 \\
 		\bottomrule
 	\end{tabular}
+	\vspace{1em}
 	\caption{Hyperparameters used during the experiments.}\label{tab:hyperparameters}
 \end{table}
 
-\setcounter{table}{2}
-\begin{table*}[t]
+\begin{table}[t]
+	\small
 	\centering
-	\scriptsize
 	\renewcommand\arraystretch{1.5}
 	\renewcommand{\tabcolsep}{0em}
 	\newcolumntype{M}[1]{>{\centering\arraybackslash}b{#1}}
 	\newcolumntype{C}{>{\centering\arraybackslash}m{2.4em}}
-	\begin{tabular}{@{\extracolsep{1em}}lM{5em}CCCCCCCCCCCCCCCC}
-		&\multirow{2}{4em}{\centering\textit{mixup} strength $\alpha$} &\multicolumn{7}{M{23em}}{Frame Metrics}&\multicolumn{3}{M{9em}}{Note Metrics} &\multicolumn{3}{M{9em}}{Note Metrics with Offsets} &\multicolumn{3}{M{9em}}{Note Metrics with Offsets \& Velocity} \\ \cline{3-9} \cline{10-12} \cline{13-15} \cline{16-18}
-		& & F1 & P & R & $E_\text{total}$ & $E_\text{subs}$ & $E_\text{miss}$ & $E_\text{fa}$ & F1 & P & R & F1 & P & R & F1 & P & R \\ \hline
-		Baseline & & .899 & .946 & .857 & .179 & .013 & .130 & .036 & .942 & .990 & .899 & .802 & .842 & .765 & .790 & .830 & .755 \\
-		%		\hline
-		%		\multirow{2.2}{*}{Non-Saturating GAN} & 0 & .664 & .830 & .566 & .488 & .068 & .367 & .053 & .717 & .867 & .623 & .510 & .614 & .444 & .505 & .607 & .440 \\
-		%		& 0.2 & .912 & .937 & .889 & .157 & .013 & .097 & .047 & .953 & .974 & .933 & .811 & .828 & .794 & .799 & .816 & .783 \\
-		Non-Saturating GAN & 0.3 & \textbf{.914} & .931 & .898 & \textbf{.156} & .012 & .089 & .054 & \textbf{.956} & .981 & .932 & \textbf{.813} & .835 & .793 & \textbf{.802} & .823 & .782 \\
-		%		& 0.4 & .907 & .939 & .879 & .166 & .013 & .108 & .045 & .951 & .973 & .930 & .799 & .817 & .782 & .787 & .805 & .770 \\
-		% \hline
-		%		\multirow{2.2}{*}{Least-Squares GAN} & 0 & .902 & .941 & .868 & .174 & .013 & .119 & .041 & .940 & .990 & .896 & .802 & .844 & .765 & .791 & .832 & .755 \\
-		%		& 0.2 & .901 & .940 & .865 & .176 & .014 & .121 & .042 & .944 & .986 & .905 & .799 & .835 & .767 & .788 & .823 & .757 \\
-		Least-Squares GAN & 0.3 & .906 & .942 & .875 & .167 & .013 & .113 & .042 & .950 & .988 & .916 & .810 & .841 & .781 & .799 & .830 & .771 \\
-		%		& 0.4 & .898 & .946 & .855 & .181 & .013 & .132 & .036 & .941 & .989 & .898 & .798 & .838 & .762 & .787 & .827 & .752 \\
-		\hline \end{tabular}
-	\caption{Summary of transcription performance using \textit{mixup} strength $\alpha = 0.3$. The non-saturating GAN loss has the highest performance across all F1 metrics. The average metrics across the tracks in the MAESTRO test dataset are reported, and the model checkpoint where the average of frame F1 and note F1 is the highest on the validation dataset is used.}\label{tab:performance}
+	\begin{tabular}{@{\extracolsep{1em}}lM{4em}M{8em}CCCC}
+		& & & \multicolumn{4}{c}{\textit{mixup} strength $\alpha$} \\ \cline{4-7}
+		& Baseline & GAN type & 0 & 0.2 & 0.3 & 0.4 \\ \hline
+		\multirow{2.25}{5em}{Frame F1} & \multirow{2.25}{4em}{\centering0.899} & Non-Saturating & 0.664 & 0.912 & \textbf{0.914} & 0.907 \\
+		& & Least-Squares & 0.904 & 0.903 & 0.906 & 0.898 \\ \hline
+		\multirow{2.25}{5em}{Note F1} & \multirow{2.25}{4em}{\centering0.942} & Non-Saturating & 0.717 & 0.953 & \textbf{0.956} & 0.951 \\
+		& & Least-Squares & 0.944 & 0.947 & 0.950 & 0.943 \\
+		\hline
+	\end{tabular}
+	\vspace{1em}
+	\caption{Frame and note F1 scores are the highest when the non-saturating GAN loss and $\alpha = 0.3$ are used.}\label{tab:alpha}
+\end{table}
+
+\begin{table*}[t]
+	\centering
+	\footnotesize
+	\renewcommand\arraystretch{1.5}
+	\renewcommand{\tabcolsep}{0em}
+	\newcolumntype{M}[1]{>{\centering\arraybackslash}b{#1}}
+	\newcolumntype{C}{>{\centering\arraybackslash}m{4em}}
+	\begin{tabular}{@{\extracolsep{0.5em}}llllCCCCCCC}
+		& & & &\multirow{3.3}{4em}{\centering Baseline} &\multicolumn{3}{M{13em}}{\centering Non-Saturating GAN}
+		&\multicolumn{3}{M{13em}}{\centering Least-Squares GAN} \\
+		\cline{6-8} \cline{9-11}
+		& & & & & $\alpha = 0.2$ & $\alpha = 0.3$ & $\alpha = 0.4$ & $\alpha = 0.2$ & $\alpha = 0.3$ & $\alpha = 0.4$ \\ \hline
+		\parbox[t]{2mm}{\multirow{7.4}{*}{\rotatebox[origin=c]{90}{Frame Metrics}}} & & & F1 & 0.899 & 0.912 & \textbf{\small0.914} & 0.907 & 0.901 & 0.906 & 0.898 \\
+		& & & Precision ~~~ & 0.946 & 0.937 & 0.931 & 0.939 & 0.940 & 0.942 & 0.946 \\
+		& & & Recall & 0.857 & 0.889 & 0.898 & 0.879 & 0.865 & 0.875 & 0.855 \\
+		& & & $E_\text{total}$ & 0.179 & 0.157 & 0.156 & 0.166 & 0.176 & 0.167 & 0.181 \\
+		& & & $E_\text{subs}$ & 0.013 & 0.013 & 0.012 & 0.013 & 0.014 & 0.013 & 0.013 \\
+		& & & $E_\text{miss}$ & 0.130 & 0.097 & 0.089 & 0.108 & 0.121 & 0.113 & 0.132 \\
+		& & & $E_\text{fa}$ & 0.036 & 0.047 & 0.054 & 0.045 & 0.042 & 0.042 & 0.036 \\ \hline
+		\parbox[t]{2mm}{\multirow{3.2}{*}{\rotatebox[origin=c]{90}{Note}}} & & & F1 & 0.942 & 0.953 & \textbf{\small0.956} & 0.951 & 0.944 & 0.950 & 0.941 \\
+		& & & Precision & 0.990 & 0.974 & 0.981 & 0.973 & 0.986 & 0.988 & 0.989 \\
+		& & & Recall & 0.899 & 0.933 & 0.932 & 0.930 & 0.905 & 0.916 & 0.898 \\ \hline
+		\parbox[t]{2mm}{\multirow{3.2}{*}{\rotatebox[origin=c]{90}{Note with}}} & \parbox[t]{2mm}{\multirow{3.2}{*}{\rotatebox[origin=c]{90}{Offsets}}} & & F1 & 0.802 & 0.811 & \textbf{\small0.813} & 0.799 & 0.799 & 0.810 & 0.798 \\
+		& & & Precision & 0.842 & 0.828 & 0.835 & 0.817 & 0.835 & 0.841 & 0.838 \\
+		& & & Recall & 0.765 & 0.794 & 0.793 & 0.782 & 0.767 & 0.781 & 0.762 \\ \hline
+		\parbox[t]{2mm}{\multirow{3.2}{*}{\rotatebox[origin=c]{90}{Note with}}} & \parbox[t]{2mm}{\multirow{3.2}{*}{\rotatebox[origin=c]{90}{Offsets and}}} & \parbox[t]{4mm}{\multirow{3.2}{*}{\rotatebox[origin=c]{90}{Velocity}}} & F1 & 0.790 & 0.799 & \textbf{\small0.802} & 0.787 & 0.788 & 0.799 & 0.787 \\
+		& & & Precision & 0.830 & 0.816 & 0.823 & 0.805 & 0.823 & 0.830 & 0.827 \\
+		& & & Recall & 0.755 & 0.783 & 0.782 & 0.770 & 0.757 & 0.771 & 0.752 \\ \hline
+	\end{tabular}
+	\vspace{1em}
+	\caption{Summary of transcription performance. The non-saturating GAN loss has the highest performance across all F1 metrics. The average metrics across the tracks in the MAESTRO test dataset are reported, and the model checkpoint where the average of frame F1 and note F1 is the highest on the validation dataset is used.}\label{tab:performance}
 \end{table*}
 
 
@@ -384,13 +413,17 @@ For the note-level metrics, we use the default settings of the library, which us
 \begin{figure*}[t]
 	\centering
 	\includegraphics[height=12em]{pertrack.pdf}
-	\caption{F1 score improvements over the baseline, tested on the MAESTRO test tracks.}\label{fig:pertrack}
-	\vspace{2em}
+	\caption{Distribution of the F1 score improvements over the baseline, tested on the MAESTRO test tracks.}\label{fig:pertrack}
+\end{figure*}
+\begin{figure*}[t]
+	\centering
 	\includegraphics[height=12em]{distribution.pdf}
-	\caption{Distribution of frame activation values.}\label{fig:distribution}
-	\vspace{2em}
+	\caption{Distribution of frame activation values. Our model outputs more confident predictions, as indicated by the lower relative frequency in (0.1, 0.9).}\label{fig:distribution}
+\end{figure*}
+\begin{figure*}[t]
+	\centering
 	\includegraphics[height=12em]{training.pdf}
-	\caption{Learning curves showing the generalization gaps; training curves are dotted.}\label{fig:training}
+	\caption{Learning curves showing the generalization gaps; training curves are drawn as dotted lines, and test curves are drawn as solid lines.}\label{fig:training}
 \end{figure*}
 
 Table \ref{tab:alpha} and \ref{tab:performance} summarize the transcription performance, clearly showing a consistent improvement in the conditional GAN models over the Onsets and Frames baseline.
@@ -412,25 +445,6 @@ This is because indecisive predictions are penalized by the discriminator, since
 The generator is therefore encouraged to output the most probable note sequences even when it is unsure, rather than producing blurry posteriorgrams that might hamper the decoding process.
 This allows for an interpretation in which the GAN loss provides a prior for valid onset and frame activations, and the model learns to perform MAP estimation based on this prior.
 
-\setcounter{table}{1}
-\begin{table}[t]
-	\centering
-	\scriptsize
-	\renewcommand\arraystretch{1.5}
-	\renewcommand{\tabcolsep}{0em}
-	\newcolumntype{M}[1]{>{\centering\arraybackslash}b{#1}}
-	\newcolumntype{C}{>{\centering\arraybackslash}m{2.4em}}
-	\begin{tabular}{@{\extracolsep{1em}}lM{4em}M{8em}CCCC}
-		& & & \multicolumn{4}{c}{\textit{mixup} strength $\alpha$} \\ \cline{4-7}
-		& Baseline & GAN type & 0 & 0.2 & 0.3 & 0.4 \\ \hline
-		\multirow{2.25}{4em}{Frame F1} & \multirow{2.25}{4em}{\centering0.899} & Non-Saturating & 0.664 & 0.912 & \textbf{0.914} & 0.907 \\
-		& & Least-Squares & 0.904 & 0.903 & 0.906 & 0.898 \\ \hline
-		\multirow{2.25}{4em}{Note F1} & \multirow{2.25}{4em}{\centering0.942} & Non-Saturating & 0.717 & 0.953 & \textbf{0.956} & 0.951 \\
-		& & Least-Squares & 0.944 & 0.947 & 0.950 & 0.943 \\
-		\hline
-	\end{tabular}
-	\caption{Frame and note F1 scores are the highest when the non-saturating GAN loss and $\alpha = 0.3$ are used.}\label{tab:alpha}
-\end{table}
 
 \subsection{Training Dynamics and The Generalization Gap}
 

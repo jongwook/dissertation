@@ -139,7 +139,7 @@ Bayesian models provide a powerful tool connecting the whole generative process 
 
 Unlike the aforementioned approaches which incorporate as much prior knowledge on the music as possible, discriminative models employ a simple approach of learning a direct mapping between the audio features and the labels from large training data, making minimal assumptions on the acoustical or musical structure.
 This data-driven approach is made possible by the availability of large datasets and increased computational capabilities.
-\textit{Support vector machines (SVM)} were commonly used in earlier discriminative approaches, by constructing one-versus-all SVM classifiers on STFT magnitudes \cite{poliner2007discriminative}, on learned features using \textit{deep belief networks (DBN)} \cite{nam2011classification}, or on the result of NMF \cite{weninger2013nmf}.
+\textit{Support vector machines (SVM)} were commonly used in earlier discriminative approaches, by constructing one-versus-all SVM classifiers on STFT magnitudes \cite{poliner2006discriminative}, on learned features using \textit{deep belief networks (DBN)} \cite{nam2011classification}, or on the result of NMF \cite{weninger2013nmf}.
 While being flexible and straightforward to be applied on any features of choice, SVMs have high time and space complexities which limit the size of training dataset and hence the capability of the model.
 
 
@@ -150,7 +150,7 @@ Music transcription models based on neural networks are relatively recent phenom
 Because the sequential nature of \textit{recurrent neural networks (RNN)} are suitable for modeling the time-domain dependencies in music, many neural transcription models include recurrent connections in their architecture.
 RNN architectures proposed for AMT include bidirectional RNNs \cite{bock2012rnn}, recurrent temporal \text{restricted Boltzmann machines} \cite{boulangerlewandowski2012temporal}, an acoustic model combined with an RNN-based music language model \cite{sigtia2015hybrid,sigtia2016endtoend},
 a sequence-to-sequence model \cite{ullrich2017seq2seq},
-a dual-objective loss for onsets and frames \cite{hawthorne2018piano},
+a dual-objective loss for onsets and frames \cite{hawthorne2018onsetsframes},
 and a \textit{convolutional-recurrent neural networks (CRNN)} \cite{thome2017crnn}, which scored the top accuracy in the MFFE subtask of the MIREX 2017 competition.
 
 % framewise convolutional layers \cite{kelz2016framewise}
