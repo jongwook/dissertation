@@ -37,7 +37,7 @@ Automatic music transcription (AMT) concerns automated methods for converting ac
 AMT is a multifaceted problem and comprises a number of subtasks, including multi-pitch estimation (MPE), note tracking, instrument recognition, rhythm analysis, score typesetting, etc.
 % Among these, multi-pitch estimation (MPE) is often considered to be the most challenging, as it involves many difficulties such as overlapping harmonics of concurrent pitches, separation of simultaneous sources, and the scarcity of reliable annotations~\cite{benetos2019amt}.
 MPE predicts a set of concurrent pitches that are present at each instant, and it is closely related to the task of note tracking, which predicts the onset and offset timings of every note in audio.
-In this paper, we address an issue in the recent approaches for MPE and note tracking, where the probabilistic dependencies between the labels are often overlooked.
+In this chapter, we address an issue in the recent approaches for MPE and note tracking, where the probabilistic dependencies between the labels are often overlooked.
 
 \iffalse
 \begin{figure}[t]
@@ -163,7 +163,7 @@ A \texttt{pix2pix} model takes paired images $(\x, \y)$ as its training data and
 \end{equation}
 which encourages the conditional generator to learn the forward mapping from $\mathbf{x}$ to $\mathbf{y}$. It can be thought that the GAN loss in Equation \ref{eqn:cgan} is fine-tuning the mapping learned by the L1 loss in Equation \ref{eqn:l1}, resulting in a predictive mapping that better respects the probabilistic dependencies within the labels $\y$.
 
-In this paper, we adapt this approach to music transcription tasks and show that we can indeed improve the performance by introducing an adversarial loss to an existing music transcription model.
+We adapt this approach to music transcription tasks and show that we can indeed improve the performance by introducing an adversarial loss to an existing music transcription model.
 
 
 
