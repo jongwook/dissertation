@@ -4,7 +4,7 @@
 
 \graphicspath{{4-monophonic/figures/}}
 
-\chapter{Deep Monophonic Pitch Estimation}
+\chapter{CREPE: Deep Monophonic Pitch Estimation}
 \label{ch:monophonic}
 
 
@@ -13,7 +13,7 @@ While not directly being a part of the overall system as described in Chapter \r
 The original work on the pitch tracking algorithm is featured in \cite{kim2018crepe}.
 
 
-\section{Introduction to CREPE}\label{sec:introduction}
+\section{Introduction}\label{sec:introduction}
 
 We have reviewed monophonic pitch tracking methods in Section \ref{ch:mir}.\ref{sec:monophonic}.
 A notable trend in those methods is that the derivation of a better pitch detection system solely depends on cleverly devising a robust candidate-generating function and/or sophisticated post-processing steps, i.e.~heuristics, and none of them are directly learned from data, except for manual hyperparameter tuning.
@@ -26,13 +26,13 @@ In the following sections, a novel, data-driven method for monophonic pitch trac
 This approach, CREPE (Convolutional  Representation  for  Pitch  Estimation), obtains state-of-the-art results, outperforming heuristic approaches such as pYIN and SWIPE while being more robust to noise too.
 It is further shown that CREPE is highly precise, maintaining over 90\% raw pitch accuracy even for a strict evaluation threshold of just 10 cents.
 
-\section{Architecture of CREPE}
+\section{Architecture}
 
-\begin{figure*}
+\begin{sidewaysfigure}
 	\includegraphics[width=\textwidth]{architecture.pdf}
 	\caption{The architecture of the CREPE pitch tracker. The six convolutional layers operate directly on the time-domain audio signal, producing an output vector that approximates a Gaussian curve as in Equation \ref{eqn:gaussian}, which is then used to derive the exact pitch estimate as in Equation \ref{eqn:resulting}.}
 	\label{fig:architecture}
-\end{figure*}
+\end{sidewaysfigure}
 
 CREPE consists of a deep convolutional neural network which operates directly on the time-domain audio signal to produce a pitch estimate.
 A block diagram of the proposed architecture is provided in Figure \ref{fig:architecture}.
@@ -62,9 +62,9 @@ y_i = \exp \left ( {-\frac{(\cent_i - \cent_{\mathrm{true}})^2}{2 \cdot 25^2}} \
 \end{equation}
 This way, high activations in the last layer indicate that the input signal is likely to have a pitch that is close to the associated pitches of the nodes with high activations.
 
-The network is trained to minimize the binary cross entropy between the target vector $\mathbf{y}$ and the predicted vector $\mathbf{\hat{y}}$:
+The network is trained to minimize the binary cross entropy between the target vector $\mathbf{y}$ and the predicted vector $\hat{\mathbf{y}}$:
 \begin{equation}
-\mathcal{L}(\mathbf{y}, \mathbf{\hat{y}}) = \sum_{i=1}^{360} \left ( - y_i \log \hat{y_i} - (1 - y_i) \log (1 - \hat{y_i}) \right ),
+\mathcal{L}(\mathbf{y}, \hat{\mathbf{y}}) = \sum_{i=1}^{360} \left ( - y_i \log \hat{y_i} - (1 - y_i) \log (1 - \hat{y_i}) \right ),
 \end{equation}
 where both $y_i$ and $\hat{y}_i$ are real numbers between 0 and 1.
 This loss function is optimized using the ADAM optimizer \cite{kingma2015adam}, with the learning rate 0.0002. 
@@ -75,7 +75,7 @@ This architecture and the training procedures are implemented using Keras \cite{
 
 
 
-\section{Experiments on CREPE}
+\section{Experiments}
 
 \subsection{Datasets}
 
@@ -226,36 +226,23 @@ For the flute and the violin, although there are many tracks with the same instr
 The low performance on the piccolo tracks is due to an error in the dataset where the annotation is inconsistent with the correct pitch range of the instrument.
 Unsurprisingly, the model performs well on test tracks whose timbre and frequency range are well-represented in the training set.
 
-\subsubsection{Summary}
-
-CREPE is a novel data-driven method for monophonic pitch tracking based on a deep convolutional neural network operating on time-domain input, which
-obtains state-of-the-art results, outperforming pYIN and SWIPE on two datasets with homogeneous and heterogeneous timbre respectively.
-Furthermore, CREPE remains highly accurate even at a very strict evaluation threshold of just 10 cents.
-It is also shown that in most cases CREPE is more robust to added noise.
-
-
-\section{Generative Adversarial Network of Instrumental Sounds}
-
-As seen in Chapter \ref{ch:deeplearning}, the recent surge of GAN variants have shown many promising results in computer vision.
-To examine the potential applicability of a GAN model in music, a few attempts were made to train GANs that learns from musical sounds, in the form of raw audio waveforms and magnitude spectrograms.
-A difference between audio and images is that audio has much more high-dimensional data than the typical images used in deep learning.
-Time domain signals have tens of thousands of numbers for a second of audio, and a typical resolution of a magnitude spectrogram ranges from 512 to 1024 vertical pixels where many image datasets for deep learning is under 96 pixels.
-Despite this difficulty, a careful design using mode regularized generative adversarial network (MRGAN) \cite{che2016mrgan} could achieve a stable convergence of 512-by-64 images of magnitude spectrograms, as shown in Figure \ref{fig:gan}.
-
-\begin{figure}
-	\centering
-	\includegraphics[width=0.9\textwidth]{gan.jpg}
-	\caption{Spectrogram images generated by mode regularized generative adversarial network (MRGAN) %\cite{che2016mrgan} trained on instrumental sounds of Vienna symphonic library
-	}\label{fig:gan}
-\end{figure}
-
-Future work in this project includes quantifying how the manifold learned by the GAN is informative in predicting various qualities of the sound, by combining the model with other GAN variants like InfoGAN \cite{chen2016infogan} or ACGAN \cite{odena2016acgan}.
-Using NSynth dataset will also help in getting more insights of GAN's ability, since it is more organized and comes with more consistent annotations than Vienna Symphonic Library.
-
 
 \section{Conclusions}
 
-In this chapter, a novel, generative approach toward automatic music transcription has been proposed, and comprehensive reviews on the relevant literature on deep learning and music informatics have been provided.
-The proposed approach combines deep learning's prodigious capacity to process multimedia data and the practically unlimited source of training data generated by software instruments and data augmentation.
-Deep generative models are a previously unseen kind of models that have the capability of generating multimedia data end-to-end and have advantages in producing disentangled representation.
-Whether the proposed model can indeed become a successful approach toward automatic music transcription remains to be seen in the future work toward the dissertation.
+In this paper, we presented a novel data-driven method for monophonic pitch tracking based on a deep convolutional neural network operating on time-domain input, CREPE.
+We showed that CREPE obtains state-of-the-art results, outperforming pYIN and SWIPE on two datasets with homogeneous and heterogeneous timbre respectively.
+Furthermore, we showed that CREPE remains highly accurate even at a very strict evaluation threshold of just 10 cents.
+We also showed that in most cases CREPE is more robust to added noise.
+
+
+Ideally, we want the model to be invariant to all transformations that do not affect pitch, such as changes due to distortion and reverberation.
+Some invariance can be induced by the architectural design of the model, such as the translation invariance induced by pooling layers in our model as well as in deep image classification models.
+However, it is not as straightforward to design the model architecture to specifically ignore other pitch-preserving transformations.
+While it is still an intriguing problem to build an architecture to achieve this, we could use data augmentation to generate transformed and degraded inputs that can effectively make the model learn the invariance.
+The robustness of the model could also be improved by applying pitch-shifts as data augmentation \cite{mcfee2015muda} to cover a wider pitch range for every instrument.
+In addition to data augmentation, various sources of audio timbre can be obtained from software instruments; NSynth \cite{engel2017nsynth} is an example where the training dataset is generated from the sound of software instruments.
+
+
+Pitch values tend to be continuous over time, but CREPE estimates the pitch of every frame independently without using any temporal tracking, unlike pYIN which exploits this by using an HMM to enforce temporal smoothness.
+We can potentially improve the performance of CREPE even further by enforcing temporal smoothness.
+In the future, we plan to do this by means of adding recurrent architecture to our model, which could be trained jointly with the convolutional front-end in the form of a convolutional-recurrent neural network (CRNN).

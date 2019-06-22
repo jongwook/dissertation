@@ -159,7 +159,9 @@ In this series of experiments, we examine how slight variations in the model arc
 The first two variations use either the frame data or the onset data only as the input.
 The next three omit an architectural component: one of the two FiLM layers or the backward LSTM.
 The last four increase the network's capacity by adding the ReLU nonlinearity after the first convolution, using kernel sizes of 3 or 5 time steps in convolutions, or adding another LSTM layer.
-\begin{center}
+\begin{table}
+	\centering
+	\renewcommand\arraystretch{1.2}
 	\setlength\tabcolsep{0.3em}
 	\begin{tabular}{c|c|c}
 		Variations & Train loss ($\times 10^3$) & Validation loss ($\times 10^3$)\\
@@ -178,7 +180,9 @@ The last four increase the network's capacity by adding the ReLU nonlinearity af
 		5x1 convolutions & 3.49 $\pm$ 0.30 & 5.06 $\pm$ 0.08 \\
 		2-layer LSTM & 2.98 $\pm$ 0.20 & 4.96 $\pm$ 0.12 \\
 	\end{tabular}
-\end{center}
+	\vspace{1em}
+	\caption{\TODO{caption here}}\label{tab:synthesis-ablation}
+\end{table}
 The train and validation losses as defined in Equation \ref{eqn:tanh-log-abs-loss} are shown\footnote{The means and standard deviations over the model checkpoints in 90k-100k iterations are reported, to minimize the variability due to SGD.} in the table above for each variation.
 Using both onsets and frames is indeed more effective than using only one of them in the input.
 The first FiLM layer plays a more crucial role than the second, because only the first can help learn a timbre-dependent recurrent layer.
@@ -227,7 +231,8 @@ For each of the six configurations corresponding to the curves in Figure \ref{fi
 The listeners were provided with a randomly selected segment at a time, and each segment was evaluated by three listeners, comprising 420 samples in each configuration.
 18 or less questions were given to each listener, and 173 unique listeners participated.
 
-\begin{center}
+\begin{table}
+	\centering
 	\begin{tabular}{l|c} 
 		Condition & Mean Opinion Scores \\ \hline
 		Original audio & 4.301 $\pm$ 0.080 \\
@@ -238,7 +243,9 @@ The listeners were provided with a randomly selected segment at a time, and each
 		WaveNet: log-abs MSE & 3.019 $\pm$ 0.109 \\
 		WaveNet: abs MSE & 2.751 $\pm$ 0.110 \\
 	\end{tabular}
-\end{center}
+	\vspace{1em}
+	\caption{\TODO{caption}}\label{tab:synthesis-quality}
+\end{table}
 
 This table shows the mean opinion scores (MOS) and the 95\% confidence intervals, which generally follow the tendency similar to Figure \ref{fig:correlations}.
 Using the soft-thresholding loss in Equation \ref{eqn:tanh-log-abs-loss} results in the best subjective quality among the three loss functions compared, more significantly so than the numerical comparison in Figure \ref{fig:correlations}.
