@@ -16,7 +16,7 @@ Therefore, unlike the single-pitch objective in Chapter \ref{ch:monophonic}, pre
 In this chapter, as hinted in the conclusions in the last chapter, we discuss a method to include adversarial loss to allow the model to predict the piano roll target more accurately.
 We first address a limitation in the conventional, element-wise definition of loss functions in which the inter-label probabilistic dependences are not accurately modeled.
 Based on this observation, we show that appending an adversarial discriminator to a discriminative piano transcription model can help producing more confident predictions which in turn improve the transcription accuracy.
-The content of this chapter is largely based on the work presented at ISMIR 2019 \cite{kim2019adversarial}. \TODO{add ref}
+The content of this chapter is largely based on the work presented at ISMIR 2019 \cite{kim2019adversarial}.
 
 
 \section{Introduction}
@@ -84,7 +84,7 @@ Note-level transcription, or note tracking, operates at a higher level, predicti
 Note tracking is typically implemented as a post-processing stage on the output of MPE~\cite{benetos2019amt}, by connecting and grouping the pitch estimates over time to produce discrete note events.
 In this sense, we can say that MPE is at the core of polyphonic music transcription.
 
-Among the categories of approaches for MPE reviewed in Section \ref{ch:mir}.\ref{sec:mffe}, two have been most successful in recent years: matrix factorization \cite{lee2001nmf} and deep learning \cite{lecun2015deeplearning}.
+Among the approaches for MPE reviewed in Section \ref{ch:mir}.\ref{sec:mffe}, two categories have been most successful in recent years: matrix factorization \cite{lee2001nmf} and deep learning \cite{lecun2015deeplearning}.
 Commonly in both of these approaches, an iterative gradient-descent algorithm is used to minimize an element-wise loss function that is defined on two-dimensional representation.
 NMF-based methods are designed to minimize a divergence function between the matrix factorization and the target matrix, and similarly in deep learning models, neural networks are optimized to predict a two-dimensional representation that makes an element-wise loss function as small as possible.
 
