@@ -116,10 +116,6 @@ The predicted Mel spectrograms are defined using 80 area-normalized triangular f
 The STFT window length of 1,024 samples and the step size of 128 samples are used, which translate to 64 milliseconds and 8 milliseconds, respectively.
 Unless specified otherwise, we use 256 channels in all hidden layers and a two-dimensional embedding space for timbre conditioning.
 
-\medmuskip=0mu
-\thinmuskip=0mu
-\thickmuskip=0mu
-
 For Mel spectrogram prediction, an Adam optimizer with the initial learning rate of 0.002 is used, and the learning rate is halved every 40,000 iterations.
 The model is trained for 100,000 iterations, where each iteration takes a mini-batch of 128 sequences of length 65,536, or 4.096 seconds.
 Three different loss functions are used and compared; for linear-scale Mel spectrograms $S_{\mathrm{true}}$ and $S_{\mathrm{pred}}$:

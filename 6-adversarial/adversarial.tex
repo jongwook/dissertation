@@ -1,7 +1,4 @@
 %!TEX root = ../dissertation.tex
-%!TEX TS-program = xelatex
-%!TEX encoding = UTF-8 Unicode
-%!BIB program = bibtex
 % this file is called up by thesis.tex
 % content in this file will be fed into the main document
 
@@ -10,21 +7,20 @@
 \chapter{Adversarial Learning for Piano Transcription}
 \label{ch:adversarial}
 
+In the previous chapter, we have introduced a WaveNet-based music synthesis model that is conditioned on predicted Mel spectrograms.
+A Mel spectrogram is a representation of audio whose dimension is in the order of hundreds at each frame.
+Accurate prediction of such high-dimensional representations requires sophisticated modeling of their statistical properties as well as extensive computational power to realize it.
+Piano roll representations of music, which are formulated in Chapter \ref{ch:introduction} as the output representation of polyphonic music transcription throughout this thesis, are another example of high-dimensional representations of audio which contain hundreds of data points at each instant.
+Therefore, unlike the single-pitch objective in Chapter \ref{ch:monophonic}, prediction of piano roll representations is inherently a multi-label problem and thus warrants a mathematical model that is right for high-dimensional representation.
 
-Automatic music transcription is considered to be one of the hardest problems in music information retrieval, yet recent deep learning approaches have achieved substantial improvements on transcription performance.
-These approaches commonly employ supervised learning models that predict various time-frequency representations, by minimizing element-wise losses such as the cross entropy function.
-However, applying the loss in this manner assumes conditional independence of each label given the input, and thus cannot accurately express inter-label dependencies.
-To address this issue, we introduce an adversarial training scheme that operates directly on the time-frequency representations and makes the output distribution closer to the ground-truth.
-Through adversarial learning, we achieve a consistent improvement in both frame-level and note-level metrics over Onsets and Frames, a state-of-the-art music transcription model.
-Our results show that adversarial learning can significantly reduce the error rate while increasing the confidence of the model estimations.
-Our approach is generic and applicable to any transcription model based on multi-label predictions, which are very common in music signal analysis.
+In this chapter, as hinted in the conclusions in the last chapter, we discuss a method to include adversarial loss to allow the model to predict the piano roll target more accurately.
+We first address a limitation in the conventional, element-wise definition of loss functions in which the inter-label probabilistic dependences are not accurately modeled.
+Based on this observation, we show that appending an adversarial discriminator to a discriminative piano transcription model can help producing more confident predictions which in turn improve the transcription accuracy.
 
 
+\section{Introduction}
 
-\section{Introduction}\label{sec:introduction}
-
-Automatic music transcription (AMT) concerns automated methods for converting acoustic music signals into some form of musical notation~\cite{benetos2013amt}.
-AMT is a multifaceted problem and comprises a number of subtasks, including multi-pitch estimation (MPE), note tracking, instrument recognition, rhythm analysis, score typesetting, etc.
+Automatic music transcription (AMT) is a multifaceted problem and comprises a number of subtasks, including multi-pitch estimation (MPE), note tracking, instrument recognition, rhythm analysis, score typesetting, etc.
 % Among these, multi-pitch estimation (MPE) is often considered to be the most challenging, as it involves many difficulties such as overlapping harmonics of concurrent pitches, separation of simultaneous sources, and the scarcity of reliable annotations~\cite{benetos2019amt}.
 MPE predicts a set of concurrent pitches that are present at each instant, and it is closely related to the task of note tracking, which predicts the onset and offset timings of every note in audio.
 In this chapter, we address an issue in the recent approaches for MPE and note tracking, where the probabilistic dependencies between the labels are often overlooked.
@@ -124,7 +120,7 @@ This motivates the adversarial training scheme that is outlined in the following
 Generative adversarial networks (GANs)~\cite{goodfellow2014gan} refer to a family of deep generative models which consist of two components, namely the generator $G$ and the discriminator $D$.
 Given a data distribution $\x \sim p(\x)$ and latent codes $\z \sim p(\z)$, GAN performs the following minimax game:
 \begin{equation}\label{eqn:gan}
-\min_{G} \max_{D} \underbrace{\Big [ \E_{\x} \log D(\x) + \E_{\z} \log (1 - D ( G(\z))) \Big ]}_{\L_{\text{GAN}}(G, D)}.
+\min_{G} \max_{D}  \underbrace{\Big [ \E_{\x} \log D(\x) + \E_{\z} \log (1 - D ( G(\z))) \Big ]}_{\L_{\text{GAN}}(G, D)}.
 \end{equation}
 $G$ and $D$ are implemented as neural networks trained in an adversarial manner, where the discriminator learns to distinguish the generated samples from the real data, while the generator learns to produce realistic samples to fool the discriminator.
 GANs are most renowned for their ability to produce photorealistic images~\cite{karras2019stylegan} and have shown promising results on music generation as well~\cite{engel2019gansynth,dong2018musegan,yang2017midinet}.
@@ -138,15 +134,16 @@ The non-saturating GAN loss is used more often than the minimax loss in Equation
 Least-squares GAN \cite{mao2017lsgan} is an alternative method to address the vanishing gradient problem, which replaces the cross entropy loss in Equations \ref{eqn:gan}-\ref{eqn:nsgan} with squared errors:%
 \begin{equation}\label{eqn:lsgan}
 	\begin{array}{l@{}l}
-	\min_{D} ~\Big [ \E_{\x} (D(\x) - 1)^2 + \E_{\z} D(G(\x))^2 \Big ], \\
-	\min_{G} ~\>\E_{\z} (D(G(\z)) - 1)^2.
+	\displaystyle\min_{D} ~\Big [ \E_{\x} (D(\x) - 1)^2 + \E_{\z} D(G(\x))^2 \Big ], \\
+	\displaystyle\min_{G} ~\>\E_{\z} (D(G(\z)) - 1)^2.
 	\end{array}
 \end{equation}
 
 
 While the default formulation of GAN concerns unconditional generation of samples from $p(\mathbf{x})$, conditional GANs (cGAN)~\cite{mirza2014conditional} produce samples from a conditional distribution $p(\y|\x)$. To do this, the generator and the discriminator are defined in terms of                                                                                                                                                                                                                                                     the condition variable $\x$ as well:
-\begin{equation}\label{eqn:cgan}
-\min_{G}~\max_{D}\underbrace{\Big [ \mathbb{E}_{\x,\y} \log D(\x,~\y) + \mathbb{E}_{\x,\z} \log (1 - D ( \x,~ G(\x,~\z)) \Big ]}_{\L_{\text{cGAN}}(G, D)}.
+\begin{equation}
+\label{eqn:cgan}
+\min_{G}\max_{D}\underbrace{\Big [ \mathbb{E}_{\x,\y} \log D(\x,~\y) + \mathbb{E}_{\x,\z} \log (1 - D ( \x,~ G(\x,~\z)) \Big ]}_{\L_{\text{cGAN}}(G, D)}.
 \end{equation}
 \texttt{pix2pix} \cite{isola2017pix2pix} is an image translation model that learns a mapping between two distinct domains of images, such as aerial photos and maps.
 A \texttt{pix2pix} model takes paired images $(\x, \y)$ as its training data and minimizes the conditional GAN loss along with an additional L1 loss:
@@ -191,7 +188,7 @@ Unlike the image-to-image translation problem, the input representations (e.g.~M
 This makes combining $\X$ and $\Y$ in a fully convolutional manner difficult.
 For this reason, we make the discriminator a function of $\Y$ only, simplifying the objective in Equation \ref{eqn:cgan} to:
 \begin{equation}\label{eqn:simple-cgan}
-\L_{\text{cGAN}}(G, D) =  \mathbb{E}_{\Y}  \log D(\Y) + \mathbb{E}_{\X} \log (1 - D ( G(\X))).
+\L_{\text{cGAN}}(G, D) ~ = ~  \mathbb{E}_{\Y}  \log D(\Y) ~ + ~ \mathbb{E}_{\X} \log (1 - D ( G(\X))).
 \end{equation}
 Note that $\z$ is also omitted in Equation \ref{eqn:simple-cgan}, as we follow \cite{isola2017pix2pix} and implement the stochasticity of $\z$ only in terms of dropout layers \cite{srivastava2014dropout}, without explicitly feeding random noises into the generator.
 This causes a mode collapse problem where the learned $p(\Y|\X)$ is not diverse enough, but it does not harm our purpose of producing more realistic target representations.
@@ -220,8 +217,7 @@ When $\alpha = 0$, the Beta distribution becomes $\text{Bernoulli}(0.5)$ which r
 \SetInd{0.1em}{2em}
 \begin{algorithm2e}[b!]
 	\vspace{-0.3em}\noindent
-	\label{alg:training}
-	\caption{Training of a \textit{mixup} Conditional GAN.}
+	\caption{Training of a \textit{mixup} Conditional GAN.}\label{alg:training}
 	\setstretch{1.05}
 	\rule{\columnwidth}{0.75pt}\\
 	\KwIn{
@@ -253,7 +249,7 @@ When $\alpha = 0$, the Beta distribution becomes $\text{Bernoulli}(0.5)$ which r
 \textit{mixup} is readily applicable to the binary classification task of GAN discriminators.
 In our conditional GAN setup, we have an additional advantage of having paired samples of a real label $\Y$ and a fake label $\hat{\Y} = G(\X)$, which allow us to replace Equation \ref{eqn:simple-cgan} with:
 \begin{equation}\label{eqn:mixup-gan}
-\min_{G} \max_{D} \mathbb{E}_{\X,\Y,\lambda} \Big [ - \ell (D(\lambda \Y + (1 - \lambda) G(\X) ), \lambda) \Big ].
+\min_{G} ~ \max_{D} ~ \mathbb{E}_{\X,\Y,\lambda} \Big [ - \ell (D(\lambda \Y + (1 - \lambda) G(\X) ), ~ \lambda) \Big ].
 \end{equation}
 where $\ell(p, y) = - y \log p - (1-y) \log (1-p)$ is the binary cross entropy (BCE) function.
 With this \textit{mixup} setup, the discriminator now has to operate on the convex interpolation between the predicted representation and the corresponding ground truth.
@@ -335,7 +331,7 @@ Also, to train a least-squares GAN (Equation \ref{eqn:lsgan}) instead, we can si
 		& & & Recall & 0.755 & 0.783 & 0.782 & 0.770 & 0.757 & 0.771 & 0.752 \\ \hline
 	\end{tabular}
 	\vspace{1em}
-	\caption{Summary of transcription performance. The non-saturating GAN loss has the highest performance across all F1 metrics. The average metrics across the tracks in the MAESTRO test dataset are reported, and the model checkpoint where the average of frame F1 and note F1 is the highest on the validation dataset is used.}\label{tab:performance}
+	\caption{Summary of transcription performance. The non-saturating GAN loss achieves the best performance across all F1 metrics. The average metrics across the tracks in the MAESTRO test dataset are reported, and the model checkpoint where the average of frame F1 and note F1 is the highest on the validation dataset is used.}\label{tab:performance}
 \end{table*}
 
 
@@ -449,7 +445,7 @@ This means that the GAN loss works as an effective regularizer that encourages t
 
 We have presented an adversarial training method that can consistently outperform the baseline Onsets and Frames model, using the standard frame-level and note-level transcription metrics and visualizations that show how the improved model predicts more confident output.
 To achieve this, a discriminator network is trained competitively with the transcription model, i.e. a conditional generator, so that the discriminator serves as a learned regularizer that provides a prior for realistic note sequences.
-% After training, the discriminator can be disregarded for inference, incurring no additional computational cost during transcription.
+After training, the discriminator can be disregarded for inference, incurring no additional computational cost during transcription.
 
 
 Our results show that modeling the inter-label dependencies in the target distribution is important and brings measurable performance improvements.
@@ -463,3 +459,5 @@ This implies that our method would be less effective when the majority of errors
 How to apply adversarial learning for better generalization on the input distribution is a potential future research direction.
 
 
+Although the MAESTRO dataset used in this chapter contains various recording conditions and therefore somewhat different timbres among the tracks, they are all recordings of piano performances which have limited timbral diversity.
+In the next chapter, we discuss how to extend our music transcription model so that it can handle a variety of musical instruments.

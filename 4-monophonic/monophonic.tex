@@ -7,15 +7,14 @@
 \chapter{CREPE: Deep Monophonic Pitch Estimation}
 \label{ch:monophonic}
 
-
-In this chapter, some of the preliminary research results toward the direction of the thesis are presented, based on two pilot studies: a pitch tracking algorithm based on one-dimensional convolutional neural networks, and a generative adversarial network that can unconditionally generate the spectrograms of orchestral instrument sounds.
-While not directly being a part of the overall system as described in Chapter \ref{ch:methods}, these experiments are expected to provide valuable insights about what convolutional representations can learn from music audio signals, and how their architecture should be designed to maximize the effectiveness.
-The original work on the pitch tracking algorithm is featured in \cite{kim2018crepe}.
-
+As outlined in chapter \ref{ch:introduction}, we start with a simpler formulation of music transcription that is later extended to ultimately support multi-instrument polyphonic music transcription.
+This chapter concerns the first step where we assume that the input is monophonic, i.e. the audio contains at most one pitched sound at each instant.
+Through this simplified formulation, we aim to gain insights on how a supervised learning framework for music transcription tasks can be designed.
+Furthermore, we seek to identify important aspects of the proposed approach that can be applied to or extended to polyphonic and multi-instrument transcription tasks.
 
 \section{Introduction}\label{sec:introduction}
 
-We have reviewed monophonic pitch tracking methods in Section \ref{ch:mir}.\ref{sec:monophonic}.
+We have reviewed a few approaches for monophonic pitch tracking in Section \ref{ch:mir}.\ref{sec:monophonic}, including YIN~\cite{decheveigne2002yin} and pYIN~\cite{mauch2014pyin}.
 A notable trend in those methods is that the derivation of a better pitch detection system solely depends on cleverly devising a robust candidate-generating function and/or sophisticated post-processing steps, i.e.~heuristics, and none of them are directly learned from data, except for manual hyperparameter tuning.
 This contrasts with many other problems in music information retrieval like chord ID \cite{humphrey2012rethinking} and beat detection \cite{bock2011enhanced}, where data-driven methods have been shown to consistently outperform heuristic approaches.
 One possible explanation for this is that since fundamental frequency is a low-level physical attribute of an audio signal which is directly related to its periodicity, in many cases heuristics for estimating this periodicity perform extremely well with accuracies (measured in raw pitch accuracy, defined later on) close to 100\%, leading some to consider the task a solved problem.
@@ -167,11 +166,11 @@ CREPE maintains the highest accuracy for all SNR levels for pub noise and white 
 Brown noise is the exception where pYIN's performance is almost unaffected by the noise.
 This can be attributed to the fact that brown noise has most of its energy at low frequencies, to which the YIN algorithm (on which pYIN is based) is particularly robust.
 
-\begin{figure}
+\begin{sidewaysfigure}
 	\includegraphics[width=\textwidth]{noise.pdf}
 	\caption{Pitch tracking performance when additive noise signals are present. The error bars are centered at the average raw pitch accuracies and span the first standard deviations. With brown noise being a notable exception, CREPE shows the highest noise robustness in general. }
 	\label{fig:noise}
-\end{figure}
+\end{sidewaysfigure}
 
 To summarize, CREPE performs better in all cases where the SNR is below 10 dB while the performance varies depending on the spectral properties of the noise when the noise level is higher, which indicates that this approach can be reliable under a reasonable amount of additive noise.
 CREPE is also more stable, exhibiting consistently lower variance in performance compared to the baseline algorithms.
@@ -217,7 +216,7 @@ In both cases, this suggests that the neural network can adapt to the distributi
 \subsubsection{Performance by Instrument}
 
 The MDB-stem-synth dataset contains 230 tracks from 25 different instruments, where electric bass (58 tracks) and male singer (41 tracks) are the most common while there are instruments that occur in only one or two tracks.
-Figure \ref{fig:per-track} plots the performance of CREPE on each of the 230 tracks, with respect to the instrument of each track.
+Figure \ref{fig:per-track} shows the performance of CREPE on each of the 230 tracks, with respect to the instrument of each track.
 It is notable that the model performs worse for the instruments with higher average frequencies, but the performance is also dependent on the timbre.
 CREPE performs particularly worse on the tracks with the dizi, a Chinese transverse flute, because the tracks came from the same artist, and they are all placed in the same split.
 This means that for the fold in which the dizi tracks are in the test set, the training and validation sets do not contain a single dizi track, and the model fails to generalize to this previously unseen timbre.
@@ -229,7 +228,7 @@ Unsurprisingly, the model performs well on test tracks whose timbre and frequenc
 
 \section{Conclusions}
 
-In this paper, we presented a novel data-driven method for monophonic pitch tracking based on a deep convolutional neural network operating on time-domain input, CREPE.
+In this chapter, we presented a novel data-driven method for monophonic pitch tracking based on a deep convolutional neural network operating on time-domain input, CREPE.
 We showed that CREPE obtains state-of-the-art results, outperforming pYIN and SWIPE on two datasets with homogeneous and heterogeneous timbre respectively.
 Furthermore, we showed that CREPE remains highly accurate even at a very strict evaluation threshold of just 10 cents.
 We also showed that in most cases CREPE is more robust to added noise.
@@ -244,5 +243,7 @@ In addition to data augmentation, various sources of audio timbre can be obtaine
 
 
 Pitch values tend to be continuous over time, but CREPE estimates the pitch of every frame independently without using any temporal tracking, unlike pYIN which exploits this by using an HMM to enforce temporal smoothness.
-We can potentially improve the performance of CREPE even further by enforcing temporal smoothness.
-In the future, we plan to do this by means of adding recurrent architecture to our model, which could be trained jointly with the convolutional front-end in the form of a convolutional-recurrent neural network (CRNN).
+We can potentially improve the performance of CREPE further by statistically modeling how the pitch value changes over time.
+Employing recurrent neural networks (RNN) is a natural choice for this, and we will explore in the following chapters how RNNs can model the temporal characteristics of music, focusing on two specific tasks: music synthesis (Chapter \ref{ch:synthesis}) and piano transcription (Chapter \ref{ch:adversarial}).
+
+
