@@ -11,6 +11,7 @@ As outlined in chapter \ref{ch:introduction}, we start with a simpler formulatio
 This chapter concerns the first step where we assume that the input is monophonic, i.e. the audio contains at most one pitched sound at each instant.
 Through this simplified formulation, we aim to gain insights on how a supervised learning framework for music transcription tasks can be designed.
 Furthermore, we seek to identify important aspects of the proposed approach that can be applied to or extended to polyphonic and multi-instrument transcription tasks.
+The content of this chapter is largely based on the work presented at IEEE ICASSP 2018 \cite{kim2018crepe}.
 
 \section{Introduction}\label{sec:introduction}
 
@@ -244,6 +245,6 @@ In addition to data augmentation, various sources of audio timbre can be obtaine
 
 Pitch values tend to be continuous over time, but CREPE estimates the pitch of every frame independently without using any temporal tracking, unlike pYIN which exploits this by using an HMM to enforce temporal smoothness.
 We can potentially improve the performance of CREPE further by statistically modeling how the pitch value changes over time.
-Employing recurrent neural networks (RNN) is a natural choice for this, and we will explore in the following chapters how RNNs can model the temporal characteristics of music, focusing on two specific tasks: music synthesis (Chapter \ref{ch:synthesis}) and piano transcription (Chapter \ref{ch:adversarial}).
+Employing recurrent neural networks (RNNs) is a natural choice for this, and we will explore in the following chapters how RNNs can model the temporal characteristics of music, focusing on two specific tasks: music synthesis (Chapter \ref{ch:synthesis}) and piano transcription (Chapter \ref{ch:adversarial}).
 
 

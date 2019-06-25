@@ -91,7 +91,7 @@ While these methods work well for monophonic audio, they are not enough for gene
 To address this situation, the next section reviews the techniques for tracking multiple pitches.
 
 
-\section{Multiple Fundamental Frequency Estimation}
+\section{Multiple Fundamental Frequency Estimation}\label{sec:mffe}
 
 Among the subtasks of automatic music transcription, estimating and tracking all pitches from a polyphonic recording poses the most difficult challenges, as apparent from the recent stream of results from MIREX challenges \cite{downie2014mirex}.
 The task is commonly referred to as \emph{multiple fundamental frequency estimation} (Multi-F0 estimation, or MFFE) or simply \emph{polyphonic pitch tracking}.
@@ -106,12 +106,14 @@ Early approaches for polyphonic pitch tracking are often based on rather strict 
 
 %%% NMF and its variants
 
-\textit{Non-negative matrix factorization (NMF)} \cite{lee1999nmf,lee2001nmf} refers to an algorithm that finds two matrices that factorize a given matrix, where the elements of all three matrices are non-negative.
-Due to the simplicity of the algorithm and the applicability of the non-negative setup to magnitude spectrograms, many MFFE algorithms using NMF have been introduced.
-\citeA{smaragdis2003nmf} showed that NMF can extract the temporal and spectral profiles of piano notes even when the notes are being played concurrently.
-The NMF model was extended by incorporating sparsity loss \cite{cont2006realtime,costantini2013nmf}, non-negative matrix division \cite{niedermayer2008division}, $\beta$-divergence \cite{dessein2010beta}, and a Bayesian framework for encouraging harmonicity and temporal smoothness \cite{bertin2009nmf,bertin2010nmf,peeling2010factorization}.
-With carefully designed regularizers and the \textit{alternating direction method of multipliers (ADMM)} for training NMF, \citeA{ewert2016admm,ewert2017admm} achieved close-to-perfect accuracy for piano transcription in a studio setting.
+\textit{Non-negative matrix factorization (NMF)} \cite{lee1999nmf,lee2001nmf} refers to an algorithm that finds two matrices that factorize a given matrix where the elements of all three matrices are non-negative.
+Starting with \citeA{smaragdis2003nmf}, many successful methods for music transcription have been built based on NMF \cite{benetos2019amt}.
+These methods commonly take the approach of factorizing a time-frequency representation $\X \in \R^{F \times T}$ as a product of a dictionary matrix $\mathbf{D} \in \R^{F \times K}$ and an activation matrix $\mathbf{A} \in \R^{K \times T}$, where $K$ is the number of pitch labels to be transcribed, e.g. 88 keys for piano transcription.
+This allows for an intuitive interpretation of each matrix, where each column of $\mathbf{D}$ contains a spectral template for a pitch label, and each row of $\mathbf{A}$ contains the activation of the corresponding pitch over time.
+Various extensions of factorization-based methods have been proposed to leverage sparsity~\cite{abdallah2004sparse,cont2006realtime,costantini2013nmf}, non-negative matrix division \cite{niedermayer2008division}, $\beta$-divergence \cite{dessein2010beta}, adaptive estimation of harmonic spectra~\cite{vincent2010adaptive,fuentes2013harmonic}, a Bayesian framework for encouraging harmonicity and temporal smoothness \cite{bertin2009nmf,bertin2010nmf,peeling2010factorization}, and modeling of attack and decay sounds~\cite{benetos2013multi,ewert2016admm}.
+With carefully designed regularizers and the \textit{alternating direction method of multipliers (ADMM)} for training NMF, \citeA{ewert2016admm,ewert2017admm} achieved close-to-perfect accuracy for piano transcription in a studio setting, i.e. when the exact spectral profile of the piano notes to be transcribed is known in advance.
 
+  
 
 %%% PLSA (aka PLSI or PLCA)
 
@@ -145,7 +147,14 @@ While being flexible and straightforward to be applied on any features of choice
 
 %%% Neural networks and deep learning
 
-Advances in deep learning enabled neural networks to serve an alternative to SVMs for discriminative transcription.
+
+Deep learning~\cite{lecun2015deeplearning} methods for music transcription are increasingly popular%replacing NMF-based methods
+~\cite{benetos2019amt}, as larger labeled datasets and more powerful hardware become accessible.
+These approaches use neural networks (NN) to produce music transcriptions from the input audio.
+An early work~\cite{nam2011classification} used deep belief networks~\cite{hinton2006dbn} to extract audio features which are subsequently fed to pitch-wise SVM-HMM pairs to predict the target piano rolls.
+More recent approaches are based on convolutional%neural networks
+~\cite{bittner2017deepsalience,kelz2016framewise} and/or recurrent neural networks~\cite{bock2012rnn,sigtia2016endtoend,hawthorne2018onsetsframes}.
+\TODO{connect the paragraph with the below:}
 Music transcription models based on neural networks are relatively recent phenomena starting since 2012, with a notable exception of \citeA{marolt1999nn,marolt2004connectionist}.
 Because the sequential nature of \textit{recurrent neural networks (RNN)} are suitable for modeling the time-domain dependencies in music, many neural transcription models include recurrent connections in their architecture.
 RNN architectures proposed for AMT include bidirectional RNNs \cite{bock2012rnn}, recurrent temporal \text{restricted Boltzmann machines} \cite{boulangerlewandowski2012temporal}, an acoustic model combined with an RNN-based music language model \cite{sigtia2015hybrid,sigtia2016endtoend},

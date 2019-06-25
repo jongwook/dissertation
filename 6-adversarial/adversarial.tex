@@ -16,6 +16,7 @@ Therefore, unlike the single-pitch objective in Chapter \ref{ch:monophonic}, pre
 In this chapter, as hinted in the conclusions in the last chapter, we discuss a method to include adversarial loss to allow the model to predict the piano roll target more accurately.
 We first address a limitation in the conventional, element-wise definition of loss functions in which the inter-label probabilistic dependences are not accurately modeled.
 Based on this observation, we show that appending an adversarial discriminator to a discriminative piano transcription model can help producing more confident predictions which in turn improve the transcription accuracy.
+The content of this chapter is largely based on the work presented at ISMIR 2019 \cite{kim2019adversarial}. \TODO{add ref}
 
 
 \section{Introduction}
@@ -83,19 +84,17 @@ Note-level transcription, or note tracking, operates at a higher level, predicti
 Note tracking is typically implemented as a post-processing stage on the output of MPE~\cite{benetos2019amt}, by connecting and grouping the pitch estimates over time to produce discrete note events.
 In this sense, we can say that MPE is at the core of polyphonic music transcription.
 
-Two categories of approaches for MPE have been most successful in recent years: matrix factorization and deep learning.
-Factorization-based models for music transcription~\cite{smaragdis2003nmf} use non-negative matrix factorization (NMF)~\cite{lee2001nmf} to factorize a time-frequency representation $\X \in \R^{F \times T}$ as a product of a dictionary matrix $\mathbf{D} \in \R^{F \times K}$ and an activation matrix $\mathbf{A} \in \R^{K \times T}$, where $K$ is the number of pitch labels to be transcribed, e.g. 88 keys for piano transcription.
-This allows for an intuitive interpretation of each matrix, where each column of $\mathbf{D}$ contains a spectral template for a pitch label, and each row of $\mathbf{A}$ contains the activation of the corresponding pitch over time.
-Various extensions of factorization-based methods %music transcription algorithms 
-have been proposed to leverage sparsity~\cite{abdallah2004sparse}, adaptive estimation of harmonic spectra~\cite{vincent2010adaptive,fuentes2013harmonic}, and modeling of attack and decay sounds~\cite{benetos2013multi,ewert2016admm}.
-In all of these approaches, an iterative gradient-descent algorithm is used to minimize an element-wise divergence function between the matrix factorization $\mathbf{DA}$ and the target matrix $\mathbf{X}$~\cite{fevotte2011nmf}.
+Among the categories of approaches for MPE reviewed in Section \ref{ch:mir}.\ref{sec:mffe}, two have been most successful in recent years: matrix factorization \cite{lee2001nmf} and deep learning \cite{lecun2015deeplearning}.
+Commonly in both of these approaches, an iterative gradient-descent algorithm is used to minimize an element-wise loss function that is defined on two-dimensional representation.
+NMF-based methods are designed to minimize a divergence function between the matrix factorization and the target matrix, and similarly in deep learning models, neural networks are optimized to predict a two-dimensional representation that makes an element-wise loss function as small as possible.
 
-Deep learning~\cite{lecun2015deeplearning} methods for music transcription are increasingly popular%replacing NMF-based methods
-~\cite{benetos2019amt}, as larger labeled datasets and more powerful hardware become accessible.
-These approaches use neural networks (NN) to produce music transcriptions from the input audio.
-An early work~\cite{nam2011classification} used deep belief networks~\cite{hinton2006dbn} to extract audio features which are subsequently fed to pitch-wise SVM-HMM pairs to predict the target piano rolls.
-More recent approaches are based on convolutional%neural networks
-~\cite{bittner2017deepsalience,kelz2016framewise} and/or recurrent neural networks~\cite{bock2012rnn,sigtia2016endtoend,hawthorne2018onsetsframes}, which are also optimized with gradient descent to minimize an element-wise loss of predicting the target time-frequency representations.
+
+In this chapter, we use Onsets and Frames~\cite{hawthorne2018onsetsframes}, a state-of-the-art piano transcription model based on deep learning, as our baseline.
+It uses multiple columns of convolutional and recurrent neural network layers to predict onsets, offsets, velocities, and frame labels from the Mel spectrogram input, as shown in Figure~\ref{fig:onsetsframes}.
+Predicted onset and frame posteriors are then used for decoding the note sequences, where a threshold value is used to create binary onset and frame activations, and frame activations without the corresponding onsets are disregarded.
+Onsets and Frames also uses an element-wise optimization objective which does not consider the inter-label dependencies.
+This motivates the adversarial training scheme that is outlined in the following subsection.
+
 
 \begin{figure}[t]
 	\centering
@@ -105,19 +104,9 @@ More recent approaches are based on convolutional%neural networks
 \end{figure}
 
 
-Onsets and Frames~\cite{hawthorne2018onsetsframes} is a state-of-the-art piano transcription model that we use as our baseline.
-It uses multiple columns of convolutional and recurrent layers to predict onsets, offsets, velocities, and frame labels from the Mel spectrogram input, as shown in Figure~\ref{fig:onsetsframes}.
-Predicted onset and frame \def\x{{\mathbf x}}
-\def\L{{\cal L}}
-posteriors are then used for decoding the note sequences, where a threshold value is used to create binary onset and frame activations, and frame activations without the corresponding onsets are disregarded.
-
-
-As discussed above, most NMF- and NN-based methods, including Onsets and Frames, use an element-wise optimization objective which does not consider the inter-label dependencies.
-This motivates the adversarial training scheme that is outlined in the following subsection.
-
 \subsection{Generative Adversarial Networks and \texttt{pix2pix}}
 
-Generative adversarial networks (GANs)~\cite{goodfellow2014gan} refer to a family of deep generative models which consist of two components, namely the generator $G$ and the discriminator $D$.
+As extensively reviewed in Section \ref{ch:deeplearning}.\ref{sec:gan}, generative adversarial networks (GANs)~\cite{goodfellow2014gan} refer to a family of deep generative models which consist of two components, namely the generator $G$ and the discriminator $D$.
 Given a data distribution $\x \sim p(\x)$ and latent codes $\z \sim p(\z)$, GAN performs the following minimax game:
 \begin{equation}\label{eqn:gan}
 \min_{G} \max_{D}  \underbrace{\Big [ \E_{\x} \log D(\x) + \E_{\z} \log (1 - D ( G(\z))) \Big ]}_{\L_{\text{GAN}}(G, D)}.
