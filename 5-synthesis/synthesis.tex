@@ -35,7 +35,7 @@ Our work is aimed at achieving the best of both worlds: flexibly controlling a v
 
 \subsection{Timbre Morphing}
 
-`Morphing' of a sound can be generally described as making a perceptually gradual transition between two or more sounds~\cite{caetano2010morph}.
+`Morphing' of a sound can be generally described as making a perceptually gradual transition between two or more sounds~\cite{caetano2010automatic}.
 A common approach is to use a synthesis model and define sound morphing as a numerical interpolation of the model parameters.
 Sinusoidal models can directly interpolate between the energy proportions of the partials~\cite{osaka1995timbre,boccardi2001sound}.
 Other models use parameters characterizing the spectral envelope~\cite{slaney1996automatic,ezzat2005morphing} or psychoacoustic features for perceptually linear transition~\cite{caetano2013musical}.
@@ -47,8 +47,8 @@ To overcome this, we employ a data-driven approach for music synthesis that is g
 Timbre is often modeled using a timbre space~\cite{peeters2011timbre}, in which similar timbres lie closer than dissimilar timbres.
 In psychoacoustics, multidimensional scaling (MDS) is used to obtain a timbre space which preserves the timbral dissimilarities measured in perceptual experiments~\cite{grey1977multidimensional,wessel1979timbre}.
 Meanwhile, in music content analysis, timbre similarity is measured using computed features such as the Mel-frequency cepstral coefficients (MFCCs) \cite{logan2000mfcc},
-descriptors of the spectral envelope \cite{agostini2003musical}, or hidden-layer weights of a neural network trained to distinguish different timbres~\cite{humphrey2011nlse}.
-A recent method~\cite{esling2018timbrevae} used a variational autoencoder \cite{kingma2014vae} to obtain a timbre space, and unlike the above embeddings, the method is able to generate monophonic audio for a particular timbre embedding but does not consider the temporal evolution of notes such as attacks and decays.
+descriptors of the spectral envelope \cite{agostini2013aid}, or hidden-layer weights of a neural network trained to distinguish different timbres~\cite{humphrey2011nlse}.
+A recent method~\cite{esling2018timbre} used a variational autoencoder \cite{kingma2014vae} to obtain a timbre space, and unlike the above embeddings, the method is able to generate monophonic audio for a particular timbre embedding but does not consider the temporal evolution of notes such as attacks and decays.
 In our work, we generate a timbre embedding as a byproduct of polyphonic synthesis, which can utilize both spectral and temporal aspects of timbres.
 
 
@@ -56,10 +56,10 @@ In our work, we generate a timbre embedding as a byproduct of polyphonic synthes
 
 WaveNet~\cite{oord2016wavenet} is a generative audio synthesis model that is able to produce realistic human speech.
 WaveNet achieves this by learning an autoregressive distribution which predicts the next audio sample from the previous samples in its receptive field using a series of dilated convolutions.
-Tacotron~\cite{shen2018tacotron} and Deep Voice~\cite{ping2018deepvoice} are WaveNet-based text-to-speech models which first predict a Mel spectrogram from text and use it to condition a WaveNet vocoder.
+Tacotron~\cite{shen2018tacotron} and Deep Voice~\cite{ping2018deepvoice3} are WaveNet-based text-to-speech models which first predict a Mel spectrogram from text and use it to condition a WaveNet vocoder.
 
-There are also a few notable applications of WaveNet on music, including NSynth~\cite{engel2017neural}, an autoencoder architecture which separately encodes monophonic pitch with learned timbral features, and the universal music translation network~\cite{mor2018universal} which uses a denoising autoencoder architecture that can extract and translate between musical styles while preserving the melody.
-In \cite{anonymous2019maestro}, a WaveNet is used for music synthesis conditioned directly on note sequences, while only supporting piano sounds.
+There are also a few notable applications of WaveNet on music, including NSynth~\cite{engel2017nsynth}, an autoencoder architecture which separately encodes monophonic pitch with learned timbral features, and the universal music translation network~\cite{mor2019universal} which uses a denoising autoencoder architecture that can extract and translate between musical styles while preserving the melody.
+In \cite{hawthorne2019maestro}, a WaveNet is used for music synthesis conditioned directly on note sequences, while only supporting piano sounds.
 Our model is similarly built around WaveNet for its synthesis capability, while using a learned embedding space to flexibly control the timbre of polyphonic music.
 
 
@@ -77,13 +77,13 @@ The input to the neural network is a concatenation of two 88-dimensional piano r
 	\mathbf{X}^{\textrm{frame}}_{p,t} &= & v_{\textrm{~the active note}} \cdot \mathbb{1}_{\textrm{a note at pitch $p$ is active at time $t$}}
 \end{eqnarray*}
 \noindent where $\mathbb{1}$ is the indicator function, and $v$ denotes the MIDI velocity scaled to $[0, 1]$.
-This input representation is inspired by \cite{hawthorne2017onsets} which showed that jointly training on onsets and frames performs better than using frame information only;
+This input representation is inspired by \cite{hawthorne2018onsetsframes} which showed that jointly training on onsets and frames performs better than using frame information only;
 similarly, we want the network to maximally utilize the onsets which have the most relevant information on the attack sounds, while still receiving the frame information.
 Another reason for using both onsets and frames is that, because of the time quantization, repeated notes become indistinguishable only using $\mathbf{X}^\textrm{frame}$ when an offset is too close to the subsequent onset.
 
 The input goes through a linear 1x1 convolution layer, which is essentially a time-distributed fully connected layer, followed by a FiLM layer, to be described in the following subsection, which takes the timbre embedding vector and transforms the features accordingly.
 After a bidirectional LSTM layer and another FiLM layer for timbre conditioning, another linear 1x1 convolution layer produces the Mel spectrogram prediction.
-The resulting Mel spectrogram is then fed to a WaveNet vocoder to produce the music; Mel spectrograms compactly convey sufficient information for audio synthesis and have been successfully used for conditioning WaveNet~\cite{shen2018tacotron,ping2018deepvoice}.
+The resulting Mel spectrogram is then fed to a WaveNet vocoder to produce the music; Mel spectrograms compactly convey sufficient information for audio synthesis and have been successfully used for conditioning WaveNet~\cite{shen2018tacotron,ping2018deepvoice3}.
 The use of bidirectional LSTM is justified because Mel spectrograms are constructed using a larger window than the step size, making it non-causal.
 The only nonlinearities in the network are in the LSTM, and there are no time-domain convolutions except in WaveNet.
 
@@ -141,7 +141,7 @@ Each iteration takes a mini-batch of 4 sequences of length 16,384, i.e. 1.024 se
 \subsection{Datasets}
 
 While it is ideal to use recorded audio of real instruments as the training dataset, the largest multi-instrument polyphonic datasets available such as MusicNet~\cite{thickstun2017musicnet} is highly skewed, contains a limited variety of solo instrument recordings, and is expected to have a certain degree of labeling errors.
-So we resorted to using synthesized audio for training and collected MIDI files from \texttt{www.piano-midi.de}, which are also used in the MAPS Database~\cite{emiya2010multipitch}; these MIDI files are recorded from actual performances and contain expressive timing and velocity information.
+So we resorted to using synthesized audio for training and collected MIDI files from \texttt{www.piano-midi.de}, which are also used in the MAPS Database~\cite{emiya2010smoothness}; these MIDI files are recorded from actual performances and contain expressive timing and velocity information.
 We have selected 10 General MIDI instruments shown in Figure~\ref{fig:embedding} covering a wide variety of timbres, and 334 piano tracks are synthesized for each instrument using FluidSynth with the default SoundFont from MuseScore 3.
 The 334 tracks are randomly split into 320 for training and 14 for validation.
 The total size of the synthesized dataset is 3,340 tracks and 221 hours.
@@ -222,7 +222,7 @@ The reasons and implications of these trends are discussed in the following subs
 \subsubsection{Subjective Audio Quality Test}\label{sec:subjective}
 
 We performed a crowdsourced test asking the listeners to rate the quality of synthesis using a 5-point mean opinion score (MOS) scale with 0.5-point steps.
-MOS allows a simple interface that is more suitable for non-expert listeners in a crowdsourcing setup than e.g. MUSHRA \cite{itu2011mushra} and is used as a standard approach for assessing the perceptual quality of WaveNet syntheses \cite{oord2016wavenet,oord2017parallel}.
+MOS allows a simple interface that is more suitable for non-expert listeners in a crowdsourcing setup than e.g. MUSHRA \TODO{remove the subjective test part} and is used as a standard approach for assessing the perceptual quality of WaveNet syntheses \cite{oord2016wavenet,oord2018parallel}.
 For each of the six configurations corresponding to the curves in Figure \ref{fig:correlations}a in addition to the original audio, the first 20 seconds of the 140 validation tracks are evaluated.
 The listeners were provided with a randomly selected segment at a time, and each segment was evaluated by three listeners, comprising 420 samples in each configuration.
 18 or less questions were given to each listener, and 173 unique listeners participated.
@@ -273,7 +273,7 @@ The points corresponding to the 10 instruments are annotated with instrument ico
 These plots show that the learned embedding space forms a continuous span over the timbres expressed by all instruments in the training data.
 This allows us to use the timbre embedding as a flexible control space for the synthesizer, and timbre morphing is possible by interpolating along curves within the embedding space.
 
-To illustrate how the model scales with more diverse timbre, we train the Mel2Mel model with 100 instruments using a 10-dimensional embedding, and we refer the readers to the web demo$^\textrm{5}$ for an interactive $t$-SNE visualization~\cite{maaten2008visualizing} of the embedding space.
+To illustrate how the model scales with more diverse timbre, we train the Mel2Mel model with 100 instruments using a 10-dimensional embedding, and we refer the readers to the web demo$^\textrm{5}$ for an interactive $t$-SNE visualization~\cite{maaten2008tsne} of the embedding space.
 The 10-dimensional embedding space also contains a locally continuous timbre distribution of instruments, as in Figure \ref{fig:embedding}, implying that the Mel2Mel model is capable of scaling to hundreds of instruments and to a higher-dimensional embedding space.
 
 In addition to the audio samples used in the experiments, our interactive web demo$^\textrm{1}$ %\footnote{\url{https://neural-music-synthesis.github.io}}
@@ -295,12 +295,12 @@ We showed that it is possible to build a music synthesis model by combining a re
 It successfully learns to synthesize musical notes according to the given note sequence and timbre embedding in a continuous timbre space, providing the ability of flexible timbre control for music synthesizers.
 
 The capacity of the WaveNet, such as the number of residual channels and the number of layers, is limited due to the memory requirements of the nv-wavenet implementation, and the degradation from $\mu$-law quantization is also apparent in the experiments.
-These limitations can be overcome by Parallel WaveNet \cite{oord2017parallel}, which does not require a special CUDA kernel for fast synthesis and uses a continuous probability distribution for generation, thereby avoiding the quantization noise.
-Our earlier experiments on continuous emission failed to stably perform autoregressive sampling due to teacher forcing, and the future work includes investigating this phenomenon comparing with \cite{anonymous2019maestro}, which used a mixture of logistics distributions to produce high-quality piano sounds.
+These limitations can be overcome by Parallel WaveNet \cite{oord2018parallel}, which does not require a special CUDA kernel for fast synthesis and uses a continuous probability distribution for generation, thereby avoiding the quantization noise.
+Our earlier experiments on continuous emission failed to stably perform autoregressive sampling due to teacher forcing, and the future work includes investigating this phenomenon comparing with \cite{hawthorne2019maestro}, which used a mixture of logistics distributions to produce high-quality piano sounds.
 
 A notable observation is that the WaveNet vocoder is able to synthesize polyphonic music from Mel spectrograms containing only 80 frequency bins, which are not even aligned to the tuning of the audio files.
 While more information available from the increased bins should help synthesize more accurate audio, predicting the higher-dimensional representation becomes more compute-intensive and inaccurate, making 80 bins a sweet spot for use with WaveNet.
-Introducing an adversarial loss function for predicting high-resolution images \cite{ledig2017srgan} can be a viable direction for predicting more accurate and realistic Mel spectrograms for conditioning WaveNet.
+Introducing an adversarial loss function for predicting high-resolution images \cite{ledig2017superresolution} can be a viable direction for predicting more accurate and realistic Mel spectrograms for conditioning WaveNet.
 
 Overall, we have demonstrated that a MIDI-to-audio synthesizer can be learned directly from audio, and that this learning allows for flexible timbre control.
 Once extended with an improved vocoder and trained on real audio data, we believe the model can result in a powerful and quite realistic music synthesis model.

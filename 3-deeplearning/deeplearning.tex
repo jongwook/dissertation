@@ -7,7 +7,7 @@
 \chapter{Deep Learning and Deep Generative Models}\label{sec:deeplearning}
 \label{ch:deeplearning}
 
-Since recently, a family of machine learning research under the term \emph{deep learning} has incurred many groundbreaking changes to the world of artificial intelligence, making the long-waited dream of the \emph{artificial general intelligence} (AGI) \footnote{a loosely defined term referring to human-level intelligence, i.e. an AI system that can solve complex problems in varied and possibly previously-unseen domains with self-understanding and autonomous self-control. \cite{goertzel2007agi}} look not so distant in the future.
+Since recently, a family of machine learning research under the term \emph{deep learning} has incurred many groundbreaking changes to the world of artificial intelligence, making the long-waited dream of the \emph{artificial general intelligence} (AGI)\footnote{a loosely defined term referring to human-level intelligence, i.e. an AI system that can solve complex problems in varied and possibly previously-unseen domains with self-understanding and autonomous self-control. \cite{goertzel2007agi}} look not so distant in the future.
 The impact of deep learning has been so dramatic that many successful applications of deep learning like DeepMind's AlphaGo outplaying the human Go champion and Google's neural machine translation have became familiar to the general public.
 The core idea of using artificial neural networks to process complex information traces back to the earliest days of computing \cite{kleene1951representation} but has long been considered less effective than alternative methods, such as support vector machines or probabilistic graphical models.
 Since around 2010, it has been increasingly shown that neural networks can substantially outperform those other approaches and have much more capability for further improvements, and that the lower performance of neural networks in the past was merely due to insufficient data, the lack of computational power, and some numerical tricks that had not been employed before.
@@ -139,7 +139,7 @@ The autoencoder architecture are shown to be effective at encoding the latent re
 
 
 Autoencoders are not generative models in a strict sense, because, while its decoder part can produce data samples from their latent representations, it lacks the ability to randomly sample the points in the latent dimensions that corresponds to the data distribution.
-\emph{Variational autoencoders} (VAE) \cite{kingma2013vae} address this problem by restricting the posterior latent distribution to be Gaussian.
+\emph{Variational autoencoders} (VAE) \cite{kingma2014vae} address this problem by restricting the posterior latent distribution to be Gaussian.
 This is achieved by variational inference, reformulating the evidence lower bound (ELBO) of the data log-likelihood as:
 \begin{equation}\label{eqn:vae}
 \log p(\bm{x}) \ge \mathcal{L}(p_\theta, q_\phi) = \mathbb{E}_{q_\phi(\bm{z}|\bm{x})} [\log p_\theta(\bm{x}|\bm{z})] - \mathrm{KL}(q_\phi(\bm{z}|\bm{x}) || p(\bm{z})),
