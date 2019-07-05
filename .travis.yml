@@ -1,4 +1,4 @@
-language: generic
+language: java
 before_install:
   - export TZ=America/New_York
 install:
@@ -9,6 +9,7 @@ install:
 
   # Needed to check if conda already installed
   - export PATH="$HOME/miniconda/bin:$PATH"
+  - export PATH="$HOME/sejda-console-3.2.81/bin:$PATH"
 
   # If not yet installed, obtain Miniconda
   # and tectonic
@@ -22,14 +23,25 @@ install:
       conda update --all;
       conda install tectonic;
     fi
+  - if ! command -v sejda-console > /dev/null; then
+      wget https://github.com/torakiki/sejda/releases/download/v3.2.81/sejda-console-3.2.81-bin.zip;
+      unzip sejda-console-3.2.81-bin.zip;
+      mv sejda-console-3.2.81 $HOME/;
+    fi
   - conda info -a
+  - find $HOME/sejda*;
+  - echo $PATH;
 cache:
   directories:
     - $HOME/miniconda
     - $HOME/.cache
+    - $HOME/sejda-console-3.2.81
 script:
  - mkdir -p result
  - tectonic ./dissertation.tex --print -o result -r 2
+ - bash -e split.sh
+ - mv chapters result/
+ - cp index.html result/
 deploy:
   provider: pages
   skip-cleanup: true

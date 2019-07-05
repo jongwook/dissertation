@@ -1,7 +1,8 @@
 DIR=chapters
 rm -rf $DIR
 mkdir -p $DIR
-sejda-console splitbybookmarks --bookmarkLevel 1 --files dissertation.pdf --output $DIR -p [BOOKMARK_NAME]
+PDF=$(find . -type f -name dissertation.pdf)
+sejda-console splitbybookmarks --bookmarkLevel 1 --files $PDF --output $DIR -p [BOOKMARK_NAME]
 mv "$DIR/[BOOKMARK_NAME].pdf" "$DIR/TABLE OF CONTENTS.pdf"
 
 I=1
