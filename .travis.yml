@@ -40,6 +40,7 @@ script:
  - mkdir -p result
  - tectonic ./dissertation.tex --print -o result -r 2
  - bash -e split.sh
+ - ls chapters > result/chapters.txt
  - mv chapters result/
  - cp index.html result/
 deploy:

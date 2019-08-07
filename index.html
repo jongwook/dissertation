@@ -1,8 +1,63 @@
 <!doctype html>
 <html>
 <head>
-	<title>Dissertation</title>
+<title>Dissertation</title>
+<style type="text/css">
+body {
+	font-family: sans-serif;
+}
+
+li {
+	height: 30px;
+	line-height: 30px;
+	list-style-type: none;
+}
+
+a {
+	text-decoration: underline;
+	color: #555;
+}
+
+a:hover {
+	text-decoration: underline;
+	color: #999;
+}
+</style>
 </head>
 <body>
+<p>
+	<ul style="padding: 0;">
+		<li><b><a href="dissertation.pdf">Full Document</a></b></li>
+	</ul>
+</p>
+<p>
+	<b>Chapters:</b>
+	<ul id="chapter-list"></ul>
+</p>
+<script>
+!function() {
+	let list = document.querySelector("#chapter-list");
+	let xhr = new XMLHttpRequest()
+	xhr.open("GET", "chapters.txt", true);
+	xhr.onreadystatechange = function () {
+		if (xhr.readyState != 4 || xhr.status != 200) return;
+		lines = xhr.responseText.split('\n');
+		for (let i = 0; i < lines.length; i++) {
+			if (!lines[i]) continue;
+			filename = lines[i];
+			name = filename.replace(".pdf", "");
+			console.log(name);
+			item = document.createElement("li");
+			item.innerHTML = `<a href="chapters/${filename}">${name}</a>`
+			if (name.toUpperCase() === name) {
+				list.insertBefore(item, list.firstChild);
+			} else {
+				list.appendChild(item);
+			}
+		}
+	};
+	xhr.send();
+}();
+</script>
 </body>
 </html>
