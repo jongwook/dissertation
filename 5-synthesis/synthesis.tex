@@ -8,7 +8,7 @@
 \label{ch:synthesis}
 
 The recent success of raw audio waveform synthesis models like WaveNet motivates a new approach for music synthesis, in which the entire process --- creating audio samples from a score and instrument information --- is modeled using generative neural networks.
-This paper describes a neural music synthesis model with flexible timbre controls, which consists of a recurrent neural network conditioned on a learned instrument embedding followed by a WaveNet vocoder.
+In this chapter, we develop a neural music synthesis model with flexible timbre controls, which consists of a recurrent neural network conditioned on a learned instrument embedding followed by a WaveNet vocoder.
 The learned embedding space successfully captures the diverse variations in timbres within a large dataset and enables timbre control and morphing by interpolating between instruments in the embedding space.
 The synthesis quality is evaluated both numerically and perceptually, and an interactive web demo is presented.
 
@@ -19,7 +19,7 @@ Musical synthesis, most commonly, is the process of generating musical audio wit
 The primary difference between synthesis engines is the way in which \emph{timbre} is modeled and controlled.
 In general, it is difficult to design a synthesizer that both has dynamic and intuitive timbre control and is able to span a wide range of timbres; most synthesizers change timbres by having presets for different instrument classes or have a very limited space of timbre transformations available for a single instrument type.
 
-In this paper, we present a flexible music synthesizer named Mel2Mel, which uses a learned, non-linear instrument embedding as timbre control parameters in conjunction with a learned synthesis engine based on WaveNet.
+In this chapter, we present a flexible music synthesizer named Mel2Mel, which uses a learned, non-linear instrument embedding as timbre control parameters in conjunction with a learned synthesis engine based on WaveNet.
 Because the model has to learn the timbre -- any information not specified in the note sequence -- to successfully reconstruct the audio, the embedding space spans over the various aspects of timbre such as spectral and temporal envelopes of notes.
 This learned synthesis engine allows for flexible timbre control, and in particular, timbre morphing between instruments, as demonstrated in our interactive web demo.\footnote{\url{https://neural-music-synthesis.github.io}}
 
@@ -177,7 +177,7 @@ The last four increase the network's capacity by adding the ReLU nonlinearity af
 		2-layer LSTM & 2.98 $\pm$ 0.20 & 4.96 $\pm$ 0.12 \\
 	\end{tabular}
 	\vspace{1em}
-	\caption{\TODO{caption here}}\label{tab:synthesis-ablation}
+	\caption{Train and validation losses as defined in Equation \ref{eqn:tanh-log-abs-loss} with respect to different variations on the architecture, either limiting or increasing the model capacity. The proposed architecture has the lowest validation loss, indicating that it predicts the most accurate Mel spectrograms while not being prone to overfitting.}\label{tab:synthesis-ablation}
 \end{table}
 The train and validation losses as defined in Equation \ref{eqn:tanh-log-abs-loss} are shown\footnote{The means and standard deviations over the model checkpoints in 90k-100k iterations are reported, to minimize the variability due to SGD.} in the table above for each variation.
 Using both onsets and frames is indeed more effective than using only one of them in the input.
@@ -217,8 +217,9 @@ The lower three curves correspond to the loss functions in Equations \ref{eqn:ab
 
 Figure \ref{fig:correlations}b shows the breakdown of the curve corresponding to Equation \ref{eqn:tanh-log-abs-loss} into each of the 10 instruments.
 There are rather drastic differences among instruments, and most instruments have low Pearson correlations in low pitches except pizzicato strings.
-The reasons and implications of these trends are discussed in the following subsection, in comparison with the subjective audio quality test.
+The implications of these trends are discussed in \cite{kim2019synthesis}, in comparison with the subjective audio quality test.
 
+\iffalse
 \subsubsection{Subjective Audio Quality Test}\label{sec:subjective}
 
 We performed a crowdsourced test asking the listeners to rate the quality of synthesis using a 5-point mean opinion score (MOS) scale with 0.5-point steps.
@@ -261,7 +262,7 @@ In Figure \ref{fig:scatter}, we compare the numerically and perceptually evaluat
 The horizontal coordinates are the average values for each curve in Figure \ref{fig:correlations}b.
 Pearson correlations between CQT are not necessarily indicative of the subjective synthesis quality, because a large contrast in the temporal envelope can contribute to high Pearson correlations, notwithstanding a low perceptual quality.
 Reflecting this, more transient instruments in the lower right such as pizzicato strings achieve higher Pearson correlations compared to the MOS, while more sustained instruments on the left side have relatively lower Pearson correlations but have higher perceptual quality.
-
+\fi
 
 \subsection{The Timbre Embedding Space}
 

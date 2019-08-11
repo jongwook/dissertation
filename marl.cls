@@ -59,7 +59,6 @@
 \renewcommand{\doublespacing}{\setstretch{1.5}}
 %\newcommand{\mathbbm}[1]{\text{\usefont{U}{bbm}{m}{n}#1}}
 
-\renewcommand{\L}{\mathcal{L}}
 \newcommand{\E}{\mathbb{E}}
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\x}{\mathbf{x}}

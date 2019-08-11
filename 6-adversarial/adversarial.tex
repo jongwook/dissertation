@@ -42,14 +42,14 @@ is another example that can contain more granular information on pitch contours.
 Once such representation is obtained, pitches and notes can be decoded by thresholding~\cite{kelz2016framewise} or other heuristic methods~\cite{kim2018crepe,hawthorne2018onsetsframes}.
 
 
-To train a model that predicts a two-dimensional target representation $\hat{\Y} \in \R^{P \times T}$ from an input audio representation $\X$, where $P$ is the number of pitch labels and $T$ is the number of time frames, a common approach is to minimize the element-wise sum of a loss function $\L$:
+To train a model that predicts a two-dimensional target representation $\hat{\Y} \in \R^{P \times T}$ from an input audio representation $\X$, where $P$ is the number of pitch labels and $T$ is the number of time frames, a common approach is to minimize the element-wise sum of a loss function $\mathcal{L}$:
 \begin{equation}\label{eqn:elementwise}
-\textrm{minimize} ~~ \L(\hat{\Y}, \Y) = \sum_{p=1}^{P}  \sum_{t=1}^{T} \L (\hat{\Y}_{pt}, \Y_{pt}),
+\textrm{minimize} ~~ \mathcal{L}(\hat{\Y}, \Y) = \sum_{p=1}^{P}  \sum_{t=1}^{T} \mathcal{L} (\hat{\Y}_{pt}, \Y_{pt}),
 \end{equation}
 where $\Y \in \mathbb{R}^{P \times T}$ is the ground truth.
-In a probabilistic perspective, we can interpret $\L$ as the negative log-likelihood of the model parameters $\vartheta$ of a discriminative model $p_\vartheta(\Y | \X)$:
+In a probabilistic perspective, we can interpret $\mathcal{L}$ as the negative log-likelihood of the model parameters $\vartheta$ of a discriminative model $p_\vartheta(\Y | \X)$:
 \begin{equation}
-p_\vartheta(\Y | \X) ~=~ e^{\shortminus\L(\hat{\Y}, \Y)} = \prod_{p=1}^{P} \prod_{t=1}^{T} e^{\shortminus\L(\hat{\Y}_{pt}, \Y_{pt})} = \prod_{p=1}^{P} \prod_{t=1}^{T} p_\vartheta(\Y_{pt} | \X)
+p_\vartheta(\Y | \X) ~=~ e^{\shortminus\mathcal{L}(\hat{\Y}, \Y)} = \prod_{p=1}^{P} \prod_{t=1}^{T} e^{\shortminus\mathcal{L}(\hat{\Y}_{pt}, \Y_{pt})} = \prod_{p=1}^{P} \prod_{t=1}^{T} p_\vartheta(\Y_{pt} | \X)
 \end{equation}
 which indicates that each element of the label $\Y$ is conditionally independent with each other given the input $\X$.
 This encourages the model to predict the average of the posterior, making blurry predictions when the posterior distribution is multimodal, e.g. natural images~\cite{dosovitskiy2016generating}.
@@ -109,30 +109,31 @@ This motivates the adversarial training scheme that is outlined in the following
 As extensively reviewed in Section \ref{ch:deeplearning}.\ref{sec:gan}, generative adversarial networks (GANs)~\cite{goodfellow2014gan} refer to a family of deep generative models which consist of two components, namely the generator $G$ and the discriminator $D$.
 Given a data distribution $\x \sim p(\x)$ and latent codes $\z \sim p(\z)$, GAN performs the following minimax game:
 \begin{equation}\label{eqn:gan}
-\min_{G} \max_{D}  \underbrace{\Big [ \E_{\x} \log D(\x) + \E_{\z} \log (1 - D ( G(\z))) \Big ]}_{\L_{\text{GAN}}(G, D)}.
+\min_{G} \max_{D}  \underbrace{\Big [ \E_{\x} \log D(\x) + \E_{\z} \log (1 - D ( G(\z))) \Big ]}_{\mathcal{L}_{\text{GAN}}(G, D)}.
 \end{equation}
 $G$ and $D$ are implemented as neural networks trained in an adversarial manner, where the discriminator learns to distinguish the generated samples from the real data, while the generator learns to produce realistic samples to fool the discriminator.
 GANs are most renowned for their ability to produce photorealistic images~\cite{karras2019stylegan} and have shown promising results on music generation as well~\cite{engel2019gansynth,dong2018musegan,yang2017midinet}.
 We refer the readers to~\cite{goodfellow2016gan,creswell2017gan} for a comprehensive review of the techniques, variants, and applications of GANs.
 
-The second term in Equation~\ref{eqn:gan} has near-zero gradients when $D(G(\z)) \approx 0$, which is usually the case in early training. To avoid this, a non-saturating variant of GAN is suggested in~\cite{goodfellow2014gan} where the generator is trained with the following optimization objective instead:
+The second term in Equation~\ref{eqn:gan} has near-zero gradients when $D(G(\z)) \approx 0$, which is usually the case in early training.
+To avoid this, a \textit{non-saturating} variant of GAN is suggested in~\cite{goodfellow2014gan} where the generator is trained with the following optimization objective instead:
 \begin{equation}\label{eqn:nsgan}
 \max_{G}~ \E_{\z} \log D(G(\z)).
 \end{equation}
 The non-saturating GAN loss is used more often than the minimax loss in Equation \ref{eqn:gan} and is implemented by flipping the labels of fake data while using the same loss function.
-Least-squares GAN \cite{mao2017lsgan} is an alternative method to address the vanishing gradient problem, which replaces the cross entropy loss in Equations \ref{eqn:gan}-\ref{eqn:nsgan} with squared errors:%
+\textit{Least-squares GAN} \cite{mao2017lsgan} is an alternative method to address the vanishing gradient problem, which replaces the cross entropy loss in Equations \ref{eqn:gan}-\ref{eqn:nsgan} with squared errors:%
 \begin{equation}\label{eqn:lsgan}
 	\begin{array}{l@{}l}
 	\displaystyle\min_{D} ~\Big [ \E_{\x} (D(\x) - 1)^2 + \E_{\z} D(G(\x))^2 \Big ], \\
 	\displaystyle\min_{G} ~\>\E_{\z} (D(G(\z)) - 1)^2.
 	\end{array}
 \end{equation}
-
+The non-saturating GAN (NSGAN) and least-squares GAN (LSGAN) losses are examples of GAN losses that define the objective used during the minimax optimization, and we will use these two losses in conjunction with the conditional GAN setup described below.
 
 While the default formulation of GAN concerns unconditional generation of samples from $p(\mathbf{x})$, conditional GANs (cGAN)~\cite{mirza2014conditional} produce samples from a conditional distribution $p(\y|\x)$. To do this, the generator and the discriminator are defined in terms of                                                                                                                                                                                                                                                     the condition variable $\x$ as well:
 \begin{equation}
 \label{eqn:cgan}
-\min_{G}\max_{D}\underbrace{\Big [ \mathbb{E}_{\x,\y} \log D(\x,~\y) + \mathbb{E}_{\x,\z} \log (1 - D ( \x,~ G(\x,~\z)) \Big ]}_{\L_{\text{cGAN}}(G, D)}.
+\min_{G}\max_{D}\underbrace{\Big [ \mathbb{E}_{\x,\y} \log D(\x,~\y) + \mathbb{E}_{\x,\z} \log (1 - D ( \x,~ G(\x,~\z)) \Big ]}_{\mathcal{L}_{\text{cGAN}}(G, D)}.
 \end{equation}
 \texttt{pix2pix} \cite{isola2017pix2pix} is an image translation model that learns a mapping between two distinct domains of images, such as aerial photos and maps.
 A \texttt{pix2pix} model takes paired images $(\x, \y)$ as its training data and minimizes the conditional GAN loss along with an additional L1 loss:
@@ -148,13 +149,13 @@ We adapt this approach to music transcription tasks and show that we can indeed 
 \section{Method}
 
 We describe a general method for improving an NN-based transcription model $G$ that performs prediction of a two-dimensional target $\Y$ from an input audio representation $\X$.
-Say the original model $G$ is trained by minimizing the loss $\L_{\textrm{task}}(G(\X), \Y)$ between the predicted target $\hat{\Y} = G(\X)$ and the ground-truth $\Y$. 
+Say the original model $G$ is trained by minimizing the loss $\mathcal{L}_{\textrm{task}}(G(\X), \Y)$ between the predicted target $\hat{\Y} = G(\X)$ and the ground-truth $\Y$. 
 The main idea of our method is to adapt \texttt{pix2pix}~\cite{isola2017pix2pix} to this setup, by introducing an adversarial discriminator $D$ during the training process.
-The adversarial training objective includes the conditional GAN loss $\L_{\text{cGAN}}$ (Equation \ref{eqn:cgan}):
+The adversarial training objective includes the conditional GAN loss $\mathcal{L}_{\text{cGAN}}$ (Equation \ref{eqn:cgan}):
 \begin{equation}
-\min_{G}\max_{D} \E_{\X,\Y} \Big [ \nu\L_{\text{task}} (G(\X), \Y) + \L_{\text{cGAN}}(G, D) \Big ],
+\min_{G}\max_{D} \E_{\X,\Y} \Big [ \nu\mathcal{L}_{\text{task}} (G(\X), \Y) + \mathcal{L}_{\text{cGAN}}(G, D) \Big ],
 \end{equation}
-where $\nu$ is a hyperparameter that controls how much the conditional GAN loss contributes to the gradient steps relative to the discriminative loss $\L_{\text{task}}$.
+where $\nu$ is a hyperparameter that controls how much the conditional GAN loss contributes to the gradient steps relative to the discriminative loss $\mathcal{L}_{\text{task}}$.
 Figure \ref{fig:discriminator} illustrates how the two components are connected in the computation graph and how the loss terms are calculated.
 
 \begin{figure}[t]
@@ -162,7 +163,7 @@ Figure \ref{fig:discriminator} illustrates how the two components are connected 
 	\caption{A computation graph showing how a discriminator is appended to the original model. The appended parts are shown as dotted components.}\label{fig:discriminator}
 \end{figure}
 
-Adversarial training with $\L_{\text{cGAN}}$ allows the model to learn the inter-label dependencies as desired, even when $\L_{\text{task}}$ is defined only in terms of element-wise operations between $\hat{\Y}$ and $\Y$, as in Equation \ref{eqn:elementwise}.
+Adversarial training with $\mathcal{L}_{\text{cGAN}}$ allows the model to learn the inter-label dependencies as desired, even when $\mathcal{L}_{\text{task}}$ is defined only in terms of element-wise operations between $\hat{\Y}$ and $\Y$, as in Equation \ref{eqn:elementwise}.
 In the next subsection, we describe a neural network architecture for the  cGAN discriminator that leverages prior knowledge on music.
 
 
@@ -177,7 +178,7 @@ Unlike the image-to-image translation problem, the input representations (e.g.~M
 This makes combining $\X$ and $\Y$ in a fully convolutional manner difficult.
 For this reason, we make the discriminator a function of $\Y$ only, simplifying the objective in Equation \ref{eqn:cgan} to:
 \begin{equation}\label{eqn:simple-cgan}
-\L_{\text{cGAN}}(G, D) ~ = ~  \mathbb{E}_{\Y}  \log D(\Y) ~ + ~ \mathbb{E}_{\X} \log (1 - D ( G(\X))).
+\mathcal{L}_{\text{cGAN}}(G, D) ~ = ~  \mathbb{E}_{\Y}  \log D(\Y) ~ + ~ \mathbb{E}_{\X} \log (1 - D ( G(\X))).
 \end{equation}
 Note that $\z$ is also omitted in Equation \ref{eqn:simple-cgan}, as we follow \cite{isola2017pix2pix} and implement the stochasticity of $\z$ only in terms of dropout layers \cite{srivastava2014dropout}, without explicitly feeding random noises into the generator.
 This causes a mode collapse problem where the learned $p(\Y|\X)$ is not diverse enough, but it does not harm our purpose of producing more realistic target representations.
@@ -210,7 +211,7 @@ When $\alpha = 0$, the Beta distribution becomes $\text{Bernoulli}(0.5)$ which r
 	\setstretch{1.05}
 	\rule{\columnwidth}{0.75pt}\\
 	\KwIn{
-		Generator $G_\vartheta(\X)$ with initial parameters $\vartheta$, learning rate $\eta$, and loss function $\L_{\text{task}}(\hat{\Y}, \Y)$, discriminator $D_\varphi(\Y)$ with initial parameters $\varphi$, learning rate $\beta$, and loss function $\ell \in \{\text{BCE}, \text{MSE}\}$, batch size $m$, training data distribution $p(\X, \Y)$,  \texttt{pix2pix} weight $\nu$, \textit{mixup} strength $\alpha$.
+		Generator $G_\vartheta(\X)$ with initial parameters $\vartheta$, learning rate $\eta$, and loss function $\mathcal{L}_{\text{task}}(\hat{\Y}, \Y)$, discriminator $D_\varphi(\Y)$ with initial parameters $\varphi$, learning rate $\beta$, and loss function $\ell \in \{\text{BCE}, \text{MSE}\}$, batch size $m$, training data distribution $p(\X, \Y)$,  \texttt{pix2pix} weight $\nu$, \textit{mixup} strength $\alpha$.
 	}
 
 	\KwOut{Trained conditional generator $G_\vartheta(\X)$.}
@@ -224,10 +225,10 @@ When $\alpha = 0$, the Beta distribution becomes $\text{Bernoulli}(0.5)$ which r
 			$\lambda_i \leftarrow \text{sample from Beta}(\alpha, \alpha)$\;
 			$\tilde{\Y}_i \leftarrow \lambda_i \Y_i + (1 - \lambda_i) \hat{\Y}_i$
 		}
-		$\L_{\text{cGAN}}^D\>\leftarrow \textstyle\sum_{i=1}^M \ell(D_\varphi(\tilde{\Y}_i), \lambda_i)$\;
-		$\varphi \leftarrow \varphi - \beta \cdot \nabla_\varphi \L_{\text{cGAN}}^D $\;
-		$\L_{\text{cGAN}}^G \leftarrow \textstyle\sum_{i=1}^M \ell (D_\varphi(\tilde{\Y}_i), 1 - \lambda_i) $\;
-		$\vartheta \leftarrow \vartheta - \eta \cdot \textstyle\nabla_\vartheta \Big [ \sum_{i=1}^m \nu \L_{\text{task}}(\hat{\Y}_i, Y_i) - \L_{\text{cGAN}}^G \Big ] $
+		$\mathcal{L}_{\text{cGAN}}^D\>\leftarrow \textstyle\sum_{i=1}^M \ell(D_\varphi(\tilde{\Y}_i), \lambda_i)$\;
+		$\varphi \leftarrow \varphi - \beta \cdot \nabla_\varphi \mathcal{L}_{\text{cGAN}}^D $\;
+		$\mathcal{L}_{\text{cGAN}}^G \leftarrow \textstyle\sum_{i=1}^M \ell (D_\varphi(\tilde{\Y}_i), 1 - \lambda_i) $\;
+		$\vartheta \leftarrow \vartheta - \eta \cdot \textstyle\nabla_\vartheta \Big [ \sum_{i=1}^m \nu \mathcal{L}_{\text{task}}(\hat{\Y}_i, Y_i) - \mathcal{L}_{\text{cGAN}}^G \Big ] $
 	}
 	\vspace{-0.5em}\noindent
 	\rule{\columnwidth}{0.75pt}\;
@@ -242,10 +243,10 @@ In our conditional GAN setup, we have an additional advantage of having paired s
 \end{equation}
 where $\ell(p, y) = - y \log p - (1-y) \log (1-p)$ is the binary cross entropy (BCE) function.
 With this \textit{mixup} setup, the discriminator now has to operate on the convex interpolation between the predicted representation and the corresponding ground truth.
-This makes the discriminator's task even more difficult when the prediction gets close to the ground truth, which is desirable because the discrimiantor should be inconclusive (i.e. $D = \tfrac{1}{2}$ everywhere) at the global optimum~\cite{goodfellow2014gan}.
+This makes the discriminator's task even more difficult when the prediction gets close to the ground truth, which is desirable because the discriminator should be inconclusive (i.e. $D = \tfrac{1}{2}$ everywhere) at the global optimum~\cite{goodfellow2014gan}.
 
 Algorithm \ref{alg:training} details the procedure of training the conditional GAN using \textit{mixup}, based on Equations \ref{eqn:simple-cgan} and \ref{eqn:mixup-gan}.
-Note that for training the generator network, we perform label flipping in $\L_{\text{cGAN}}^G$ similarly as in Equation \ref{eqn:nsgan}.
+Note that for training the generator network, we perform label flipping in $\mathcal{L}_{\text{cGAN}}^G$ similarly as in Equation \ref{eqn:nsgan}.
 Also, to train a least-squares GAN (Equation \ref{eqn:lsgan}) instead, we can simply replace $\ell$ with a mean squared error (MSE) loss.
 
 
@@ -332,10 +333,10 @@ We also aim to evaluate the choices of the GAN loss and the \textit{mixup} stren
 \subsection{Model Architecture}
 
 We use the extended Onsets and Frames model~\cite{hawthorne2019maestro} which increased the CNN channels to 48/48/96, the LSTM units to 256, and the FC units to 768.
-The extended model has total 26.5 million parameters.
+The extended model has a total of 26.5 million parameters.
 We do not use the frame loss weights described in~\cite{hawthorne2018onsetsframes} in favor of the offset stack introduced in the extended version (see Figure~\ref{fig:onsetsframes}).
-During inference, we first calculate the posteriors corresponding to overlapping chunks of audio, with the same length as the training sequences, and perform overlap-add using Hamming windows to obtain the full-length posterior.
-This is because the effects of adversarial learning do not continue further than the training sequence length when we let the recurrent networks continue to predict longer sequences.
+During inference, we first calculate the posteriors corresponding to overlapping chunks of audio, with the same length as the training sequences, and perform overlap-add (OLA) using Hamming windows to obtain the full-length posterior.
+We perform OLA instead of applying the recurrent calculations for the full length, because the effects of adversarial learning are best achieved within the training sequence length.
 
 The input to the discriminator has two channels for the onset and frame predictions.
 The discriminator has 5 convolutional layers: \texttt{c32k3s2p1}, \texttt{c64k3s2p1}, \texttt{c128k3s2p1}, \texttt{c256k3s2p1}, \texttt{c1k5s1p2}, where the numbers indicate the number of output channels, the kernel size, the stride amount, and the padding size.
@@ -440,13 +441,16 @@ After training, the discriminator can be disregarded for inference, incurring no
 Our results show that modeling the inter-label dependencies in the target distribution is important and brings measurable performance improvements.
 Our method is generic, and any model that involves predicting two-dimensional representation should be able to benefit from including an adversarial loss.
 These approaches are common not only in transcription models but also in speech or music synthesis models that predict spectrograms as an intermediate representation~\cite{shen2018tacotron,kim2019synthesis}.
-
+This implies that the findings in this chapter is applicable to a broader set of problems not only in multi-pitch estimation but also in the field of music information retrieval in general.
 
 Our results do not include the effects of using data augmentation~\cite{hawthorne2019maestro}, which is orthogonal to our approach and should bring additional performance improvements when applied.
 As discussed, the discriminator imposes the prior on the target domain whereas data augmentation enriches the input audio distribution.
 This implies that our method would be less effective when the majority of errors are due to the discrepancy in the audio distribution between the training and test datasets.
 How to apply adversarial learning for better generalization on the input distribution is a potential future research direction.
 
-
+We have argued that the adversarial discriminator serves as a regularizer providing the prior knowledge of how the note sequences in the dataset should look like, which complements the conditionally independent output of the Onsets and Frames model.
+The fully-connected output layer also does not take into account a very important characteristic of pitch, that each pitch corresponds to quasi-periodic signals in the input with a known frequency that are geometrically spaced --- rather, the predictions are instead made as if each pitch is completely independent pieces of information, not utilizing the knowledge on pitch at all.
+Another important concept that is not considered in this chapter is the timbre.
 Although the MAESTRO dataset used in this chapter contains various recording conditions and therefore somewhat different timbres among the tracks, they are all recordings of piano performances which have limited timbral diversity.
-In the next chapter, we discuss how to extend our music transcription model so that it can handle a variety of musical instruments.
+These aspects motivate building an improved model that can leverage the regularity of pitch as well as the knowledge of instrumental timbres.
+In the next chapter, we discuss how to extend our music transcription model to incorporate such aspects, specifically by using a synthesizer model similar to the one used in Chapter \ref{ch:synthesis}.
