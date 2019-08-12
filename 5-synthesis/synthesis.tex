@@ -7,10 +7,16 @@
 \chapter{Learning Timbre Space for Music Synthesis}
 \label{ch:synthesis}
 
+In this chapter, we consider the problem of music synthesis.
+Although seemingly unconnected to music transcription, studying music synthesis models can provide an interesting perspective in understanding the music transcription problem: viewing synthesis as an inverse problem of analysis.
+One important outcome of this approach is that it allows us to computationally model the variations of musical timbre, a perceptual quality of sound that is less rigorously defined compared to other notions such as pitch and loudness.
+In light of this, we develop in this chapter a music synthesis model that can be used not only for synthesizing music, but also for better understanding the relation between audio signals and the qualities of musical sounds such as timbre and pitch.
+
 The recent success of raw audio waveform synthesis models like WaveNet motivates a new approach for music synthesis, in which the entire process --- creating audio samples from a score and instrument information --- is modeled using generative neural networks.
-In this chapter, we develop a neural music synthesis model with flexible timbre controls, which consists of a recurrent neural network conditioned on a learned instrument embedding followed by a WaveNet vocoder.
-The learned embedding space successfully captures the diverse variations in timbres within a large dataset and enables timbre control and morphing by interpolating between instruments in the embedding space.
-The synthesis quality is evaluated both numerically and perceptually, and an interactive web demo is presented.
+In this chapter, we develop a neural music synthesis model, which consists of a recurrent neural network conditioned on a learned instrument embedding followed by a WaveNet vocoder.
+The synthesis model is capable of learning a timbre embedding space that successfully captures the diverse variations in timbres within a large dataset.
+The model can therefore seamlessly connect the note sequence input and the timbre information to the audio signal, serving as the synthesizer component in Figure \ref{fig:autoencoder}.
+The content of this chapter is largely based on the work presented at IEEE ICASSP 2019~\cite{kim2019synthesis}.
 
 
 \section{Introduction}
@@ -21,17 +27,15 @@ In general, it is difficult to design a synthesizer that both has dynamic and in
 
 In this chapter, we present a flexible music synthesizer named Mel2Mel, which uses a learned, non-linear instrument embedding as timbre control parameters in conjunction with a learned synthesis engine based on WaveNet.
 Because the model has to learn the timbre -- any information not specified in the note sequence -- to successfully reconstruct the audio, the embedding space spans over the various aspects of timbre such as spectral and temporal envelopes of notes.
-This learned synthesis engine allows for flexible timbre control, and in particular, timbre morphing between instruments, as demonstrated in our interactive web demo.\footnote{\url{https://neural-music-synthesis.github.io}}
+This learned synthesis engine allows for flexible timbre control, and in particular, timbre morphing between instruments, as demonstrated in our interactive web demo.
 
-% \section{Background}\label{sec:background}
+\section{Background}\label{sec:background}
 
 \subsection{Timbre Control in Musical Synthesis}
 
 Methods for music synthesis are based on a variety of techniques such as FM synthesis, subtractive synthesis, physical modeling, sample-based synthesis, and granular synthesis~\cite{pejrolo2017creating}.
 The method of controlling timbre and the level of flexibility depends on the parameters of the exact method used, but in general, there is a trade-off between flexible timbre control over synthetic sounds (e.g. FM or subtractive synthesis) and a limited timbre control in more ``realistic'' sounds (e.g. sample-based or granular synthesis). %\textsuperscript{\note{citation needed}}
 Our work is aimed at achieving the best of both worlds: flexibly controlling a variety of realistic-sounding timbres.
-
-\pagebreak
 
 \subsection{Timbre Morphing}
 
@@ -264,6 +268,14 @@ Pearson correlations between CQT are not necessarily indicative of the subjectiv
 Reflecting this, more transient instruments in the lower right such as pizzicato strings achieve higher Pearson correlations compared to the MOS, while more sustained instruments on the left side have relatively lower Pearson correlations but have higher perceptual quality.
 \fi
 
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=\columnwidth]{runpixels.pdf}
+	\caption{Visualization of the embedding space trained in 2 dimensions, using spectral centroids and mean energy. The continuous colors are obtained for each pixel in the 320-by-320 grid and are related to the spectral and temporal envelopes of the timbres.}
+	\label{fig:embedding}
+	\vspace{-1em}
+\end{figure}
+
 \subsection{The Timbre Embedding Space}
 
 To make sense of how the learned embedding space conveys timbre information, we construct a 320-by-320 grid that encloses all instrument embeddings and predict the Mel spectrogram conditioned on every pixel in the grid.
@@ -274,21 +286,17 @@ The points corresponding to the 10 instruments are annotated with instrument ico
 These plots show that the learned embedding space forms a continuous span over the timbres expressed by all instruments in the training data.
 This allows us to use the timbre embedding as a flexible control space for the synthesizer, and timbre morphing is possible by interpolating along curves within the embedding space.
 
-To illustrate how the model scales with more diverse timbre, we train the Mel2Mel model with 100 instruments using a 10-dimensional embedding, and we refer the readers to the web demo$^\textrm{5}$ for an interactive $t$-SNE visualization~\cite{maaten2008tsne} of the embedding space.
-The 10-dimensional embedding space also contains a locally continuous timbre distribution of instruments, as in Figure \ref{fig:embedding}, implying that the Mel2Mel model is capable of scaling to hundreds of instruments and to a higher-dimensional embedding space.
-
-In addition to the audio samples used in the experiments, our interactive web demo$^\textrm{1}$ %\footnote{\url{https://neural-music-synthesis.github.io}}
-showcases the capability of flexible timbre control, where the Mel2Mel model runs on browser to convert preloaded or user-provided MIDI files into Mel spectrograms using a user-selected point in the embedding space.
-% The WaveNet inference requires a custom CUDA kernel and cannot run on browser, so the web demo plays a pre-synthesized version of audio at each point of the embedding space.
-
-\begin{figure}[t]
+\begin{figure}
 	\centering
-	\includegraphics[width=\columnwidth]{runpixels.pdf}
-	\caption{Visualization of the embedding space trained in 2 dimensions, using spectral centroids and mean energy. The continuous colors are obtained for each pixel in the 320-by-320 grid and are related to the spectral and temporal envelopes of the timbres.}
-	\label{fig:embedding}
-	\vspace{-1em}
+	\includegraphics[width=0.5\linewidth]{100inst.png}
+	\caption{A $t$-SNE visualization of the 10-dimensional timbre embedding space learned using 100 instruments, color-coded according to the spectral centroid. In the web demo, users can rotate the dots to navigate and click on the dots to play the corresponding audio segments.}\label{fig:100inst}
 \end{figure}
 
+To illustrate how the model scales with more diverse timbre, we train the Mel2Mel model with 100 instruments using a 10-dimensional embedding, and we refer the readers to the web demo\footnote{\url{https://neural-music-synthesis.github.io}} for an interactive $t$-SNE visualization~\cite{maaten2008tsne} of the embedding space. Figure \ref{fig:100inst} shows a screenshot of the web demo.
+The 10-dimensional embedding space also contains a locally continuous timbre distribution of instruments, as in Figure \ref{fig:embedding}, implying that the Mel2Mel model is capable of scaling to hundreds of instruments and to a higher-dimensional embedding space.
+
+In addition to the audio samples used in the experiments, the interactive web demo showcases the capability of flexible timbre control, where the Mel2Mel model runs on browser to convert preloaded or user-provided MIDI files into Mel spectrograms using a user-selected point in the embedding space.
+% The WaveNet inference requires a custom CUDA kernel and cannot run on browser, so the web demo plays a pre-synthesized version of audio at each point of the embedding space.
 
 \section{Conclusions and Future Directions}\label{sec:conclusions}
 
@@ -296,12 +304,17 @@ We showed that it is possible to build a music synthesis model by combining a re
 It successfully learns to synthesize musical notes according to the given note sequence and timbre embedding in a continuous timbre space, providing the ability of flexible timbre control for music synthesizers.
 
 The capacity of the WaveNet, such as the number of residual channels and the number of layers, is limited due to the memory requirements of the nv-wavenet implementation, and the degradation from $\mu$-law quantization is also apparent in the experiments.
-These limitations can be overcome by Parallel WaveNet \cite{oord2018parallel}, which does not require a special CUDA kernel for fast synthesis and uses a continuous probability distribution for generation, thereby avoiding the quantization noise.
+These limitations can be overcome by Parallel WaveNet \cite{oord2018parallel} or WaveGlow \cite{prenger2019waveglow}, which does not require a specialized CUDA kernel for fast synthesis and uses a continuous probability distribution for generation, thereby avoiding the quantization noise.
 Our earlier experiments on continuous emission failed to stably perform autoregressive sampling due to teacher forcing, and the future work includes investigating this phenomenon comparing with \cite{hawthorne2019maestro}, which used a mixture of logistics distributions to produce high-quality piano sounds.
 
-A notable observation is that the WaveNet vocoder is able to synthesize polyphonic music from Mel spectrograms containing only 80 frequency bins, which are not even aligned to the tuning of the audio files.
+A notable observation is that the WaveNet vocoder is able to synthesize plausible polyphonic music from Mel spectrograms containing only 80 frequency bins, which are not even aligned to the tuning of the audio files.
+This implies that Mel spectrograms contain a close-to-sufficient amount of information for what we perceive from polyphonic music.
 While more information available from the increased bins should help synthesize more accurate audio, predicting the higher-dimensional representation becomes more compute-intensive and inaccurate, making 80 bins a sweet spot for use with WaveNet.
 Introducing an adversarial loss function for predicting high-resolution images \cite{ledig2017superresolution} can be a viable direction for predicting more accurate and realistic Mel spectrograms for conditioning WaveNet.
 
-Overall, we have demonstrated that a MIDI-to-audio synthesizer can be learned directly from audio, and that this learning allows for flexible timbre control.
-Once extended with an improved vocoder and trained on real audio data, we believe the model can result in a powerful and quite realistic music synthesis model.
+To summarize, we have demonstrated in this chapter that a MIDI-to-audio synthesizer can be learned directly from audio, and that this learning allows for flexible timbre control through interpolation in the learned timbre embedding space.
+While it is certainly a possible future research direction to improve the synthesis quality through the usage of a better vocoder component and a larger and more realistic dataset,
+the main takeaway of having the synthesis model in the context of this thesis is that it is an end-to-end model that can convert semantic information of music into audio signals.
+This end-to-end approach not only allows for a simpler and streamlined process of synthesizing music, but also enables using the synthesis model as a differentiable component in a larger neural network.
+We will examine this possibility in Chapter \ref{ch:timbre} later in this thesis, by combining a music synthesis model with a multi-pitch transcription model introduced in Chapter \ref{ch:adversarial}.
+
