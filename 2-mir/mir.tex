@@ -209,16 +209,16 @@ Training GANs for arbitrary-length audio sequences and extending it as a tool fo
 \section{Music Language Models for Symbolic Music Generation}
 
 Symbolic music processing refers to the techniques for processing music at a symbolic level, such as in the form of sheet music, MIDI signals, or piano roll representations.
-Problems in this domain includes optical music recognition \cite{rebelo2012omr}, algorithmic composition \cite{fernandez2013ai}, and computational music theory \cite{hamanaka2013computational}, while the subject most relevant to music transcription research would be \emph{music language models}.
+Problems in this domain include optical music recognition \cite{rebelo2012omr}, algorithmic composition \cite{fernandez2013ai}, and computational music theory \cite{hamanaka2013computational}, while the subject most relevant to music transcription research would be \emph{music language models}.
 A music language model is a statistical model, often a generative model, that encodes music theoretic knowledge to describe the structural composition and arrangement of musical elements \cite{patel2010musiclanguage}, similarly to how computational linguists build language models to describe the structure of natural languages.
 A well-designed music language model can be an important component for a generative model for music, because it can serve as a prior for latent representations and can be combined with conditional synthesis models or software instruments to produce audio.
-As a side note, there are two distinct objectives for symbolic music generation systems --- style imitation and genuine composition \cite{nierhaus2009composition} --- among with this thesis only focuses on the former, aiming at informing the transcription model about music theoretic knowledge rather than imagining a new type of musical art.
+% As a side note, there are two distinct objectives for symbolic music generation systems --- style imitation and genuine composition \cite{nierhaus2009composition} --- among with this thesis only focuses on the former, aiming at informing the transcription model about music theoretic knowledge rather than imagining a new type of musical art.
 
 The first systematic approach of applying a linguistic theory to music was the \emph{generative theory of tonal music} \cite{lerdahl1983gttm}, which was inspired by Noam Chomsky's generative grammar \cite{chomsky1966generative} and was influential in music theory, music psychology, and cognitive musicology.
 Music language models implement this idea using computational methods, typically involving statistical models that are also used in natural language processing.
 These include many kinds of approaches for symbolic music generation, such as hidden Markov models \cite{farbood2001markov}, generative grammars \cite{chemilier2001grammar}, cellular automata \cite{burraston2004automata}, and genetic algorithms \cite{miranda2007evolutionary}.
-More recently, deep learning models such as a recurrent neural network to build a music language models \cite{sigtia2014lm} has also been proposed.
-The latest approaches to generate realistic sound music sequences in the symbolic domain include an application of variational autoencoder \cite{teng2017generating,tikhonov2017generation}, and a generative adversarial network \cite{yang2017midinet}.
+More recently, deep learning models such as recurrent neural networks have been used to build music language models \cite{sigtia2014lm}.
+The latest approaches to generate realistic music sequences in the symbolic domain include an application of variational autoencoder \cite{teng2017generating,tikhonov2017generation}, and a generative adversarial network \cite{yang2017midinet}.
 
 \section{Summary}
 
