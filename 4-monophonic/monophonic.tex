@@ -15,6 +15,18 @@ The content of this chapter is largely based on the work presented at IEEE ICASS
 
 \section{Introduction}\label{sec:introduction}
 
+Estimating the fundamental frequency (f0) of a monophonic audio signal, also known as pitch tracking or pitch estimation, is a long-standing topic of research in audio signal processing.
+Pitch estimation plays an important role in music signal processing, where monophonic pitch tracking is used as a method to generate pitch annotations for multi-track datasets \cite{bittner2014medleydb} or as a core component of melody extraction systems \cite{bosch2014melody, mauch2015computer}. 
+Pitch estimation is also important for speech analysis, where prosodic aspects such as intonations may reflect various features of speech \cite{zubizarreta1998prosody}.
+
+\iffalse % (pasted in section II)
+Computational methods for monotonic pitch estimation have been studied for more than a half-century \cite{noll1967cepstrum}, and many reliable methods have been proposed since.
+Earlier methods commonly employ a certain candidate-generating function, accompanied by pre- and post-processing stages to produce the pitch curve.
+Those functions include the cepstrum \cite{noll1967cepstrum}, the autocorrelation function (ACF) \cite{dubnowski1976acf}, the average magnitude difference function (AMDF) \cite{ross1974amdf}, the normalized cross-correlation function (NCCF) as proposed by RAPT \cite{talkin1995rapt} and PRAAT \cite{boersma1993praat}, and the cumulative mean normalized difference function as proposed by YIN \cite{decheveigne2002yin}. More recent approaches include SWIPE \cite{camacho2008swipe}, which performs template matching with the spectrum of a sawtooth waveform, and 
+pYIN \cite{mauch2014pyin}, a probabilistic variant of YIN that uses a Hidden Markov Model (HMM) to decode the most probable sequence of pitch values.
+According to a few comparative studies, the state of the art is achieved by YIN-based methods \cite{von2010comparison, babacan2013comparative}, with pYIN being the best performing method to date \cite{mauch2014pyin}.
+\fi
+
 We have reviewed a few approaches for monophonic pitch tracking in Section \ref{ch:mir}.\ref{sec:monophonic}, including YIN~\cite{decheveigne2002yin} and pYIN~\cite{mauch2014pyin}.
 A notable trend in those methods is that the derivation of a better pitch detection system solely depends on cleverly devising a robust candidate-generating function and/or sophisticated post-processing steps, i.e.~heuristics, and none of them are directly learned from data, except for manual hyperparameter tuning.
 This contrasts with many other problems in music information retrieval like chord ID \cite{humphrey2012rethinking} and beat detection \cite{bock2011enhanced}, where data-driven methods have been shown to consistently outperform heuristic approaches.
@@ -28,29 +40,35 @@ It is further shown that CREPE is highly precise, maintaining over 90\% raw pitc
 
 \section{Architecture}
 
+\begin{figure}
+	\centering
+	\includegraphics[width=0.9\linewidth]{formulation.pdf}
+	\caption{The input and output representations of the CREPE model. The input is 1024 time-domain samples, and the output is a 360-dimensional vector that contains a Gaussian curve centered at the ground-truth frequency (see Equation \ref{eqn:gaussian}). For details on the convolutional architecture used in the model, see Figure \ref{fig:architecture}.}\label{fig:formulation}
+\end{figure}
+
 \begin{sidewaysfigure}
 	\includegraphics[width=\textwidth]{architecture.pdf}
-	\caption{The architecture of the CREPE pitch tracker. The six convolutional layers operate directly on the time-domain audio signal, producing an output vector that approximates a Gaussian curve as in Equation \ref{eqn:gaussian}, which is then used to derive the exact pitch estimate as in Equation \ref{eqn:resulting}.}
+	\caption{The architecture of the CREPE pitch tracker. The six convolutional layers predicts the Gaussian curve centered at the ground-truth frequency. The output is then used to extract the exact pitch estimate as in Equation \ref{eqn:resulting}-\ref{eqn:resulting2}.}
 	\label{fig:architecture}
 \end{sidewaysfigure}
 
 CREPE consists of a deep convolutional neural network which operates directly on the time-domain audio signal to produce a pitch estimate.
-A block diagram of the proposed architecture is provided in Figure \ref{fig:architecture}.
-The input is a 1024-sample excerpt from the time-domain audio signal, using a 16 kHz sampling rate.
-There are six convolutional layers that result in a 2048-dimensional latent representation, which is then connected densely to the output layer with sigmoid activations corresponding to a 360-dimensional output vector $\hat{\mathbf{y}}$.
-From this, the resulting pitch estimate is calculated deterministically.
+The input and output representations used in the model are illustrated in Figure \ref{fig:formulation}.
+The input is a 1024-sample excerpt from the time-domain audio signal, using a 16 kHz sampling rate, and the output is a 360-dimensional vector $\hat{\mathbf{y}}$, from which the resulting pitch estimate is calculated deterministically.
 
-Each of the 360 nodes in the output layer corresponds to a specific pitch value, defined in cents.
+Each of the 360 dimensions in the output corresponds to a specific pitch value, defined in cents.
 Cent is a unit representing musical intervals relative to a reference pitch $f_{\mathrm{ref}}$ in Hz, defined as a function of frequency $f$ in Hz:
 \begin{equation}
 \cent(f) = 1200 \cdot \log_2 \frac{f}{f_{\mathrm{ref}}},
 \end{equation}
 where $f_{\mathrm{ref}} = 10 \mathrm{~Hz}$ throughout the experiments. 
 This unit provides a logarithmic pitch scale where 100 cents equal one semitone.
-The 360 pitch values are denoted as $\cent_1, \cent_2, \cdots, \cent_{360}$ and are selected so that they cover six octaves with 20-cent intervals between C1 and B7, corresponding to 32.70 Hz and 1975.5 Hz. 
+The 360 pitch values are denoted as $\cent_1, \cent_2, \cdots, \cent_{360}$ and are selected so that they cover six octaves with 20-cent intervals between C1 and B6, corresponding to 32.70 Hz and 1975.5 Hz. 
 The resulting pitch estimate $\hat{\cent}$ is the weighted average of the associated pitches $\cent_i$ according to the output $\hat{\mathbf{y}}$, which gives the frequency estimate in Hz:
 \begin{equation}\label{eqn:resulting}
-\hat{\cent} = \frac{\sum_{i=1}^{360}\hat{y}_i \cent_i}{\sum_{i=1}^{360} \hat{y}_i}, ~~~~~~~~~~~~~~
+\hat{\cent} = \frac{\sum_{i=1}^{360}\hat{y}_i \cent_i}{\sum_{i=1}^{360} \hat{y}_i},
+\end{equation}
+\begin{equation}\label{eqn:resulting2}
 \hat{f} = f_{\mathrm{ref}} \cdot 2 ^ {\hat{\cent} / 1200}.
 \end{equation}
 
@@ -62,6 +80,8 @@ y_i = \exp \left ( {-\frac{(\cent_i - \cent_{\mathrm{true}})^2}{2 \cdot 25^2}} \
 \end{equation}
 This way, high activations in the last layer indicate that the input signal is likely to have a pitch that is close to the associated pitches of the nodes with high activations.
 
+A detailed block diagram of the proposed architecture is provided in Figure \ref{fig:architecture}.
+There are six convolutional layers that result in a 2048-dimensional latent representation, which is then connected densely to the output layer with sigmoid activations to produce the 360-dimensional target vector.
 The network is trained to minimize the binary cross entropy between the target vector $\mathbf{y}$ and the predicted vector $\hat{\mathbf{y}}$:
 \begin{equation}
 \mathcal{L}(\mathbf{y}, \hat{\mathbf{y}}) = \sum_{i=1}^{360} \left ( - y_i \log \hat{y_i} - (1 - y_i) \log (1 - \hat{y_i}) \right ),
@@ -151,9 +171,8 @@ It is notable that the degradation of performance from RWC-synth is more signifi
 \end{table}
 
 Finally, to see how the algorithms compare under scenarios where any deviation in the estimated pitch from the true value could be detrimental, Table \ref{tbl:thresholds} reports the RPA at lower evaluation tolerance thresholds of 10 and 25 cents as well as the RPA at the standard 50 cents threshold for reference.
-The table indicates that as the threshold is decreased, the difference in performance becomes more accentuated, with CREPE 
-%maintaining near-perfect RPA for RWC-synth while the others degrade significantly.
-outperforming by over 8 percentage points when the evaluation tolerance is lowered to 10 cents.
+The table indicates that as the threshold is decreased, the difference in performance becomes more accentuated, with CREPE outperforming by over 8 percentage points when the evaluation tolerance is lowered to 10 cents.
+The high accuracy in 10 cents despite the 20-cent resolution of the model output indicates that the weighted average solution in Equation \ref{eqn:resulting} is effective at predicting the precise frequencies even between the adjacent frequency bins.
 This suggests that CREPE is especially preferable when even minor deviations from the true pitch should be avoided as best as possible.
 Obtaining highly precise pitch annotations is perceptually meaningful for transcription and analysis/resynthesis applications.
 
@@ -226,6 +245,112 @@ For the flute and the violin, although there are many tracks with the same instr
 The low performance on the piccolo tracks is due to an error in the dataset where the annotation is inconsistent with the correct pitch range of the instrument.
 Unsurprisingly, the model performs well on test tracks whose timbre and frequency range are well-represented in the training set.
 
+\section{Open-Sourcing CREPE}
+
+Releasing an implementation of research work as an open-source software helps ensure better quality, reproducibility, and longevity of the research code~\cite{mcfee2019opensource}.
+To facilitate easier adoption of CREPE's pitch tracking functionality for wider audience, we open-sourced\footnote{\url{https://github.com/marl/crepe}} the implementation of CREPE under the MIT License.
+The main purpose of the open-source release is to make the usage of the CREPE software as easy and effective as possible, so we aimed to ensure that the pitch estimation can work accurately for the broad range of the real-world monophonic signals.
+As shown in Figure \ref{fig:firstlayer}, a model trained on a specific dataset specializes to the characteristics of the sounds in the dataset and will fail to work well across the previously unknown, real-world inputs.
+To address this problem, we used six different datasets for the pre-trained model included in the open-source release of CREPE: MIR-1K~\cite{hsu2010mir1k}, Bach10~\cite{duan2010bach10}, RWC-Synth~\cite{mauch2014pyin}, MedleyDB~\cite{bittner2014medleydb}, MDB-STEM-Synth~\cite{salamon2017analysis}, and NSynth~\cite{engel2017nsynth}.
+These datasets contain various instrumental and vocal sounds, and the pre-trained model is expected to work well on these types of sounds.
+A visualization of the first-layer filters for the model trained with these datasets are shown in Figure \ref{fig:firstlayer-one}.
+Compared to Figure \ref{fig:firstlayer}, the peak-frequency curve better covers the full range of frequencies and in a smoother manner.
+An interesting feature of this visualization is that the curve is somewhat linear until 1 kHz and rapidly grows for the higher frequencies.
+This roughly coincides with the Mel scale, where the mapping from the perceived frequency to the actual frequency is linear below 1 kHz and logarithmic above~\cite{logan2000mfcc}.
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.6\textwidth]{firstlayer-one.pdf}
+	\caption{The first layer filters of the CREPE model trained with six different datasets, visualized using the same method as in Figure \ref{fig:firstlayer}. Compared to the previous cases where the filters are specialized to one dataset, the peak-frequency curve is smoother and covers the full frequency range.}\label{fig:firstlayer-one}
+\end{figure}
+
+\subsection{Python Package and Command-Line Interface}
+
+CREPE is distributed as a Python package and is hosted on the Python Package Index (PyPI). It can be installed simply by running the following command:
+
+\vspace{1em}
+\texttt{\$ pip install crepe}
+\vspace{1em}
+
+\noindent in a Python environment. This command will install the Python package \texttt{crepe} usable in Python scripts as well as a command-line interface that can be called with one or more audio file names:
+
+\vspace{1em}
+\texttt{\$ crepe audio\_file.wav}
+\vspace{1em}
+
+\noindent The estimated pitch values are saved using the CSV format, like:
+
+\begin{figure}[b]
+	\includegraphics[width=\linewidth]{activation.png}
+	\caption{Visualization of the target activation, which can be saved as in image file by using the \texttt{--save-activation} option in the CREPE command-line interface. The audio clip used contains an excerpt of male singing voice.}\label{fig:crepe-activation}
+\end{figure}
+
+\vspace{1em}
+\texttt{time,frequency,confidence}
+
+\texttt{0.00,185.616,0.907112}
+
+\texttt{0.01,186.764,0.844488}
+
+\texttt{0.02,188.356,0.798015}
+
+\texttt{0.03,190.610,0.746729}
+
+\texttt{0.04,192.952,0.771268}
+
+\texttt{0.05,195.191,0.859440}
+
+\texttt{0.06,196.541,0.864447}
+
+\texttt{0.07,197.809,0.827441}
+
+\texttt{0.08,199.678,0.775208}
+
+\texttt{...}
+\vspace{1em}
+
+\noindent where the third column indicates the confidence level of the presence of a pitch, which is obtained by taking the maximum activation value at each frame.
+
+The command-line interface supports various options, such as to use Viterbi smoothing~\cite{viterbi1967decoding} of the pitch curves as in pYIN~\cite{mauch2014pyin} and to save the activation in an image file as shown in Figure \ref{fig:crepe-activation}.
+The package contains five pre-trained models with different capacities, where the number of convolutional channels are scaled to 12.5\% (tiny), 25\% (small), 50\% (medium), 75\% (large), or 100\% (full) relative to the model size used in the experiments (see Figure \ref{fig:architecture}), and the specific model capacity to use can be specified using the \texttt{--model-capacity} option.
+Smaller-capacity models run significantly faster than the full-capacity model, suitable for resource-constrained use cases where faster computation is preferred at the cost of slightly lower pitch estimation accuracy.
+
+
+\subsection{Real-Time Web Demo}
+
+In addition to the Python package, we have developed a real-time web demo\footnote{\url{https://marl.github.io/crepe}} where the CREPE model runs on the web browser using the audio recorded from the system microphone and displays the target activation as well as the predicted pitch value in real time.
+To enable this, the demo used the W3C Web Audio API for real-time audio input and TensorFlow.js~\cite{smilkov2019tensorflowjs} for running inference on the deep model.
+Under the hood, TensorFlow.js uses WebGL which allows GPU acceleration for faster computation of the convolutional layers.
+The web demo uses the ``tiny" capacity model in order to run faster in browsers, which uses less than 3\% of the parameters compared to the full model.
+The web demo is also open-source and distributed in the same Github repository as the Python package.
+
+\subsection{Argmax-Local Weighted Averaging}
+
+In the process of training the model with diverse datasets, we have observed a side-effect where the model produces more octave errors, i.e. the predicted pitch is an octave apart from the ground truth.
+These errors resulted in multiple peaks in the target output vector around the harmonics of the ground-truth frequency, as depicted in Figure \ref{fig:octave-errors}.
+When the weighted average over the all 360 bins is used, this ends up predicting a completely different pitch.
+To alleviate this, we have revised Equation \ref{eqn:resulting} in the open-source version of CREPE to calculate the weighted average using only the frequency bins around the highest peak in the output:
+\begin{equation}\label{eqn:resulting-fixed}
+\hat{\cent} = \frac{\sum\limits_{i=m-4}^{m+4}\hat{y}_i \cent_i}{\sum\limits_{i=m-4}^{m+4} \hat{y}_i},
+~~~~~~~~~ m = \argmax_i \hat{y}_i.
+\end{equation}
+Using Equation \ref{eqn:resulting-fixed} improved the transcription accuracies of real-world signals significantly. However, a quantitative evaluation of the robustness in the real-world situations is inherently difficult and is out of the scope of this chapter, because it is virtually impossible to obtain a representative and objective dataset encompassing all such situations.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{octave-errors.pdf}
+	\caption{An example of an inaccurate target output where there exist multiple peaks around the harmonics of the ground-truth frequency. Equation \ref{eqn:resulting-fixed} ensures that the predicted pitch is calculated using only the frequency bins around the highest peak.}\label{fig:octave-errors}
+\end{figure}
+
+\subsection{Data-Driven Models and Real-World Applications}
+
+The series of modifications on the CREPE model are taken in order to release the open-source software that are effective not only for evaluation in an academic setting but also in various real-world scenarios of pitch estimation.
+These give an important lesson that should be considered when developing data-driven models for music analysis tasks.
+Especially with the rise of deep learning models that typically have a large number of parameters, it is very easy to overfit a model to work well with a specific dataset while not being able to generalize.
+This problem can persist even if the dataset is properly splitted for training and evaluation, because it is common for such dataset to have shared characteristics such as recording and mixing conditions that are not particularly representative of the broad range of the real-world data for which the model should supposedly work well.
+Therefore, a great amount of care should be taken when selecting the datasets to be used for evaluation of a music analysis model, and qualitative analyses on out-of-distribution real-world data need to be accompanied.
+
 
 \section{Conclusions}
 
@@ -233,7 +358,7 @@ In this chapter, we presented a novel data-driven method for monophonic pitch tr
 We showed that CREPE obtains state-of-the-art results, outperforming pYIN and SWIPE on two datasets with homogeneous and heterogeneous timbre respectively.
 Furthermore, we showed that CREPE remains highly accurate even at a very strict evaluation threshold of just 10 cents.
 We also showed that in most cases CREPE is more robust to added noise.
-
+In addition, we discussed the challenges that arose during the open-source release of the model, which included how to make the model more generalizable to the real-world sounds and the revised pitch extraction strategy to better deal with increased octave errors.
 
 Ideally, we want the model to be invariant to all transformations that do not affect pitch, such as changes due to distortion and reverberation.
 Some invariance can be induced by the architectural design of the model, such as the translation invariance induced by pooling layers in our model as well as in deep image classification models.
