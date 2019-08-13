@@ -14,7 +14,15 @@
 \begin{itemize}
 	\item multi-instrument transcription
 	\item Deep Clustering
+	\item using a generative component
 \end{itemize}
+
+
+\citeA{li2017infinite} explored the idea of using on-the-fly synthesized training dataset for piano transcription, using a simple fully-connected neural network operating on the CQT representation.
+The idea of using generative models to predict multiple fundamental frequencies is also not new \cite{dubois2005harmonic,cemgil2006generative}, but the authors relied on manually designed generative models for sound generation, which limits the expressibility and the generalizability of the model.
+Using deep generative models can be a direction for overcoming these limitations, since the recent neural network approaches for audio generation are capable of producing highly realistic sounds.
+Chapter \ref{ch:deeplearning} will review deep generative models for audio in detail.
+
 
 \section{Method}
 
