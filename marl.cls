@@ -56,7 +56,7 @@
 \setlength{\baselineskip}{12pt plus 1pt minus 0.5pt}
 
 \DeclareMathSymbol{\shortminus}{\mathbin}{AMSa}{"39}
-\renewcommand{\doublespacing}{\setstretch{1.5}}
+\renewcommand{\doublespacing}{\setstretch{1.8}}
 %\newcommand{\mathbbm}[1]{\text{\usefont{U}{bbm}{m}{n}#1}}
 
 \newcommand{\E}{\mathbb{E}}
