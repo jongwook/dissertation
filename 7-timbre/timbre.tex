@@ -129,16 +129,13 @@ The dataset contains annotations of 11 General MIDI instruments: Acoustic Grand 
 Different recordings in the dataset have drastically different tuning, ranging more than a semitone in some recordings which would result in a wrong transcription even by a perfect transcriber.
 To alleviate this, we preprocess the dataset by running a tuning estimator implemented in librosa~\cite{mcfee2015librosa} on each track and pitch-shifted any recordings that are more than 20 cents apart from the A440 tuning.
 
+Unlike in Chapter~\ref{ch:adversarial}, we use the original Onsets and Frames model size of 512, and the transcription model contains 10 million parameters.
+We use a 2-dimensional instrument embedding space to represent the distribution of the 11 instruments, and the polynomial transfer functions used in the subtractive synthesis are modeled by cubic B\'{e}zier curves.
 
-\subsection{Model and Training Details}
 
-\begin{itemize}
-	\item dataset and tuning fix
-	\item model details: embedding dim, model capacity, Bezier degree
-	\item training details
-% 	\item with/without timbre embedding
-%	\item predicted/binarized vs GT frame labels
-\end{itemize}
+The audio is resampled to 16kHz, and a training batch is composed of eight 20-second audio segments and labels.
+We use Adam optimizer~\cite{kingma2015adam} with learning rate 0.0006, and the learning rate decay of factor 0.98 is applied every 1000 steps.
+We ran the optimization for 180,000 steps and report the transcription accuracies evaluated on the 10 test recordings provided in the MusicNet dataset.
 
 \section{Results}
 
