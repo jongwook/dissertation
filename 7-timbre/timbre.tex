@@ -135,9 +135,15 @@ We use a 2-dimensional instrument embedding space to represent the distribution 
 
 The audio is resampled to 16kHz, and a training batch is composed of eight 20-second audio segments and labels.
 We use Adam optimizer~\cite{kingma2015adam} with learning rate 0.0006, and the learning rate decay of factor 0.98 is applied every 1000 steps.
-We ran the optimization for 180,000 steps and report the transcription accuracies evaluated on the 10 test recordings provided in the MusicNet dataset.
+We ran the optimization for 180,000 steps and report the transcription accuracy evaluated on the 10 test recordings provided in the MusicNet dataset.
 
 \section{Results}
+
+\subsection{Synthesizer Output}
+
+\subsection{Transcription Accuracy}
+
+\subsection{Multi-Instrument Transcription}
 
 \begin{itemize}
 	\item Trained Synthesizer
@@ -145,11 +151,13 @@ We ran the optimization for 180,000 steps and report the transcription accuracie
 	\item Multi-instrument
 \end{itemize}
 
+\subsection{MusicNet Inspector}
+
+
 
 \section{Conclusion}
 
 \begin{itemize}
-	\item musicnet inspector
 	\item Discussion points: unison, dot product space, Lipschitz; volume information
 \end{itemize}
 
