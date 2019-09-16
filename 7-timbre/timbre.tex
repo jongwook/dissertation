@@ -44,35 +44,46 @@ Specifically, we examine how to induce the transcription model to make predictio
 We do this by appending a neural music synthesis model to the transcription model, and the synthesis model is specifically designed to describe the sound generation process with a small number of interpretable parameters, which is restrictive enough to guide the transcription model to more accurate predictions, yet flexible enough to be learnable in a data-driven manner.
 We evaluate this approach with a multi-instrument transcription task and show that a synthesis model can serve as an effective regularizer. % \TODO{describe qualitative improvement}
 
-\section{Background}
+\section{Related Work}
 
 
 \subsection{Multi-Instrument Music Transcription}
 
-\cite{itoyama2011bayesian}: instrument recognition, \TODO{add more; interconnected with source separation}
+Transcribing polyphonic music with multiple instruments present is a particularly difficult problem and there has been relatively few successful attempts, as it requires solutions to instrument classification in addition to multiple pitch estimation.
+While some approaches perform source separation and instrument recognition as a separate pre-processing step for per-instrument polyphonic transcription,~\cite{heittola2009separation,itoyama2011bayesian}, a number of approaches attempt to jointly solve the two problems, by modeling possible instruments as a constraint to non-negative matrix factorization (NMF)~\cite{grindlay2009eigeninstruments}, applying spectral templates to a probabilistic latent component model~\cite{benetos2015probabilistic}, and using a U-Net architecture to separate a multi-channel representation of audio into per-instrument transcriptions~\cite{wu2019musicnet}.
+In general, joint estimation of instrument and multiple pitches allows for flexible modeling of diverse sounds and enables an end-to-end approach for multi-instrument polyphonic transcription.
 
-\cite{grindlay2009eigeninstruments}: Hierarchical eigeninstruments
-
-\cite{benetos2015probabilistic}: Probabilistic model (PLCA), spectral template, EM maximization
-
-\cite{thickstun2017musicnet}: MusicNet, \cite{thickstun2018invariances} invariances,
 
 \subsection{Deep Clustering}
 
-\cite{hershey2016deepclustering}
+Deep clustering~\cite{hershey2016deepclustering} is a technique for audio source separation which learns a mapping from each time-frequency bin of the input audio into an embedding space.
+% During training, a pair of embedding vectors corresponding to the same source are encouraged to be closer to each other, while pushing the pairs corresponding to different sources apart from each other. To do this, 
+The original formulation uses the class assignment matrix $Y = \{ y_{i,c} \}$ indicating whether element $i$ belongs to cluster $c$ and learns the embedding matrix $V = \{ \mathbf{v}_{i} \}$ as a function of the input audio that minimizes the Frobenius distance between the assignment matrix:
+\begin{equation}\label{eqn:deepclustering}
+\mathcal{L} = \lVert VV^\top - YY^\top \rVert_{\mathrm{F}}^2 = \sum_{i, j} \left ( \left < \mathbf{v}_i, \mathbf{v}_j \right > - \left < \mathbf{y}_i, \mathbf{y}_j \right > \right )^2.
+\end{equation}
+Since $\left < \mathbf{y}_i, \mathbf{y}_j \right >$ equals 1 if the elements $i$ and $j$ belongs to the same cluster and 0 otherwise, the learned embedding vectors are optimized to be as close as possible for the vectors which belong to the same cluster and as orthogonal as possible otherwise.
+Alternative objective functions to Equation \ref{eqn:deepclustering} employing deep neural networks have been suggested by~\cite{wang2018deepclustering}.
+The deep clustering technique has been successfully applied to the multi-speaker separation~\cite{isik2016deepclustering} and the singing voice separation problem~\cite{luo2017deepclustering}.
 
-\subsection{Source-Filter Synthesis}
+This chapter's work borrows the idea of deep clustering and builds an embedding space that captures the timbres of different instruments, while relying on a synthesizer component rather than inducing every pair of embedding vectors to be orthogonal to each other.
+By allowing different embedding vectors to be similar but not necessarily orthogonal, the synthesizer can learn to map similar-sounding instruments to vectors that are close to each other.
+Informed by this embedding space, the multi-instrument transcription model can more easily learn to classify the similar instruments than when the instruments are treated independently.
 
-\cite{heittola2009separation} (instrument recognition)
 
-\subsection{Synthesizer Component for Transcription}
+% \subsection{Source-Filter Synthesis}
+% \cite{heittola2009separation} (instrument recognition)
 
+\subsection{Generative Modeling for Transcription}
+
+Bayesian approaches for music transcription consider the audio generation process as a probabilistic model that can describe the generated audio in terms of its sound events.
+In these approaches, an audio representation such as a spectrogram is considered as an observation, and the model parameters that maximizes the observation is found using Bayesian inference techniques such as particle filtering~\cite{dubois2005harmonic}, message propagation~\cite{cemgil2006generative}, and block-coordinate ascent~\cite{bergkirkpatrick2014unsupervised}.
+These models typically work well for small test datasets with a homogeneous timbral profile, but because they rely on a small, manually designed set of parameters for sound generation, they often struggle to generalize to diverse inputs.
+
+In the spirit of utilizing the synthesizer component for transcription,
 \citeA{li2017infinite} explored the idea of using on-the-fly synthesized training dataset for piano transcription, using a simple fully-connected neural network operating on the CQT representation.
-The idea of using generative models to predict multiple fundamental frequencies is also not new \cite{dubois2005harmonic,cemgil2006generative}, but the authors relied on manually designed generative models for sound generation, which limits the expressibility and the generalizability of the model.
-Using deep generative models can be a direction for overcoming these limitations, since the recent neural network approaches for audio generation are capable of producing highly realistic sounds.
-
-\cite{choi2019drum} \cite{bergkirkpatrick2014unsupervised}
-
+\cite{choi2019drum} proposes appending a drum synthesizer component to enable fully unsupervised training of drum transcription.
+The work in this chapter draws several ideas from these previous approaches of incorporating a synthesizer component into the loop, while also leveraging the flexibility and the generalizability of data-driven deep learning.
 
 \section{Method}
 
