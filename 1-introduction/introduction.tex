@@ -170,27 +170,6 @@ Pitch is relatively precisely defined in this sense, and formulating automatic m
 There exist some cases where the mathematical definition of fundamental frequency still cannot be applied for all pitched sounds, such as the Shepard tone \cite{shepard1964circularity} where the pitch of a harmonic sound fails to be consistently mapped to a fundamental frequency.
 However, disregarding these few edge cases, this study assumes that the piano roll notation can convey an objective transcription for practical purposes, postulating AMT as a mathematical problem which does not require experiments on human subjects.
 
-
-\subsection{The Ultimate Goal of Automatic Music Transcription}
-
-Finally, a consideration is needed for the fundamental limitation on any music transcription task, either automatic or manual, and when it can be said that AMT is solved.
-Polyphonic music contains a mixture of sounds with an indefinite number of notes being played simultaneously; even the most experienced musicians may not be able to identify every note, and the audio mixture may not contain the sufficient information to convey all notes in the first place.
-It would be unreasonable to expect anyone to perfectly transcribe all notes in the score of an orchestral music from an audio file, but it would be sensible for a trained musician to produce a version of score that, when played by the same orchestra, sounds indistinguishable to the original recording.
-Considering these limitations, passing this ``transcriptional Turing test'' as shown in Figure \ref{fig:turing}, rather than achieving the 100\% accuracy on a certain dataset, should be the ultimate goal of automatic music transcription, at which point it can be said to have a human-level intelligence on this task.
-
-Developing an AMT algorithm that can pass this test is not a goal of this thesis, because the performance of AMT is far behind the human performance.
-Therfore, this thesis pursues a more tangible goal of achieving a better accuracy in transcribing music that is easy enough for human transcribers but challenging for machines.
-More details on the dataset and the evaluation method are provided in Chapter \ref{ch:methods}. \TODO{FIX}
-
-
-\begin{figure}
-	\includegraphics[width=\textwidth]{turing.pdf}
-	\caption{The \emph{transcriptional Turing test}, to test whether an automatic music transcription algorithm has reached human-level. While this provides some conceptual insights to the adversarial training setup, to be covered in the later chapters, fully achieving the human-level performance is out of scope of this thesis.}
-	\label{fig:turing}
-\end{figure}
-
-\pagebreak
-
 \section{Need for Study}
 
 The nature of music transcription is multifold; to create a complete transcription, one has to identify all instruments, onsets, dynamics, and the pitch traces for every instrument present in the music, and it is still far from achieving the human-level accuracy.
