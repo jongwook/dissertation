@@ -11,7 +11,7 @@
 
 As listening is a core constituent of human perception, an essential component of artificial intelligence is \emph{machine listening}.
 The purpose of machine listening research is to enable computers to process and understand sounds as humans do.
-In recent years, there have been an unprecedented amount of successes in the field of \emph{machine learning}, a near-synonym to artificial intelligence with a connotation of statistical and/or probabilistic methodologies, which redefined what a computer vision or natural language processing systems can do and made previously unimaginable applications such as autonomous driving and a superhuman Go-playing AI into reality.
+In recent years, there have been an unprecedented amount of successes in the field of \emph{machine learning}, a near-synonym to artificial intelligence with a connotation of statistical and/or probabilistic methodologies, which redefined what a computer vision or natural language processing systems can do and made previously unimaginable applications such as autonomous driving and a superhuman StarCraft-playing AI into reality.
 
 In this context, this thesis focuses on improving the machine understanding of music in order to automatically transcribe music, which largely remains an unsolved problem despite decades of research.
 The recent rapid development in \emph{deep learning} research, however, hints at many new possibilities for improving the performance or even achieving human-level accuracy in music transcription.
@@ -36,80 +36,37 @@ In this sense, the setup of AMT is \emph{discriminative} in nature, meaning that
 Meanwhile, when a generative model is jointly trained with an encoder, it can learn to generate data samples from a small number of latent factors, while the encoder learns to extract those factors from the audio in a compact representation, as depicted in Figure \ref{fig:autoencoder}.
 Since recently, with the increased capacity of machine learning models and hardware, many \emph{deep generative models} have been proposed and shown to be capable of processing high-dimensional multimedia data.
 Furthermore, significant research efforts have been made toward learning disentangled representation of data, meaning that the latent factors contain meaningful information that can be easily separated and isolated.
-To this end, the goal of this thesis is to study representation learning methods powered by deep generative models, accompanied with automatic generation of music, to obtain disentangled information from audio signals that can achieve better performance in music transcription.
+To this end, the goal of this thesis is to study representation learning methods powered by deep generative models to obtain disentangled information from audio signals that can achieve better performance in music transcription.
 
 \begin{figure}[t]
 	\includegraphics[width=\textwidth]{autoencoder.pdf}
-	\caption{A generative model has to know all of necessary information required to reconstruct the audio data, including pitch, timbre, loudness, and duration. Generative models can be jointly trained with an encoder that finds those semantic information, giving a transcriber-synthesizer pair; more detail on Subsection \ref{ch:deeplearning}.\ref{subsec:gan-encoder}.}
+	\caption{A generative model has to know all of necessary information required to reconstruct the audio data, including pitch, timbre, loudness, and duration. Generative models can be jointly trained with an encoder that finds those semantic information, giving a transcriber-synthesizer pair.}
 	\label{fig:autoencoder}
 \end{figure}
 
 \pagebreak
 
-\section{Subproblems and Research Questions}\label{sec:subproblems}
+\section{Research Questions}\label{sec:subproblems}
 
-This thesis concerns two major subproblems regarding the proposed approach toward automatic music transcription: 
+To achieve the goal of improving music transcription with generative models, several research questions needs to be addressed. This thesis considers the following questions regarding the proposed approach toward automatic music transcription.
 
 \vspace{1em}
 
 \begin{enumerate}
-	\item Can we use generative methods to obtain disentangled representations of musical audio signals, to be used for automatic music transcription?
-	\begin{enumerate}
-		\item Can deep generative models such as \emph{generative adversarial networks} (GAN) learn to differentiate the concept of pitch and timbre, so that it can separately control them in its generation?
-		\item How can we extend such generative model to work with arbitrary time scales, learning to encode and generate polyphonic notes with various onset times and durations?
-		\item Can we make the latent representation used in the generative model convey information on the note-level events in the form of piano rolls, effectively performing music transcription?
-	\end{enumerate}
-	\item Can we build a music generation pipeline as a data augmentation tool which provides a large-scale representative dataset for training, in order to more effectively train the transcription model?
-	\begin{enumerate}
-		\item Can we use software instruments and audio post-processing techniques to span various timbres and recording environments that we are expected to encounter in transcription?
-		\item How can we formulate a music language model that can be plugged into music synthesis and build generalizable datasets for polyphonic, multi-instrument music transcription?
-		\item Would it be possible to incorporate the music generation pipeline into the deep generative model as a learnable component of the automatic music transcription algorithm?
-	\end{enumerate}
+\item What kinds of deep models and representations can be used for effectively extracting pitch from audio?
+\item How does the choice of datasets affect the accuracy and the generalizability of a trained model?
+\item How can we encode the concept of timbre in a way that is useful for music synthesis and transcription?
+\item How can a transcription model make informed predictions incorporating the knowledge of music theory?
+\item Can a music synthesizer component based on a deep generative model be used to improve music transcription?
 \end{enumerate}
 
 \vspace{1em}
 
-The primary objective of this thesis lies on the first subproblem, concerning the disentanglement in representation learning on musical audio powerd by deep generative models.
-Necessary to the successful application of data-driven learning is the availability of large-scale training data, while the difficulty of obtaining large-scale labeled data has always been a problem in music informatics.
-The second subproblem is aimed at alleviating this issue by employing automatically generated datasets using software instruments and music language models.
-In this sense, while not being the primary research objective of the thesis, effectively designing the data generation pipeline would be an indispensable component of achieving the primary goal.
+We aim to address each of these questions in the technical chapters of the thesis.
+Through extensive experimental analysis in each chapter, we draw the conclusion on the effectiveness of deep generative models in the context of automatic music transcription.
 
-\section{Definitions}\label{sec:definitions}
 
-\paragraph{Research Areas}
-
-\begin{itemize}
-	\item \textbf{Music Information Retrieval (MIR)}: An interdisciplinary research area that concerns retrieving information from music.
-	\item \textbf{Automatic Music Transcription}: An automated process of extracting musical events in the input audio and converting them into musical notations.
-	\item \textbf{Multi-Pitch Estimation}: A task of estimating individual pitch values in polyphonic music. Synonymous with \textbf{Multiple Fundamental Frequency (F0) Estimation}.
-\end{itemize}
-
-\noindent 
-\paragraph{Music and Audio Signal Processing}
-
-\begin{itemize}
-	\item \textbf{Pitch}: A perceived quality of highness or lowness of a sound that is closely related to the fundamental frequency.
-	\item \textbf{Spectrogram}: A two-dimensional representation of an audio signal that visualizes the spectral decomposition of the sound over time, using the magnitudes of the short-time Fourier transform (STFT).
-	\item \textbf{Short-Time Fourier Transform (STFT)}: A linear transformation that maps a one-dimensional signal to a two-dimensional representation that contains the Fourier spectra of the short-time segments.
-	\item \textbf{Music Language Model}: Modeling of symbolic sequences of music.
-\end{itemize}
-
-\paragraph{Machine Learning and Deep Learning}
-
-\begin{itemize}
-	\item \textbf{Heuristics}: A method that is not optimal or perfect but useful for immediate practical purposes, usually employing manually designed functions or computations.
-	\item \textbf{Data-Driven Method}: A method based on the optimization of model parameters using examples of data.
-	\item \textbf{Ground-Truth}: Annotations corresponding to the data examples that are assumed to be true.
-	\item \textbf{Machine Learning}: Programming computers to learn from experience, without being explicitly programmed \cite{samuel1959ml}.
-	\item \textbf{Supervised Learning}: A category of machine learning methods that require labeled training data.
-	\item \textbf{Unsupervised Learning}: A machine learning task to discover the hidden structures from unlabeled data.
-	\item \textbf{Deep Learning}: A family of machine learning methods that employ multiple layers of learned representations, obtained by composing simple transformations at each level \cite{lecun2015deeplearning}.
-	\item \textbf{Representation Learning}: A task of learning the underlying representations of data that make it easier to extract useful information \cite{bengio2013representation}.
-	\item \textbf{Generative Model}: A model that is capable of generating data points that are coherent to supplied training examples.
-	\item \textbf{Disentanglement}: A desirable quality of a learned representation from which meaningful information can be easily separated and isolated.
-\end{itemize}
-
-\section{Delimitations/Limitations}\label{sec:limitations}
+\section{Limitations}\label{sec:limitations}
 
 Because of the sophisticated and open-ended nature of automatic music transcription, it is necessary to define the scope of the tasks and data that this thesis will be concerned with.
 The purpose of this section is to define those limitations in terms of the scope of music that the proposed AMT system can process, the required capability of symbolic music processing, and the need for the perceptual studies regarding the validity of AMT systems.
@@ -118,7 +75,7 @@ The purpose of this section is to define those limitations in terms of the scope
 \subsection{Scope of Music}
 
 Music signals typically contain both harmonic and percussive sources. 
-In the signal processing point of view, harmonic sounds are periodic and contains energy only at certain frequencies usually at the multiples of the fundamental frequencies, whereas percussive sounds have continuous frequency spectra in which it is not possible to define a fundamental frequency.
+In the signal processing point of view, harmonic sounds are quasi-periodic and contains energy only at certain frequencies, typically at the multiples of the fundamental frequencies, whereas percussive sounds have continuous frequency spectra in which it is not possible to define a fundamental frequency.
 Consequently, transcription models for harmonic sounds and percussive sounds require different techniques according to their nature.
 
 
@@ -134,19 +91,14 @@ Additional limitations should be considered on the types of the instruments and 
 Depending on the instrument, the same line segment in a piano roll representation may contain a variety of musical techniques, such as vibrato, tremolo, pizzicato, and the usage of a mute or harmonics, among others.
 In order to accurately produce the piano roll transcription that is invariant to those variations, the model has to be trained to classify them as nonessential information, requiring the availability of the dataset with the annotations for those techniques.
 While an ideal model should learn those concepts as humans do, too much timbral or temporal variation for an instrument will prevent the model from learning a consistent representation corresponding to the instrument.
-Therefore, for the immediate purpose of this thesis, a dataset that does not contain too much variations will be employed, similarly to the pilot study which used non-vocal harmonic sounds of Western classical instruments.
+Therefore, for the immediate purpose of this thesis, distributions of music signals that do not contain too much of said variations will be employed.
 
 
 \subsection{Symbolic Processing of Notes}
 
 As mentioned and justified in the statement of problem (Section \ref{sec:statement}), by choosing per-instrument piano rolls as the output of transcription, many structure-level and symbolic-level concerns in music transcription are excluded from the scope of this study.
-The difference between the piano roll output and the full human-readable score output becomes apparent when we compare the piano rolls in Figure \ref{fig:transcription-to-piano-rolls} with Figure \ref{fig:wedding-march-score}, which is the original score from which the piano rolls are plotted.
+The difference between a piano roll output and a full human-readable score output becomes apparent when we compare the piano rolls in Figure \ref{fig:transcription-to-piano-rolls} with Figure \ref{fig:wedding-march-score}, which is the original score from which the piano rolls are plotted.
 There are many aspects in producing the score output that are highly subjective and difficult to derive a consistent evaluation metric from, such as the interpretation of legatos or staccatos and the aesthetic choices for typesetting, providing an additional justification for using the piano roll notation.
-
-
-The MIDI file format is suitable for conveying the data equivalent to per-instrument piano rolls, consisting of multiple tracks of \texttt{note\_on} and \texttt{note\_off} events with the corresponding timestamps.
-MIDI will therefore be the output format of the proposed AMT system, which can also be conveniently played back by media player software.
-Music typesetting software such as Sibelius or Finale can render a MIDI file into a score notation using the metadata in the file as well as some heuristics for quantization, however the readability of the score rendered from a transcribed MIDI file would be limited, due to imperfect transcription and the absence of metadata on the time and key signature.
 
 
 \begin{figure}
@@ -155,15 +107,19 @@ Music typesetting software such as Sibelius or Finale can render a MIDI file int
 \end{figure}
 
 
+The MIDI file format is suitable for conveying the data equivalent to per-instrument piano rolls, consisting of multiple tracks of \texttt{note\_on} and \texttt{note\_off} events with the corresponding timestamps.
+MIDI will therefore be a supported output format of the proposed AMT system in addition to the piano roll representations, which can also be conveniently played back by media player software.
+Music typesetting software such as Sibelius or Finale can render a MIDI file into a score notation using the metadata in the file as well as some heuristics for quantization, however the readability of the score rendered from a transcribed MIDI file would be limited, due to imperfect transcription and the absence of metadata such as the time and key signature.
+
+
 
 \subsection{On the Need for Perceptual Studies}
 
-This study of automatic music transcription is entirely quantitative and does not involve subjective tests on human participants.
-The dataset to be used in thesis consists of audio signals, i.e. waveforms encoding the physical vibrations of air.
+This study of automatic music transcription is entirely quantitative and does not involve subjective tests on human participants, and we only aim to discover the systematic relations between audio signals and corresponding note sequences present in the datasets we use for training.
 However, music is essentially a perceived notion, and thus are the core qualities of sound --- pitch, timbre, and loudness --- which are the output of automatic transcription.
 For this reason, manually annotating polyphonic music is an error-prone process, where any two annotators may produce drastically different annotations.
 Although this problem of inaccuracy and subjective difference is often overcome by using a ground-truth dataset synthesized from known frequency information, the gap still persists between what a model can learn from synthesized audio and what it will respond to the real-world sound.
-This thesis aims to take one step further than using synthesized training datasets, by building a generative model that can better model the real-world sound of interest.
+This thesis uses both kinds of datasets, from synthesized and recorded audio signals, and thus the real-world applicability of each of the proposed models should be carefully examined.
 
 The goal of automatic transcription is at a lower level than the tasks like chord recognition and melody tracking, which may incur even more subjective disagreements caused by the imprecise definitions of chords and melodies.
 Pitch is relatively precisely defined in this sense, and formulating automatic music transcription as an audio-to-piano-roll conversion mostly eliminates the ambiguity that exists in chord recognition and melody tracking.
@@ -175,7 +131,7 @@ However, disregarding these few edge cases, this study assumes that the piano ro
 The nature of music transcription is multifold; to create a complete transcription, one has to identify all instruments, onsets, dynamics, and the pitch traces for every instrument present in the music, and it is still far from achieving the human-level accuracy.
 The need for study arises naturally, not only because this is an intriguing problem in the interdiscipline of music and technology that has remained unsolved for decades, but also because the solution to this problem can provide practical benefits to many applications.
 
-In order to bolster the need for this study, this section starts by introducing such applications, followed by discussions on the advantages of employing generative models as a means of better capturing musical semantics and a new paradigm of MIR research.
+In order to bolster the need for this study, a few of such applications are introduced in this section, followed by discussions on the advantages of employing generative models as a means of better capturing musical semantics.
 A brief perspective on AMT is presented in the context of wider AI research, followed by the organization of the chapters.
 
 
@@ -186,7 +142,7 @@ Many applications of the techniques in the realm of automatic music transcriptio
 \emph{Score following} is a general term referring to the synchronization of a computer with a performer playing a known score \cite{orio2003following}.
 An offline music-to-score matching algorithm can also be applied to intelligent audio editors \cite{dannenberg2003following}.
 
-Music recommender systems can combine many kinds of information for improved music retrieval and personalization \cite{celma2010music}.
+\emph{Music recommender systems} can combine many kinds of information for improved music retrieval and personalization \cite{celma2010music}.
 Content-based music recommender systems can utilize not only the metadata but also the audio content, and methods using timbral \cite{magno2008recommendation}, temporal \cite{li2007recommender}, and tonal features \cite{lu2009recommendation} have been introduced.
 These music recommender systems can be further improved when the complete information on each domain is made available through AMT.
 
@@ -200,18 +156,18 @@ Being ``generative'' means that a model is capable of generating new samples in 
 Generation in the symbolic domain creates new musical scores, and a generative model in the audio domain creates audio waveform.
 These two kinds of generative systems are familiar to computer music artists and are referred to as algorithmic composition \cite{fernandez2013ai} and sound synthesis \cite{cook2002synthesis} models.
 This thesis defines the term ``generative model'' more specifically, as a model that can learn the distribution of provided data and can sample new samples in the original distribution.
-This differs from the term ``generative'' used in computer music in a sense that it aims to accurately model and learn to regenerate the real-world audio to be used in music transcription, rather than focusing on artistic aspects of generating new kinds of sounds and music.
+This differs from the term ``generative'' used in computer music in a sense that it aims to accurately model the probability distribution and learn to regenerate the real-world audio to be used in music transcription, rather than focusing on artistic aspects of generating new kinds of sounds and music.
 
 By learning to generate data using fewer parameters than the scale of the dataset, a model has to discover the underlying natural features from the distribution of data.
 In music transcription, these features correspond to the musical concepts such as pitch, timbre, and rhythm.
-This idea follows what Richard Feynman once wrote on his blackboard, \emph{``What I cannot create, I do not understand''} and \emph{``Know how to solve every problem that has been solved''}.
+Philosophically, this idea follows what Richard Feynman once wrote on his blackboard, \emph{``What I cannot create, I do not understand''} and \emph{``Know how to solve every problem that has been solved''}.
 He meant that the marker for truly understanding something is the ability to construct it completely from scratch.
 Generative models are a branch of unsupervised learning, because it does not require labeled data.
 \citeA{lecun2016unsupervised} introduced unsupervised learning as a cake, comparing supervised learning as icing and reinforcement learning as the cherry on the top, by which he meant that generative model needs to predict much larger scale of information but is able to learn the ``common sense''.
 
 \begin{figure}
 	\includegraphics[width=\textwidth]{generative-evolution.pdf}
-	\caption{Increasingly realistic qualities of the generated faces using generative adversarial networks as shown in \protect\cite{brundage2018malicious}; images are from \protect\cite{goodfellow2014gan}, \protect\cite{radford2015dcgan}, \protect\cite{liu2016cogan}, and \protect\cite{karras2017pggan}.}
+	\caption{Increasingly realistic qualities of the generated faces using generative adversarial networks as shown in \protect\cite{brundage2018malicious}; images are taken from \protect\cite{goodfellow2014gan}, \protect\cite{radford2015dcgan}, \protect\cite{liu2016cogan}, \protect\cite{karras2017pggan}, and \protect\cite{karras2019stylegan}.} 
 	\label{fig:generative-evolution}
 \end{figure}
 
@@ -226,6 +182,7 @@ In this context, this thesis aims to design and develop improved methods for aut
 The idea specifically hypothesizes that by training a generative model, it is possible to learn disentangled representations, from which the information necessary for transcription can be easily extracted, as depicted in Figure \ref{fig:autoencoder}.
 By doing so, the ultimate objective is to build an end-to-end differentiable model that connects the piano roll representation to audio signals, in order to perform automatic music transcription --- obtaining the most likely piano roll representation for given audio.
 
+\iffalse
 
 \subsection{Generative Models as a new Paradigm of MIR Research}
 
@@ -269,7 +226,6 @@ By doing so, the ultimate objective is to build an end-to-end differentiable mod
 \end{figure}
 
 
-The second subproblem stated in Section \ref{sec:subproblems} considers data generation as an augmentation tool for further improving the performance of an AMT system.
 In the proposed setup, a music language model is trained to produce meaningful symbolic music sequences to be fed to the generative model, which can synthesize multi-track polyphonic music along with the corresponding annotations.
 
 This architecture can be aligned with the previous paradigms of MIR research, as shown in Figure \ref{fig:paradigms}:
@@ -279,8 +235,10 @@ This architecture can be aligned with the previous paradigms of MIR research, as
 A shortcoming of this approach is that it requires a multi-track dataset composed of monophonic stems.
 (e) The proposed setup extends the analysis/synthesis model by building a fully learnable pipeline, where the synthesizer component of the generative model serves as an effectively infinite source of labeled training examples.
 
-In theory, this can constitute a positive feedback loop where data augmentation improves the performance of the transcription model, and the improved synthesizer component of the transcription model provides better data augmentation.
-Another advantage of this setup is that the data augmentation pipeline is not limited to training an AMT model but applicable to any music information retrieval tasks.
+In theory, this can constitute a positive feedback loop where data augmentation improves the performance of the transcription model, and the improved synthesizer component of the transcription model provides better data augmentation. \TODO{revise}
+% Another advantage of this setup is that the data augmentation pipeline is not limited to training an AMT model but applicable to any music information retrieval tasks.
+
+\fi
 
 \subsection{In the Broader Context of Machine Listing in AI Research}
 
@@ -299,15 +257,15 @@ To this end, the problem of automatic music transcription is not just an intrigu
 \subsection{Organization of Thesis}
 
 
-To summarize, this thesis considers the possibility of using deep generative models to learn the musical concepts necessary for automatic music transcription, as well as using the learned generative component as an augmentation tool for further improving the performance of the transcription model.
+This thesis considers the possibility of using deep generative models to learn the inductive bias incorporating musical concepts that are necessary for automatic music transcription.
+There exists a rich history of research aiming at understanding of musical sounds and automatic music transcription; to validate this claim as a feasible research direction and place this thesis in the context of this continuum of research, Chapter \ref{ch:mir} provides a review of the standard methods and the current state of the art of automatic music transcription research.
+Deep learning techniques are employed as a building block throughout the this thesis, and a general introduction to deep learning and deep generative models is provided in Chapter \ref{ch:deeplearning}, with a focus on generative adversarial networks.
 
-There exists a rich history of research aiming at understanding of musical sounds and automatic music transcription, and to validate this claim as a feasible research direction and place this proposal in the context of this continuum of research, Chapter \ref{ch:mir} provides a review of the standard methods and the current state of the art of automatic music transcription research.
-%One of the most exciting phenomena that have been happening in the field of machine learning during the past five years is the advent of deep learning and its tremendous success in computer vision, natural language processing, and many other fields.
-%The success was made possible by the unprecedented scale of high-performance computing resources that became available, which made intelligent systems capable of processing machine learning algorithms and data pipelines that were infeasible to be realized just until a few years ago.
-%At the same time, a number of new models and techniques have been devised to drastically improve the effectiveness and flexibility of existing algorithms.
-Because it is expected that the techniques of deep learning will play the most important role in this study, a general introduction to deep learning and deep generative models is provided in Chapter \ref{ch:deeplearning}, with a focus on generative adversarial networks, which are by far the most capable family of deep generative models.
+In Chapter \ref{ch:monophonic}, we first consider a subproblem of music transcription, i.e. monophonic pitch estimation, and learn that convolutional neural networks predicting two-dimensional time-frequency representation can constitute an effective music transcription system, which we build and extend in the subsequent chapters.
+Chapter \ref{ch:synthesis} examines the applications of deep generative models in music analysis and synthesis tasks, by introducing a WaveNet-based music synthesis model that learns a multi-dimensional timbre representation.
+In Chapter \ref{ch:adversarial}, generative adversarial networks are considered as a way to apply a music language model which can help improve a piano transcription model.
+In Chapter \ref{ch:timbre}, we combine the analysis and synthesis methods developed in the preceding chapters and present a multi-instrument polyphonic music transcription system.
+Finally, concluding remarks are provided in Chapter \ref{ch:conclusions}.
 
 
-Chapter \ref{ch:methods} presents the tentative design of the proposed automatic music transcription research, along with the architecture of the deep generative model and the datasets to be used.
-%The pipeline incorporates deep learning and music signal processing methods as well as other important components including data augmentation, software instruments, audio synthesis, and music language models.
-Subsequently, some results of the preliminary experiments in this direction of research are introduced in Section \ref{ch:pilot}, including a monotonic pitch estimator based on time-domain convolutional neural network and a generative adversarial network trained on log-magnitude spectrograms of instrument note samples.
+
