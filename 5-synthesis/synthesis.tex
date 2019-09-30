@@ -34,7 +34,7 @@ This learned synthesis engine allows for flexible timbre control, and in particu
 \subsection{Timbre Control in Musical Synthesis}
 
 Methods for music synthesis are based on a variety of techniques such as FM synthesis, subtractive synthesis, physical modeling, sample-based synthesis, and granular synthesis~\cite{pejrolo2017creating}.
-The method of controlling timbre and the level of flexibility depends on the parameters of the exact method used, but in general, there is a trade-off between flexible timbre control over synthetic sounds (e.g. FM or subtractive synthesis) and a limited timbre control in more ``realistic'' sounds (e.g. sample-based or granular synthesis). %\textsuperscript{\note{citation needed}}
+The method of controlling timbre and the level of flexibility depends on the parameters of the exact method used, but in general, there is a trade-off between flexible timbre control over synthetic sounds (e.g. FM or subtractive synthesis) and a limited timbre control in more ``realistic'' sounds (e.g. sample-based, physical model-based, or granular synthesis). %\textsuperscript{\note{citation needed}}
 Our work is aimed at achieving the best of both worlds: flexibly controlling a variety of realistic-sounding timbres.
 
 \subsection{Timbre Morphing}
@@ -49,11 +49,11 @@ To overcome this, we employ a data-driven approach for music synthesis that is g
 \subsection{Timbre Spaces and Embeddings}
 
 Timbre is often modeled using a timbre space~\cite{peeters2011timbre}, in which similar timbres lie closer than dissimilar timbres.
-In psychoacoustics, multidimensional scaling (MDS) is used to obtain a timbre space which preserves the timbral dissimilarities measured in perceptual experiments~\cite{grey1977multidimensional,wessel1979timbre}.
+In early work in psychoacoustics, multidimensional scaling (MDS) is used to obtain a timbre space which preserves the timbral dissimilarities measured in perceptual experiments~\cite{grey1977multidimensional,wessel1979timbre}.
 Meanwhile, in music content analysis, timbre similarity is measured using computed features such as the Mel-frequency cepstral coefficients (MFCCs) \cite{logan2000mfcc},
 descriptors of the spectral envelope \cite{agostini2013aid}, or hidden-layer weights of a neural network trained to distinguish different timbres~\cite{humphrey2011nlse}.
 A recent method~\cite{esling2018timbre} used a variational autoencoder \cite{kingma2014vae} to obtain a timbre space, and unlike the above embeddings, the method is able to generate monophonic audio for a particular timbre embedding but does not consider the temporal evolution of notes such as attacks and decays.
-In our work, we generate a timbre embedding as a byproduct of polyphonic synthesis, which can utilize both spectral and temporal aspects of timbres.
+In our work, we generate a timbre embedding as a byproduct of polyphonic synthesis, which can utilize both spectral and temporal aspects of timbre.
 
 
 \subsection{Neural Audio Synthesis using WaveNet}
@@ -62,7 +62,7 @@ WaveNet~\cite{oord2016wavenet} is a generative audio synthesis model that is abl
 WaveNet achieves this by learning an autoregressive distribution which predicts the next audio sample from the previous samples in its receptive field using a series of dilated convolutions.
 Tacotron~\cite{shen2018tacotron} and Deep Voice~\cite{ping2018deepvoice3} are WaveNet-based text-to-speech models which first predict a Mel spectrogram from text and use it to condition a WaveNet vocoder.
 
-There are also a few notable applications of WaveNet on music, including NSynth~\cite{engel2017nsynth}, an autoencoder architecture which separately encodes monophonic pitch with learned timbral features, and the universal music translation network~\cite{mor2019universal} which uses a denoising autoencoder architecture that can extract and translate between musical styles while preserving the melody.
+There are also a few notable applications of WaveNet in music, including NSynth~\cite{engel2017nsynth}, an autoencoder architecture which separately encodes monophonic pitch with learned timbral features, and the universal music translation network~\cite{mor2019universal} which uses a denoising autoencoder architecture that can extract and translate between musical styles while preserving the melody.
 In \cite{hawthorne2019maestro}, a WaveNet is used for music synthesis conditioned directly on note sequences, while only supporting piano sounds.
 Our model is similarly built around WaveNet for its synthesis capability, while using a learned embedding space to flexibly control the timbre of polyphonic music.
 
