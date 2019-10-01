@@ -75,7 +75,7 @@ The purpose of this section is to define those limitations in terms of the scope
 \subsection{Scope of Music}
 
 Music signals typically contain both harmonic and percussive sources. 
-From a signal processing point of view, harmonic sounds are quasi-periodic and contain energy only at certain frequencies, typically at the multiples of the fundamental frequency, whereas percussive sounds have continuous frequency spectra in which it is not possible to define a fundamental frequency.
+From a signal processing point of view, harmonic sounds are quasi-periodic and contain energy only at certain frequencies, roughly at the multiples of the fundamental frequency, whereas percussive or highly inharmonic sounds have aperiodic frequency spectra in which it is not possible to define a fundamental frequency.
 Consequently, transcription models for harmonic sounds and percussive sounds require different techniques according to their nature.
 
 
@@ -126,8 +126,7 @@ This thesis uses both kinds of datasets, from synthesized and recorded audio sig
 The goal of automatic transcription is at a lower level than for tasks such as  chord recognition and melody tracking, which may incur even more subjective disagreements caused by the imprecise definitions of chords and melodies.
 Being directly related to the physical concept of fundamental frequency, pitch is relatively precisely defined in this sense, and formulating automatic music transcription as an audio-to-piano-roll conversion mostly eliminates the ambiguity that exists in chord recognition and melody tracking.
 There exist some cases where the mathematical definition of fundamental frequency still cannot be applied for all pitched sounds, such as the Shepard tone \cite{shepard1964circularity} where the pitch of a harmonic sound fails to be consistently mapped to a fundamental frequency.
-\TODO{inharmonicity}
-However, disregarding these few edge cases, this study assumes that the piano roll notation can convey an objective transcription for practical purposes, postulating AMT as a mathematical problem which does not require experiments on human subjects.
+However, disregarding these few edge cases, this study assumes that the piano roll notation can convey an objective transcription for many practical purposes, allowing us to postulate AMT as a mathematical problem which does not require experiments on human subjects.
 
 \section{Need for Study}
 
@@ -185,63 +184,6 @@ In this context, this thesis aims to design and develop improved methods for aut
 The idea specifically hypothesizes that by training a generative model, it is possible to learn disentangled representations, from which the information necessary for transcription can be easily extracted, as depicted in Figure \ref{fig:autoencoder}.
 By doing so, the ultimate objective is to build an end-to-end differentiable model that connects the piano roll representation to audio signals, in order to perform automatic music transcription --- obtaining the most likely piano roll representation for given a audio waveform.
 
-\iffalse
-
-\subsection{Generative Models as a new Paradigm of MIR Research}
-
-\begin{figure}
-	\begin{subfigure}[b]{\textwidth}
-		\centering
-		\includegraphics[width=0.75\textwidth]{paradigms-1-manual.pdf}
-		\caption{A traditional rule-based model based on hand-crafted features.}
-		\label{}
-	\end{subfigure}
-	\begin{subfigure}[b]{\textwidth}
-		\centering
-		\vspace{1em}
-		\includegraphics[width=0.75\textwidth]{paradigms-2-features.pdf}
-		\caption{A data-driven machine learning model built upon hand-crafted features.}
-		\label{}
-	\end{subfigure}
-	\begin{subfigure}[b]{\textwidth}
-		\centering
-		\vspace{1em}
-		\includegraphics[width=0.75\textwidth]{paradigms-3-end-to-end.pdf}
-		\caption{An end-to-end data-driven model without manual feature engineering.}
-		\label{}
-	\end{subfigure}
-	\begin{subfigure}[b]{\textwidth}
-		\centering
-		\vspace{1em}
-		\includegraphics[width=0.75\textwidth]{paradigms-4-analysis-synthesis.pdf}
-		\caption{Analysis/synthesis \cite{salamon2017analysis} for accurate and automatic annotation.}
-		\label{}
-	\end{subfigure}
-	\begin{subfigure}[b]{\textwidth}
-		\centering
-		\vspace{1em}
-		\includegraphics[width=0.9\textwidth]{paradigms-5-proposed.pdf}
-		\caption{The proposed setup, leveraging the music language model and the generative model providing an infinite source of accurately annotated training data.}
-		\label{}
-	\end{subfigure}
-	\caption{Paradigms of MIR research. Blue arrows indicate learnable components.}
-	\label{fig:paradigms}
-\end{figure}
-
-
-In the proposed setup, a music language model is trained to produce meaningful symbolic music sequences to be fed to the generative model, which can synthesize multi-track polyphonic music along with the corresponding annotations.
-
-This architecture can be aligned with the previous paradigms of MIR research, as shown in Figure \ref{fig:paradigms}:
-(a) The earlier methods typically use a carefully crafted function to extract features and performed rule-based predictions, whereas (b) the data-driven methods replace the later part with a machine learning model trainable with a dataset.
-(c) With the access to a larger amount of data and deep learning techniques, end-to-end models eliminate the need for manually designed feature extractors by learning the feature transform directly from data.
-(d) The analysis/synthesis model \cite{salamon2017analysis} overcomes the data scarcity problem by automatically generating annotations from multi-track stems, to be supplied to a polyphonic transcription model.
-A shortcoming of this approach is that it requires a multi-track dataset composed of monophonic stems.
-(e) The proposed setup extends the analysis/synthesis model by building a fully learnable pipeline, where the synthesizer component of the generative model serves as an effectively infinite source of labeled training examples.
-
-In theory, this can constitute a positive feedback loop where data augmentation improves the performance of the transcription model, and the improved synthesizer component of the transcription model provides better data augmentation. \TODO{revise}
-% Another advantage of this setup is that the data augmentation pipeline is not limited to training an AMT model but applicable to any music information retrieval tasks.
-
-\fi
 
 \subsection{On the Broader Context of Machine Listening in AI Research}
 
@@ -261,7 +203,7 @@ To this end, the problem of automatic music transcription is not just an intrigu
 \subsection{Organization of The Thesis}
 
 
-This thesis considers the possibility of using deep generative models to learn the inductive bias \TODO{explain} incorporating musical concepts that are necessary for automatic music transcription.
+This thesis examines the possibility of using deep generative models to learn and inform a music transcription model to incorporate musical concepts.
 There exists a rich history of research aiming at the understanding of musical sounds and automatic music transcription; to validate this claim as a feasible research direction and place this thesis in the context of this continuum of research, Chapter \ref{ch:mir} provides a review of the standard methods and the current state of the art in automatic music transcription research.
 Deep learning techniques are employed as a building block throughout this thesis, and a general introduction to deep learning and deep generative models is provided in Chapter \ref{ch:deeplearning}, with a focus on generative adversarial networks.
 
