@@ -152,15 +152,58 @@ We ran the optimization for 180,000 steps and report the transcription accuracy 
 
 \subsection{Synthesizer Output}
 
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{synthesizer-output.pdf}
+\caption{An example of the input, target, and output representations of the synthesizer. The output resembles the target Mel spectrogram but shows a regular pattern as constrained by the synthesizer model.}\label{fig:synthesizer-output}
+\end{figure}
+
+Figure \ref{fig:synthesizer-output}: the synthesizer output
+
 \subsection{Transcription Accuracy}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth]{cosine_distance.pdf}
+\caption{The learned timbre embedding space mapping the 11 instruments in the MusicNet dataset into the corresponding points in the space. Types of instruments (keyboards, winds, and strings) are color-coded.}\label{fig:learned-timbre-embedding}
+\end{figure}
+
+\begin{itemize}
+	\item Figure~\ref{fig:learned-timbre-embedding}: learned timbre embedding
+	\item Table~\ref{tab:transcription-accuracy-comparison}: accuracy comparison
+	\item \TODO{Error Analysis}
+\end{itemize}
+
+The multi-label baseline exhibits significantly lower performance in these instrument-agnostic metrics, and the proposed model slightly outperforms the single-label baseline, which does not predict the instrument labels.
+
+\begin{table}
+\centering\small
+\begin{tabular}{c|ccc}
+& \makecell{Baseline \\ (single label)} & \makecell{Baseline \\ (multi-label)} & \makecell{Synthesizer-aided \\ (ours)} \\ \hline
+Precision & 0.736 & 0.714 & 0.735 \\ 
+Recall & 0.711 & 0.600 & 0.726 \\ 
+F1 Score & 0.720 & 0.650 & 0.729 \\
+\end{tabular}
+\vspace{1em}
+\caption{A comparison of instrument-agnostic frame transcription accuracies for the baseline models and the proposed synthesizer-aided transcription model. The proposed model achieves better recall while staying at the same precision.}\label{tab:transcription-accuracy-comparison}
+\end{table}
 
 \subsection{Multi-Instrument Transcription}
 
+\TODO{multi-instrument accuracy}
+
 \subsection{MusicNet Inspector}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{inspector.png}
+\caption{The MusicNet Inspector web interface. Users can select among the 330 tracks in the MusicNet dataset, and the selected track is played together with the CQT, piano roll, and amplitude visualizations.}\label{fig:musicnet-inspector}
+\end{figure}
+
+Figure~\ref{fig:musicnet-inspector}: the web UI.
 
 \section{Conclusion}
 
 \begin{itemize}
-	\item Discussion points: unison, dot product space, Lipschitz; volume information, inharmonicity
+	\item Discussion points: dataset quality, unison, dot product space, Lipschitz; volume information, inharmonicity
 \end{itemize}
 

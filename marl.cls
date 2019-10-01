@@ -49,6 +49,7 @@
 \usepackage{textcomp}
 \usepackage{ wasysym }
 \usepackage{mathbbol}
+\usepackage{makecell}
 
 \usepackage[none]{hyphenat}
 %\flushbottom
