@@ -4,7 +4,7 @@
 
 \documentclass[oneside, 11pt, letterpaper]{marl}
 
-\title{\doublespacing
+\abstracttitle{\doublespacing
 %Applications of Generative Neural Networks \\ in Automatic Music Transcription\\
 Automatic Music Transcription in the Deep Learning Era:\\Perspectives on Generative Neural Networks
 }
@@ -38,50 +38,7 @@ Automatic Music Transcription in the Deep Learning Era:\\Perspectives on Generat
 \widowpenalty=10000
 \clubpenalty=10000
 
-\include{frontmatter/cover}
+\maketitle
 \include{frontmatter/abstract}
-
-\doublespacing
-% \include{frontmatter/dedication}
-% \include{frontmatter/acknowledgement}
-\singlespacing
-
-\include{frontmatter/toc}
-% \include{frontmatter/glossary}
-\include{frontmatter/epigraph}
-
-\mainmatter
-\doublespacing
-
-%: ----------------------- subdocuments ------------------------
-\include{1-introduction/introduction}
-\include{2-mir/mir}
-\include{3-deeplearning/deeplearning}
-\include{4-monophonic/monophonic}
-\include{5-synthesis/synthesis}
-\include{6-adversarial/adversarial}
-\include{7-timbre/timbre}
-\include{8-conclusions/conclusions}
-
-%: ----------------------- bibliography ------------------------
-{
-\hypersetup{linkcolor = RoyalBlue}
-\onehalfspacing
-\renewcommand\bibname{Bibliography}
-\renewcommand\bibliographytypesize{\small}
-\bibliography{library/library}
-}
-
-%: ----------------------- appendices --------------------------
-% \appendixbegin
-% \include{backmatter/appendices}
-
-%: --------------------------- index ---------------------------
-% \clearpage
-% \begin{footnotesize}
-% \cleardoublepage % ensure the right page
-% \phantomsection % sets an anchor
-% \printindex
-% \end{footnotesize}
 
 \end{document}

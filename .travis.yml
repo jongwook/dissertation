@@ -39,6 +39,7 @@ cache:
 script:
  - mkdir -p result
  - tectonic ./dissertation.tex --print -o result -r 2
+ - tectonic ./abstract.tex --print -o result -r 0
  - bash -e split.sh
  - ls chapters > result/chapters.txt
  - mv chapters result/
