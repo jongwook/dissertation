@@ -298,24 +298,23 @@ While the improvement in the individual multi-instrument performance remains a f
 
 \subsection{MusicNet Inspector}
 
-\begin{figure}
+\begin{figure}[t]
 \includegraphics[width=\textwidth]{inspector.png}
 \caption{The MusicNet Inspector web interface. Users can select among the 330 tracks in the MusicNet dataset, and the selected track is played together with the CQT, piano roll, and amplitude visualizations.}\label{fig:musicnet-inspector}
 \end{figure}
 
-Finally, we introduce a web interface developed for easy inspection of the audio tracks in the MusicNet dataset, which helped identify the characteristics and imperfections of the music and the annotations in the dataset.
+Finally, we introduce a web interface\footnote{\url{https://musicnet-instpector.github.io}} developed for easy inspection of the audio tracks in the MusicNet dataset, which helped identify the characteristics and imperfections of the music and the annotations in the dataset.
 The UI is shown in Figure~\ref{fig:musicnet-inspector}; the users can select one of the 330 tracks in the list showing the details of each track, and a video containing a CQT representation, color-coded piano-roll representation, and an audio amplitude visualization is played together with the audio.
 Additionally, the users can participate in the discussion about each track, e.g. any errors in the annotations, in the comment section.
 This interface can serve as a useful tool for researchers using the MusicNet dataset, providing an easy way to inspect the content of the dataset.
 
 \section{Future Work}
 
-Although the experimental results presented above has shown that a marginal improvement by the appended synthesizer component is possible, significant further work is required to prove the practical viability of the idea.
-First of all, although the MusicNet dataset is the largest freely available dataset for multiple-instrument music transcription, it contains a non-negligible amount of inaccuracy in the annotations.
-This is largely because the annotations were largely obtained by matching each audio track with a MIDI file containing the same piece using dynamic time warping~\cite{thickstun2017musicnet}.
-This caused many inaccurate time mappings near the beginning and the end of each track, and there exist a few cases where totally inaccurate annotations continue over extended periods, because the audio and the MIDI file sometimes do not exactly match due to different repetitions or revisions of the music.
+The experimental results presented above has shown that a marginal improvement by the appended synthesizer component is possible. However, significant further work is required to prove the practical viability of the idea.
+First of all, although MusicNet is the largest freely available dataset for multiple-instrument music transcription, it contains a non-negligible amount of inaccuracy in the annotations.
+This is largely because the annotations were obtained by matching each audio track with a MIDI file containing the same piece using dynamic time warping~\cite{thickstun2017musicnet}.
+This caused many inaccurate time mappings near the beginning and the end of each track, and there exist a few cases where inaccurate annotations continue over extended periods, because the music content of the audio and the MIDI file sometimes do not exactly match due to different repetitions or revisions of the music.
 Furthermore, because of the inhomogeneous sources of the audio tracks, the recording conditions and the tuning vary significantly, which made the model training even more difficult, given the relatively small number of tracks in the dataset.
-
 While the availability of a significantly larger and more accurate dataset is desirable, some of the drawbacks can be alleviated by performing data augmentation~\cite{mcfee2015muda} such as pitch shifting.
 Since the audio input is not volume-normalized during training, improved robustness to different dynamic ranges of audio can be achievable by augmenting the training data with the variations in the audio volume.
 
@@ -325,3 +324,13 @@ If a dataset containing the velocity information can be obtained, alternative lo
 % using onset info, dot product space, Lipschitz
 
 \section{Conclusions}
+
+In this chapter, we have explored the overarching idea of this thesis: using a music synthesis model to achieve better music transcription performance.
+To do so, we have proposed a novel synthesizer architecture which is expressive enough to learn the distribution of different instruments, while being restricted to produce only harmonic sounds matching the input and also having a low number of parameters to be able to effectively serve as a regularizer to a transcription model.
+We observed improved performance when the transcription model is appended by a pre-trained music synthesis model, which can help the transcriber achieve better recall while suppressing incorrect predictions.
+Additionally, we have tested the multi-instrument transcription performance of the same setup and introduced a web interface for easier navigation of the MusicNet dataset used in the experiments.
+
+This chapter concludes the technical work of this thesis, which started with proposing a framework for deep learning-based music analysis tasks (Chapter~\ref{ch:monophonic}), followed by introducing a WaveNet-based music synthesis model that can also learn the distribution of instrumental timbre (Chapter~\ref{ch:synthesis}) and an adversarial technique that can impose a music language model on an existing transcription model (Chatper~\ref{ch:adversarial}).
+We continue our discussion of our findings so far in the context of the series of research questions raised in Chapter~\ref{ch:introduction}, as well as about the implications and the prospects of this line of research, in the next and final chapter of this thesis.
+
+
