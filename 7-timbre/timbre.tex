@@ -136,7 +136,7 @@ where $\mathbf{s}$ follows the distribution of Mel spectra in the input audio, a
 
 We use the MusicNet dataset~\cite{thickstun2017musicnet} to train both the synthesizer and the transcriber.
 The dataset contains 2,048 minutes of classical chamber music audio and labels, which comprises 330 recordings of various ensembles.
-The dataset contains annotations of 11 General MIDI instruments: Acoustic Grand Piano, Harpsichord, Violin, Viola, Cello, Contrabass, French Horn, Oboe, Bassoon, Clarinet, and Flute.
+The dataset contains annotations of 11 General MIDI instruments: acoustic grand piano, harpsichord, violin, viola, cello, contrabass, french horn, oboe, bassoon, clarinet, and flute.
 Different recordings in the dataset have drastically different tuning, ranging more than a semitone in some recordings which would result in a wrong transcription even by a perfect transcriber.
 To alleviate this, we preprocess the dataset by running a tuning estimator implemented in librosa~\cite{mcfee2015librosa} on each track and pitch-shifted any recordings that are more than 20 cents apart from the A440 tuning.
 
@@ -164,24 +164,81 @@ Figure \ref{fig:synthesizer-output}: the synthesizer output
 
 \begin{figure}
 \centering
-\includegraphics[width=0.7\textwidth]{cosine_distance.pdf}
+\includegraphics[width=0.9\textwidth]{cosine_distance.pdf}
 \caption{The learned timbre embedding space mapping the 11 instruments in the MusicNet dataset into the corresponding points in the space. Types of instruments (keyboards, winds, and strings) are color-coded.}\label{fig:learned-timbre-embedding}
 \end{figure}
 
 \begin{itemize}
 	\item Figure~\ref{fig:learned-timbre-embedding}: learned timbre embedding
 	\item Table~\ref{tab:transcription-accuracy-comparison}: accuracy comparison
-	\item \TODO{Error Analysis}
 \end{itemize}
 
 The multi-label baseline exhibits significantly lower performance in these instrument-agnostic metrics, and the proposed model slightly outperforms the single-label baseline, which does not predict the instrument labels.
 
-\begin{table}
+
+\begin{figure}
+\begin{subfigure}[b]{\textwidth}
+	\centering
+	\parbox{0.3\textwidth}{\footnotesize\centering Ground-Truth}
+	\quad
+	\parbox{0.3\textwidth}{\footnotesize\centering Baseline}
+	\quad
+	\parbox{0.3\textwidth}{\footnotesize\centering Proposed}
+	\\
+	\vspace{0.5em}
+	\includegraphics[width=0.3\textwidth]{cropped/2191-label.png}
+	\quad
+	\includegraphics[width=0.3\textwidth]{cropped/2191-baseline.png}
+	\quad
+	\includegraphics[width=0.3\textwidth]{cropped/2191-proposed.png}
+	\caption{The proposed model correctly finds the highest note that the baseline model did not detect.}
+	\label{}
+\end{subfigure}
+\begin{subfigure}[b]{\textwidth}
+	\vspace{2em}
+	\centering
+	\parbox{0.3\textwidth}{\footnotesize\centering Ground-Truth}
+	\quad
+	\parbox{0.3\textwidth}{\footnotesize\centering Baseline}
+	\quad
+	\parbox{0.3\textwidth}{\footnotesize\centering Proposed}
+	\\
+	\vspace{0.5em}
+	\includegraphics[width=0.3\textwidth]{cropped/2298-label.png}
+	\quad
+	\includegraphics[width=0.3\textwidth]{cropped/2298-baseline.png}
+	\quad
+	\includegraphics[width=0.3\textwidth]{cropped/2298-proposed.png}
+	\caption{The proposed model makes less false positives in the silent part in the beginning of the excerpt.}
+	\label{}
+\end{subfigure}
+\begin{subfigure}[b]{\textwidth}
+	\vspace{2em}
+	\centering
+	\parbox{0.3\textwidth}{\footnotesize\centering Ground-Truth}
+	\quad
+	\parbox{0.3\textwidth}{\footnotesize\centering Baseline}
+	\quad
+	\parbox{0.3\textwidth}{\footnotesize\centering Proposed}
+	\\
+	\vspace{0.5em}
+	\includegraphics[width=0.3\textwidth]{cropped/2303-label.png}
+	\quad
+	\includegraphics[width=0.3\textwidth]{cropped/2303-baseline.png}
+	\quad
+	\includegraphics[width=0.3\textwidth]{cropped/2303-proposed.png}
+	\caption{The proposed model better predicts the low sustained note in the later half of the excerpt, while being more prone to false positive predictions than the baseline.}
+	\label{}
+\end{subfigure}
+\caption{Examples of the frame predictions by the baseline and the proposed model, }\label{fig:frame-prediction-excerpts}
+\end{figure}
+
+\begin{table}[b]
 \centering\small
 \begin{tabular}{c|ccc}
 & \makecell{Baseline \\ (single label)} & \makecell{Baseline \\ (multi-label)} & \makecell{Synthesizer-aided \\ (ours)} \\ \hline
-Precision & 0.736 & 0.714 & 0.735 \\ 
-Recall & 0.711 & 0.600 & 0.726 \\ 
+Precision & 0.736 & 0.714 & 0.735 \\
+Recall & 0.711 & 0.600 & 0.726 \\
 F1 Score & 0.720 & 0.650 & 0.729 \\
 \end{tabular}
 \vspace{1em}
@@ -190,7 +247,13 @@ F1 Score & 0.720 & 0.650 & 0.729 \\
 
 \subsection{Multi-Instrument Transcription}
 
-\TODO{multi-instrument accuracy}
+\TODO{table}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{2628.png}
+\caption{An example of multi-instrument transcription of an accompanied violin piece (MusicNet track 2628), where predictions of keyboard and string instruments are color-coded in cyan and magenta respectively.}\label{fig:multi-instrument-example}
+\end{figure}
 
 \subsection{MusicNet Inspector}
 
