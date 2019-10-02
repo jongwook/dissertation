@@ -66,15 +66,13 @@ There are also a few notable applications of WaveNet in music, including NSynth~
 In \cite{hawthorne2019maestro}, a WaveNet is used for music synthesis conditioned directly on note sequences, while only supporting piano sounds.
 Our model is similarly built around WaveNet for its synthesis capability, while using a learned embedding space to flexibly control the timbre of polyphonic music.
 
-
-\pagebreak % temp 
-
 \section{Method}\label{sec:method}
 
 The neural network shown in Figure \ref{fig:mel2mel-architecture}, dubbed Mel2Mel, concerns the task of synthesizing music corresponding to given note sequences and timbre.
 The note sequences are supplied as a MIDI file and converted to a piano roll representation, which contains the note timings and the corresponding note velocities for each of the 88 piano keys.
 We use a fixed step size in time, and the piano roll representation is encoded as a matrix by quantizing the note timings to the nearest time step.
 The input to the neural network is a concatenation of two 88-dimensional piano roll representations, one for onsets and one for frames, comprising 176 dimensions in total:
+
 \begin{eqnarray*}
 	\mathbf{X} & =&  [~ \mathbf{X}^{\textrm{onset}} ~;~ \mathbf{X}^{\textrm{frame}} ~] \\
 	\mathbf{X}^{\textrm{onset}}_{p,t} &= & v_{\textrm{~the active note}} \cdot \mathbb{1}_{\textrm{a note at pitch $p$ is \textit{first} active at time $t$}} \\

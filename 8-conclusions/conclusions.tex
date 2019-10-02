@@ -16,27 +16,27 @@ In this chapter, we summarize our findings and discuss the future prospects of t
 Through the experiments and analyses conducted in this thesis, we have answered the research questions raised in Section~\ref{ch:introduction}.\ref{sec:subproblems}.
 We summarize our findings and discuss the takeaways from the thesis in the following paragraphs, by addressing each of the research questions raised in Section~\ref{ch:introduction}.\ref{sec:subproblems}.
 
-\uline{Question 1. What kinds of deep models and representations can be used for effectively extracting pitch from audio?}
-In Chapter~\ref{ch:monophonic} where a data-driven method for monophonic pitch estimation is proposed, we have found that a framewise convolutional computation predicting a time-frequency representation is an effective way to extract pitch information from audio.
+\uline{Question 1: What kinds of deep models and representations can be used for effectively extracting pitch from audio?}
+In Chapter~\ref{ch:monophonic} where a data-driven method for monophonic pitch estimation is proposed, we have found that a frame-wise convolutional computation predicting a time-frequency representation is an effective way to extract pitch information from audio.
 This approach is succesfully employed in the subsequent chapters of this thesis, where we predicted Mel spectrograms for music synthesis (Chapter~\ref{ch:synthesis}), piano-roll representation for music transcription (Chapter~\ref{ch:adversarial}), and both (Chapter~\ref{ch:timbre}).
 
-\uline{Question 2. How does the choice of datasets affect the accuracy and the generalizability of a trained model?}
+\uline{Question 2: How does the choice of datasets affect the accuracy and the generalizability of a trained model?}
 We have learned that the choice of dataset can cause a drastic effect in a transcription model's performance, and caution regarding the generalizability is needed when releasing a model as open-source.
 For an open-source release of a pre-traind model, the best practice is to train the model using many datasets from various sources that are as diverse as possible, because audios in a single dataset are likely to be highly correlated, compared to image datasets~\cite{thickstun2018invariances}.
 In general, the performance of a model is a function of the quality and the quantity of the dataset, very much more so than it is a function of the novelty in the model's design, and it is a motivating factor to develop automated data augmentation methods to be discussed in the next section.
 
 
-\uline{Question 3. How can we encode the concept of timbre in a way that is useful for music synthesis and transcription?}
+\uline{Question 3: How can we encode the concept of timbre in a way that is useful for music synthesis and transcription?}
 In Chapter~\ref{ch:synthesis}, we have presented a WaveNet-based music synthesis method that can learn a continuous timbre embedding space, on which one can interpolate between different timbres.
 This is achieved by conditioning a recurrent neural network with the timbre embedding to produce instrument-specific Mel spectrograms.
 The timbre embedding space encodes continuous variations in musical timbre in which it is possible to interpolate timbres between points, and it can contain the timbre of virtually unlimited number of instruments.
 How to reduce discontinuities and irregularities to make smoother timbre transitions remains a future work.
 
-\uline{Question 4. How can a transcription model make informed predictions incorporating the knowledge of music theory?}
+\uline{Question 4: How can a transcription model make informed predictions incorporating the knowledge of music theory?}
 In Chapter~\ref{ch:adversarial}, we have used a conditional generative adversarial network model to impose a prior on music transcription, borrowing ideas from image translation literature.
 By appending an adversarial discriminator that encourages the resulting transcription to be realistic, this approach implements a music language model that works in conjunction with the Onsets and Frames transcription model.
 
-\uline{Question 5. Can a music synthesizer component based on a deep generative model be used to improve music transcription?}
+\uline{Question 5: Can a music synthesizer component based on a deep generative model be used to improve music transcription?}
 Lastly, in Chapter~\ref{ch:timbre}, we combined the ideas from the preceding chapters to create a music transcription model that can benefit from the musical knowledge contained in a music synthesizer model.
 A synthesizer-aided transcription model achieves better recall than the equivalent model without a synthesizer, and it implies that the appended synthesizer provides useful information to the transcription model as a form of regularization.
 
@@ -77,14 +77,9 @@ A compression method such as VQ-VAE~\cite{oord2017vqvae} would be helpful in all
 
 
 Finally, in the discussion regarding the future of AMT, we need to consider the fundamental limitation on any music transcription task, either automatic or manual, and when it can be said that AMT is solved.
-Polyphonic music contains a mixture of sounds with an indefinite number of notes being played simultaneously; even the most experienced musicians may not be able to identify every note. %, and the audio mixture may not contain sufficient information to convey all notes in the first place.
+Polyphonic music contains a mixture of sounds with an indefinite number of notes being played simultaneously; even the most experienced musicians may not be able to identify every note.
 It would be unreasonable to expect anyone to perfectly transcribe all notes in the score of an orchestral piece from an audio file, but it would be sensible for a trained musician to produce a version of the score that, when played by the same orchestra, sounds indistinguishable to the original recording.
 Considering these limitations, passing this ``transcriptional Turing test'' as shown in Figure \ref{fig:turing}, rather than achieving 100\% accuracy on a certain dataset, should be the ultimate goal of automatic music transcription, at which point it could be said to mimic human expert-level knowledge on this task.
 
 Considering the astounding progress of deep generative models in the domains such as image generation~\cite{karras2019stylegan} and natural language generation \cite{radford2018gpt}, it is reasonable to predict that generative modeling will play an important role in the coming decade for enabling a deeper computational understanding of music, to a degree that it becomes difficult to tell apart a machine-generated music transcription from one created by an expert musician.
 
-
-
-
-
-\pagebreak
