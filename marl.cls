@@ -85,11 +85,12 @@
 \usepackage[margin=10pt,font=small,labelfont=md]{caption}
 \DeclareCaptionLabelSeparator{newline2}{\\[5pt]}
 \captionsetup[table]{
-  justification=raggedright,
-  labelsep = newline2,
+%  justification=raggedright,
+%  labelsep = newline2,
   skip = 6pt,
   position = above,
-  singlelinecheck=off}
+%  singlelinecheck=off
+}
 \captionsetup[subtable]{
   skip = 3pt,
   labelformat = simple,

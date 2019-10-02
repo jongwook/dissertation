@@ -122,12 +122,12 @@ Using the expanded outputs, the frame activations and the predicted embedding ca
 The frame activations are binarized before feeding to the synthesizer, and we use a gradient-stop for this connection.
 
 The synthesizer model is separately trained, and the transcriber model is then optimized to minimize the sum of three losses:
-\begin{equation}
+\begin{equation}\label{eqn:overall-loss}
 \mathcal{L}_{\text{Overall}} = \mathcal{L}_{\text{Onsets \& Frames}} + \lambda \left ( \mathcal{L}_{\text{Embedding}} + \mathcal{L}_{\text{Synthesizer}} \right )
 \end{equation}
 The first term, $\mathcal{L}_{\text{Onsets \& Frames}}$, is the loss of the Onsets and Frames model which is the sum of the binary cross entropy of the onsets, offsets, and frame predictions.
 We define $\mathcal{L}_{\text{Embedding}}$ as the mean squared error (MSE) between the predicted instrument embedding and the ground truth, and $\mathcal{L}_{\text{Synthesizer}}$ is defined as the mean cosine distance between the predicted and the ground-truth Mel spectra:
-\begin{equation}
+\begin{equation}\label{eqn:cosine-distance-loss}
 \mathcal{L}_{\text{Synthesizer}} = \mathbb{E}_{\hat{\mathbf{s}}, \mathbf{s}} \left [ 1 - \frac{ \hat{\mathbf{s}} \cdot \mathbf{s} }{\lVert \hat{\mathbf{s}} \rVert \lVert \mathbf{s} \rVert} \right ]
 \end{equation}
 where $\mathbf{s}$ follows the distribution of Mel spectra in the input audio, and $\hat{\mathbf{s}}$ is the Mel spectra predicted by the synthesizer based on the transcription predicted from $\mathbf{s}$.
@@ -140,9 +140,9 @@ The dataset contains annotations of 11 General MIDI instruments: acoustic grand 
 Different recordings in the dataset have drastically different tuning, ranging more than a semitone in some recordings which would result in a wrong transcription even by a perfect transcriber.
 To alleviate this, we preprocess the dataset by running a tuning estimator implemented in librosa~\cite{mcfee2015librosa} on each track and pitch-shifted any recordings that are more than 20 cents apart from the A440 tuning.
 
-Unlike in Chapter~\ref{ch:adversarial}, we use the original Onsets and Frames model size of 512, and the transcription model contains 10 million parameters.
+We use the Onsets and Frames model~\cite{hawthorne2018onsetsframes} with the hidden size of 512, which contains 10 million learnable parameters.
 We use a 2-dimensional instrument embedding space to represent the distribution of the 11 instruments, and the polynomial transfer functions used in the subtractive synthesis are modeled by cubic B\'{e}zier curves.
-
+We additionally train and compare a multi-label prediction model, which replaces the last layer of the Onsets and Frames model with a multi-label binary classifier that predicts the activation of each of the 11 instruments.
 
 The audio is resampled to 16kHz, and a training batch is composed of eight 20-second audio segments and labels.
 We use Adam optimizer~\cite{kingma2015adam} with learning rate 0.0006, and the learning rate decay of factor 0.98 is applied every 1000 steps.
@@ -150,109 +150,150 @@ We ran the optimization for 180,000 steps and report the transcription accuracy 
 
 \section{Results}
 
+In this section, we summarize the experimental results, first by qualitatively analyzing the behavior of the synthesizer model, followed by quantitative comparisons of transcription accuracies of the baseline and proposed transcription models.
+We also introduce a web interface that allows for easier exploration of the contents of the MusicNet dataset.
+
 \subsection{Synthesizer Output}
 
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{synthesizer-output.pdf}
-\caption{An example of the input, target, and output representations of the synthesizer. The output resembles the target Mel spectrogram but shows a regular pattern as constrained by the synthesizer model.}\label{fig:synthesizer-output}
+\caption{An example of the input, target, and output representations of the synthesizer. The output resembles the target Mel spectrogram but shows a regular pattern as constrained by the synthesizer model. }\label{fig:synthesizer-output}
 \end{figure}
 
-Figure \ref{fig:synthesizer-output}: the synthesizer output
+Figure \ref{fig:synthesizer-output} shows example input, target, and output representations of the synthesizer component, and Figure \ref{fig:learned-timbre-embedding} shows the learned timbre embedding space containing the 11 instruments in the MusicNet dataset.
+The input to the synthesizer contains the frame information in a piano roll format, along with the corresponding timbre embeddings (not shown in Figure~\ref{fig:synthesizer-output}).
+The synthesizer is trained to predict the corresponding audio's Mel spectrogram by minimizing the cosine distance.
+Figure \ref{fig:learned-timbre-embedding} indicates that the synthesizer model is able to learn a timbre embedding space that maps similar kinds of instruments into neighboring regions in the space.
+
+Because the synthesizer is strictly limited by its architecture (Figure~\ref{fig:synthesizer-architecture}) to produce harmonic sound only, the output Mel spectrogram exhibits highly regular patterns compared to the target Mel spectrogram.
+While this output Mel spectrogram may not represent an audio signal that perfectly matches the target, it motivates us to find out whether this synthesizer can give informative signals to a transcription model.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.75\textwidth]{cosine_distance.pdf}
+	\vspace{-1em}
+	\caption{The learned timbre embedding space mapping the 11 instruments in the MusicNet dataset into the corresponding points in the space. Types of instruments (keyboards, winds, and strings) are color-coded.}\label{fig:learned-timbre-embedding}
+\end{figure}
+
+\begin{table}
+	\centering\small
+	\begin{tabular}{l|ccc}
+		& \makecell{Baseline \\ (single label)} & \makecell{Baseline \\ (multi-label)} & \makecell{Baseline \\ (synthesizer-aided)} \\ \hline
+		F1 Score & 0.720 & 0.650 & \textbf{0.729} \\
+		Precision & \textbf{0.736} & 0.714 & 0.735 \\
+		Recall & 0.711 & 0.600 & \textbf{0.726} \\
+	\end{tabular}
+	\vspace{1em}
+	\caption{A comparison of instrument-agnostic frame transcription accuracies for the baseline models and the proposed synthesizer-aided transcription model. The proposed model achieves better recall while staying at the same precision.}\label{tab:transcription-accuracy-comparison}
+\end{table}
 
 \subsection{Transcription Accuracy}
 
-\begin{figure}
-\centering
-\includegraphics[width=0.9\textwidth]{cosine_distance.pdf}
-\caption{The learned timbre embedding space mapping the 11 instruments in the MusicNet dataset into the corresponding points in the space. Types of instruments (keyboards, winds, and strings) are color-coded.}\label{fig:learned-timbre-embedding}
-\end{figure}
-
-\begin{itemize}
-	\item Figure~\ref{fig:learned-timbre-embedding}: learned timbre embedding
-	\item Table~\ref{tab:transcription-accuracy-comparison}: accuracy comparison
-\end{itemize}
-
-The multi-label baseline exhibits significantly lower performance in these instrument-agnostic metrics, and the proposed model slightly outperforms the single-label baseline, which does not predict the instrument labels.
-
+We compare the accuracy of the transcription model trained using the additional loss terms given by the appended synthesizer model, as in Equation~\ref{eqn:overall-loss}, with the accuracy of the equivalent transcription model trained without a synthesizer component.
+Table~\ref{tab:transcription-accuracy-comparison} summarizes the frame transcription metrics of the two configuration, in addition to a multi-label prediction model that performs a multi-label classification for each instrument.
+The multi-label baseline exhibits significantly lower performance in these instrument-agnostic metrics, and the proposed model slightly outperforms the single-label baseline.
 
 \begin{figure}
-\begin{subfigure}[b]{\textwidth}
-	\centering
-	\parbox{0.3\textwidth}{\footnotesize\centering Ground-Truth}
-	\quad
-	\parbox{0.3\textwidth}{\footnotesize\centering Baseline}
-	\quad
-	\parbox{0.3\textwidth}{\footnotesize\centering Proposed}
-	\\
-	\vspace{0.5em}
-	\includegraphics[width=0.3\textwidth]{cropped/2191-label.png}
-	\quad
-	\includegraphics[width=0.3\textwidth]{cropped/2191-baseline.png}
-	\quad
-	\includegraphics[width=0.3\textwidth]{cropped/2191-proposed.png}
-	\caption{The proposed model correctly finds the highest note that the baseline model did not detect.}
-	\label{}
-\end{subfigure}
-\begin{subfigure}[b]{\textwidth}
-	\vspace{2em}
-	\centering
-	\parbox{0.3\textwidth}{\footnotesize\centering Ground-Truth}
-	\quad
-	\parbox{0.3\textwidth}{\footnotesize\centering Baseline}
-	\quad
-	\parbox{0.3\textwidth}{\footnotesize\centering Proposed}
-	\\
-	\vspace{0.5em}
-	\includegraphics[width=0.3\textwidth]{cropped/2298-label.png}
-	\quad
-	\includegraphics[width=0.3\textwidth]{cropped/2298-baseline.png}
-	\quad
-	\includegraphics[width=0.3\textwidth]{cropped/2298-proposed.png}
-	\caption{The proposed model makes less false positives in the silent part in the beginning of the excerpt.}
-	\label{}
-\end{subfigure}
-\begin{subfigure}[b]{\textwidth}
-	\vspace{2em}
-	\centering
-	\parbox{0.3\textwidth}{\footnotesize\centering Ground-Truth}
-	\quad
-	\parbox{0.3\textwidth}{\footnotesize\centering Baseline}
-	\quad
-	\parbox{0.3\textwidth}{\footnotesize\centering Proposed}
-	\\
-	\vspace{0.5em}
-	\includegraphics[width=0.3\textwidth]{cropped/2303-label.png}
-	\quad
-	\includegraphics[width=0.3\textwidth]{cropped/2303-baseline.png}
-	\quad
-	\includegraphics[width=0.3\textwidth]{cropped/2303-proposed.png}
-	\caption{The proposed model better predicts the low sustained note in the later half of the excerpt, while being more prone to false positive predictions than the baseline.}
-	\label{}
-\end{subfigure}
-\caption{Examples of the frame predictions by the baseline and the proposed model, }\label{fig:frame-prediction-excerpts}
+	\begin{subfigure}[b]{\textwidth}
+		\centering
+		\parbox{0.3\textwidth}{\footnotesize\centering Ground-Truth}
+		\quad
+		\parbox{0.3\textwidth}{\footnotesize\centering Baseline}
+		\quad
+		\parbox{0.3\textwidth}{\footnotesize\centering Proposed}
+		\\
+		\vspace{0.5em}
+		\includegraphics[width=0.3\textwidth]{cropped/2191-label.png}
+		\quad
+		\includegraphics[width=0.3\textwidth]{cropped/2191-baseline.png}
+		\quad
+		\includegraphics[width=0.3\textwidth]{cropped/2191-proposed.png}
+		\caption{The proposed model correctly finds the highest note that the baseline model did not detect.}
+		\label{}
+	\end{subfigure}
+	\begin{subfigure}[b]{\textwidth}
+		\vspace{2em}
+		\centering
+		\parbox{0.3\textwidth}{\footnotesize\centering Ground-Truth}
+		\quad
+		\parbox{0.3\textwidth}{\footnotesize\centering Baseline}
+		\quad
+		\parbox{0.3\textwidth}{\footnotesize\centering Proposed}
+		\\
+		\vspace{0.5em}
+		\includegraphics[width=0.3\textwidth]{cropped/2298-label.png}
+		\quad
+		\includegraphics[width=0.3\textwidth]{cropped/2298-baseline.png}
+		\quad
+		\includegraphics[width=0.3\textwidth]{cropped/2298-proposed.png}
+		\caption{The proposed model makes less false positives in the silent part in the beginning of the excerpt.}
+		\label{}
+	\end{subfigure}
+	\begin{subfigure}[b]{\textwidth}
+		\vspace{2em}
+		\centering
+		\parbox{0.3\textwidth}{\footnotesize\centering Ground-Truth}
+		\quad
+		\parbox{0.3\textwidth}{\footnotesize\centering Baseline}
+		\quad
+		\parbox{0.3\textwidth}{\footnotesize\centering Proposed}
+		\\
+		\vspace{0.5em}
+		\includegraphics[width=0.3\textwidth]{cropped/2303-label.png}
+		\quad
+		\includegraphics[width=0.3\textwidth]{cropped/2303-baseline.png}
+		\quad
+		\includegraphics[width=0.3\textwidth]{cropped/2303-proposed.png}
+		\caption{The proposed model better predicts the low sustained note in the latter half of the excerpt, while being more prone to false positive predictions than the baseline.}
+		\label{}
+	\end{subfigure}
+	\caption{Examples of the frame predictions by the baseline and the proposed model, }\label{fig:frame-prediction-excerpts}
 \end{figure}
 
-\begin{table}[b]
-\centering\small
-\begin{tabular}{c|ccc}
-& \makecell{Baseline \\ (single label)} & \makecell{Baseline \\ (multi-label)} & \makecell{Synthesizer-aided \\ (ours)} \\ \hline
-Precision & 0.736 & 0.714 & 0.735 \\
-Recall & 0.711 & 0.600 & 0.726 \\
-F1 Score & 0.720 & 0.650 & 0.729 \\
-\end{tabular}
-\vspace{1em}
-\caption{A comparison of instrument-agnostic frame transcription accuracies for the baseline models and the proposed synthesizer-aided transcription model. The proposed model achieves better recall while staying at the same precision.}\label{tab:transcription-accuracy-comparison}
+Specifically, the proposed model achieves better recall than the single-label baseline while maintaining the same level of precision.
+To find out how the different behaviors of the two models contribute the differences in these metrics, we visualize in Figure~\ref{fig:frame-prediction-excerpts} a few interesting excerpts that explains the better recall score of the proposed model.
+Figure~\ref{fig:frame-prediction-excerpts}a is an excerpt of a solo violin track (MusicNet ID 2191) and shows that the proposed model is able to identify the highest note in the input that is not detected by the baseline model.
+In Figure~\ref{fig:frame-prediction-excerpts}b, which is the beginning of a solo cello piece (MusicNet ID 2298), the baseline model produces frame activations of a few notes before the first note, falsely predicted from the background noise in the input audio.
+Although the transcription metrics are not affected in this case since the activation values are below the threshold, it shows that the synthesizer model can suppress false predictions by the transcription model to a certain degree.
+Finally, in a solo piano excerpt shown in Figure~\ref{fig:frame-prediction-excerpts}c, the low sustained note in the latter half of the input is better predicted by the proposed model than the baseline.
+Transcription of a long sustained piano note is difficult because of the volume decay of a note, and this example implies that the appended synthesizer is able to encourage an accurate prediction of long notes.
+In all of these cases, the synthesizer helps in more accurately detecting frames, which in turn contributes to the better transcription metrics.
+
+
+\begin{table}[b!]
+	\centering\small
+	\begin{tabular}{l|ccc|ccc}
+		& \multicolumn{3}{c|}{\makecell{Baseline \\ (multi-label)}}
+		%& \quad\quad
+		& \multicolumn{3}{c}{\makecell{Proposed \\ (synthesizer-aided)}} \\
+		& F1 & Precision & Recall & F1 & Precision & Recall \\ \hline
+		Acoustic Grand Piano & 0.667 & 0.694 & 0.650 & 0.546 & 0.739 & 0.435 \\
+		Violin & 0.467 & 0.433 & 0.590 & 0.213 & 0.610 & 0.136 \\
+		Viola & 0.195 & 0.128 & 0.412 & 0.233 & 0.290 & 0.209 \\
+		Cello & 0.402 & 0.364 & 0.575 & 0.331 & 0.717 & 0.252 \\
+		French Horn & 0.255 & 0.164 & 0.602 & 0.246 & 0.218 & 0.299 \\
+		Bassoon & 0.290 & 0.213 & 0.473 & 0.065 & 0.152 & 0.043 \\
+		Clarinet & 0.386 & 0.305 & 0.526 & 0.376 & 0.332 & 0.440 \\
+	\end{tabular}
+	\vspace{1em}
+	\caption{Per-instrument accuracy of the multi-instrument baseline and the proposed model, showing only the instruments in the test tracks. The multi-instrument baseline generally outperforms the proposed model, which although shows higher precision across all instruments.}\label{tab:multilabel-performance-comparison}
 \end{table}
 
 \subsection{Multi-Instrument Transcription}
 
-\TODO{table}
+In this subsection, we compare the multi-instrument transcription performance of the proposed model with the multi-label baseline model.
+The instrument labels are assigned by finding the nearest instrument embedding to the embedding vector predicted by the transcription model.
+Table~\ref{tab:multilabel-performance-comparison} summarizes the transcription metrics for each instrument and indicates that the proposed model actually performs worse than the multi-label baseline, despite the advantages in the instrument-agnostic evaluation in the previous subsection.
+One contributing factor for the lower performance is that the nearest-neighbor assignment of instrument labels cannot produce the same pitch activated by multiple instruments, i.e. playing in unison.
+While the improvement in the individual multi-instrument performance remains a future work, the visualization of  Figure~\ref{fig:multi-instrument-example} shows that the model is capable of classifying the different classes of instruments, such as the piano and the strings.
+
+
 
 \begin{figure}
-\centering
-\includegraphics[width=\textwidth]{2628.png}
-\caption{An example of multi-instrument transcription of an accompanied violin piece (MusicNet track 2628), where predictions of keyboard and string instruments are color-coded in cyan and magenta respectively.}\label{fig:multi-instrument-example}
+	\centering
+	\includegraphics[width=\textwidth]{2628.png}
+	\caption{An example of multi-instrument transcription of a violin piece accompanied by piano (MusicNet track 2628), where the predictions of keyboard and string instruments are color-coded in cyan and magenta, respectively. }\label{fig:multi-instrument-example}
 \end{figure}
 
 \subsection{MusicNet Inspector}
@@ -262,11 +303,25 @@ F1 Score & 0.720 & 0.650 & 0.729 \\
 \caption{The MusicNet Inspector web interface. Users can select among the 330 tracks in the MusicNet dataset, and the selected track is played together with the CQT, piano roll, and amplitude visualizations.}\label{fig:musicnet-inspector}
 \end{figure}
 
-Figure~\ref{fig:musicnet-inspector}: the web UI.
+Finally, we introduce a web interface developed for easy inspection of the audio tracks in the MusicNet dataset, which helped identify the characteristics and imperfections of the music and the annotations in the dataset.
+The UI is shown in Figure~\ref{fig:musicnet-inspector}; the users can select one of the 330 tracks in the list showing the details of each track, and a video containing a CQT representation, color-coded piano-roll representation, and an audio amplitude visualization is played together with the audio.
+Additionally, the users can participate in the discussion about each track, e.g. any errors in the annotations, in the comment section.
+This interface can serve as a useful tool for researchers using the MusicNet dataset, providing an easy way to inspect the content of the dataset.
 
-\section{Conclusion}
+\section{Future Work}
 
-\begin{itemize}
-	\item Discussion points: dataset quality, unison, dot product space, Lipschitz; volume information, inharmonicity
-\end{itemize}
+Although the experimental results presented above has shown that a marginal improvement by the appended synthesizer component is possible, significant further work is required to prove the practical viability of the idea.
+First of all, although the MusicNet dataset is the largest freely available dataset for multiple-instrument music transcription, it contains a non-negligible amount of inaccuracy in the annotations.
+This is largely because the annotations were largely obtained by matching each audio track with a MIDI file containing the same piece using dynamic time warping~\cite{thickstun2017musicnet}.
+This caused many inaccurate time mappings near the beginning and the end of each track, and there exist a few cases where totally inaccurate annotations continue over extended periods, because the audio and the MIDI file sometimes do not exactly match due to different repetitions or revisions of the music.
+Furthermore, because of the inhomogeneous sources of the audio tracks, the recording conditions and the tuning vary significantly, which made the model training even more difficult, given the relatively small number of tracks in the dataset.
 
+While the availability of a significantly larger and more accurate dataset is desirable, some of the drawbacks can be alleviated by performing data augmentation~\cite{mcfee2015muda} such as pitch shifting.
+Since the audio input is not volume-normalized during training, improved robustness to different dynamic ranges of audio can be achievable by augmenting the training data with the variations in the audio volume.
+
+We have used the cosine distance loss (Equation~\ref{eqn:cosine-distance-loss}) which is invariant to the scaling of either the predicted or the target Mel spectrograms, because the annotations does not contain the velocity information.
+If a dataset containing the velocity information can be obtained, alternative loss functions such as spectral convergence~\cite{sturm2013classification} can be used for more accurate prediction of Mel spectrograms by the synthesizer.
+
+% using onset info, dot product space, Lipschitz
+
+\section{Conclusions}
