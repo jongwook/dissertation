@@ -9,29 +9,28 @@
 
 In Chapter \ref{ch:introduction}, we introduced the idea of extending a music transcription model with an additional synthesizer component that can convert the transcribed information back to the input audio, forming an analysis/synthesis framework as depicted in the encoder-decoder architecture in Figure \ref{fig:autoencoder}.
 By doing so, we anticipated that the two components --- the transcriber and the synthesizer --- can work together to better translate information between the two representations, i.e. audio waveform and the transcribed semantic information of the music.
-One motivation for employing such analysis/synthesis framework is that the advent of many successful deep learning techniques and the improved hardware capability may allow us to convert an audio signal completely into the constituent pieces of musical information that we want to transcribe, that are entangled in an extremely sophisticated way in the audio signal.
+One motivation for employing such analysis/synthesis framework is that the advent of many successful deep learning techniques and the improved hardware capability may allow us to break apart an audio signal completely into the constituent pieces of musical information that we want to transcribe, that are entangled in an extremely sophisticated way in the audio signal.
 In the preceding chapters, we have considered deep learning solutions to various problems in music analysis and synthesis, such as monophonic pitch tracking (Chapter \ref{ch:monophonic}), music synthesis with controllable timbre (Chapter \ref{ch:synthesis}), and polyphonic music transcription (Chapter \ref{ch:adversarial}).
 These problems correspond to a certain subset of the full encoder-decoder architecture, and in each chapter we discussed how the design choices in the model architecture and dataset construction affect the experimental results and the real-world applicability.
 
 Having learned the lessons from these, in this chapter we aim to construct an automatic music transcription system that encompasses the full analysis/synthesis cycle, by considering the general problem of multi-instrument polyphonic music transcription.
 We propose an autoencoder architecture that appends a synthesis model on top of a transcription model, and we verify the effects of the appended synthesizer in the experiments.
 As in Chapter \ref{ch:synthesis}, the synthesizer component is capable of capturing the different aspects of various timbres in the dataset using a learned timbre space representation.
-We show that the synthesizer component can serve as a regularizer to the transcriber, providing a form of prior knowledge on the spectral and temporal characteristics of the timbres. 
-% \TODO{some conclusive sentence summarizing the results of this chapter}
+We show that the synthesizer component can serve as a regularizer to the transcriber, providing a form of prior knowledge on the spectral and temporal characteristics of the timbres and thereby improving the transcription performance as well.
 
 \section{Introduction}
 
 Multi-instrument music transcription aims to extract not only the occurrences of multiple simultaneous pitches and notes but also the types of one or more instruments corresponding to those notes.
 Since it poses additional challenges to the already difficult problem of polyphonic music transcription, studies on the complete multi-instrument polyphonic transcription problem are relatively rare.
-Instead, most studies on analyzing multi-instrument audio focus on either developing a discriminative model for polyphonic where timbre information is disregarded~\cite{bittner2017deepsalience} %\TODO{cite more}
-or the problem of instrument recognition, while not identifying the individual notes that belongs to the recognized instruments~\cite{lostanlen2016spiral}. %\TODO{cite more}
+Instead, most studies on analyzing multi-instrument audio either choose to develop a discriminative model for polyphonic audio where timbre information is disregarded~\cite{bittner2017deepsalience,zhang2018particle}
+or separately work on instrument recognition, which does not aim to identify the individual notes that belongs to the recognized instruments~\cite{agostini2003timbres,lostanlen2016spiral}.
 To take both polyphonic notes and multiple instruments into account, a model has to carefully incorporate the prior knowledge of how pitch and timbre are reflected in the audio signal, e.g. using a probabilistic latent component model~\cite{benetos2015probabilistic} or a variant of non-negative matrix factorization~\cite{grindlay2009eigeninstruments}.
 To produce outputs in multiple domains, these models have to include an intricate set of design choices to implement a mathematical representation of the prior knowledge.
 
-Meanwhile, the main premise of deep learning is quite opposite of how those models are designed.
+Meanwhile, the main premise of deep learning is quite the opposite of how those models are designed.
 Rather than writing down the set of rules manually, layers of simple calculations can serve as a very effective function approximator, that can produce just about anything when an enough amount of data is fed to the black box.
 In these models, the prior knowledge baked into the model architecture is minimal.
-Take the Onsets and Frames model~\cite{hawthorne2018onsetsframes} for example; the model output has 88 dimensions corresponding to each key of the piano, but the 88 keys are treated as a separate multi-label target, without utilizing the knowledge that each key should represent a certain frequency that the quasi-periodic signal in the input follows.
+Take the Onsets and Frames model~\cite{hawthorne2018onsetsframes} for example; the model output has 88 dimensions corresponding to each key of the piano, but the 88 keys are treated as separate multi-label targets, without utilizing the crucial knowledge that each key should represent a certain frequency that the quasi-periodic signal in the input follows.
 Because of this lack of ``inductive bias'', deep learning models typically have to be trained with a very large amount of data; in other words, they are less sample efficient.
 
 
@@ -41,17 +40,19 @@ Compared to data-driven models with a lot of learnable parameters, however, thos
 
 In this chapter, we explore the possibility of finding a compromise between the two extremes.
 Specifically, we examine how to induce the transcription model to make predictions such that, when synthesized back into audio, resemble the original audio input.
-We do this by appending a neural music synthesis model to the transcription model, and the synthesis model is specifically designed to describe the sound generation process with a small number of interpretable parameters, which is restrictive enough to guide the transcription model to more accurate predictions, yet flexible enough to be learnable in a data-driven manner.
-We evaluate this approach with a multi-instrument transcription task and show that a synthesis model can serve as an effective regularizer. % \TODO{describe qualitative improvement}
+We do this by appending a neural music synthesis model to the transcription model.
+The synthesis model is specifically designed to describe the sound generation process with a small number of interpretable parameters, which is restrictive enough to guide the transcription model to more accurate predictions yet flexible enough to be learnable in a data-driven manner.
+We evaluate this approach with a multi-instrument transcription task and show that a synthesis model can serve as an effective regularizer, through a qualitative analysis of the synthesis model and a quantitative analysis of the transcription preformance.
 
 \section{Related Work}
 
 
 \subsection{Multi-Instrument Music Transcription}
 
-Transcribing polyphonic music with multiple instruments present is a particularly difficult problem and there has been relatively few successful attempts, as it requires solutions to instrument classification in addition to multiple pitch estimation.
-While some approaches perform source separation and instrument recognition as a separate pre-processing step for per-instrument polyphonic transcription,~\cite{heittola2009separation,itoyama2011bayesian}, a number of approaches attempt to jointly solve the two problems, by modeling possible instruments as a constraint to non-negative matrix factorization (NMF)~\cite{grindlay2009eigeninstruments}, applying spectral templates to a probabilistic latent component model~\cite{benetos2015probabilistic}, and using a U-Net architecture to separate a multi-channel representation of audio into per-instrument transcriptions~\cite{wu2019musicnet}.
-In general, joint estimation of instrument and multiple pitches allows for flexible modeling of diverse sounds and enables an end-to-end approach for multi-instrument polyphonic transcription.
+Transcribing polyphonic music with multiple instruments is a particularly difficult problem, and there has been relatively few successful attempts, as it requires solutions to instrument classification in addition to multiple pitch estimation.
+While some approaches perform source separation and instrument recognition as a separate pre-processing step for per-instrument polyphonic transcription,~\cite{heittola2009separation,itoyama2011bayesian}, a number of approaches attempt to jointly solve the two problems, by modeling the possible instruments as a constraint to non-negative matrix factorization (NMF)~\cite{grindlay2009eigeninstruments}, applying spectral templates to a probabilistic latent component model~\cite{benetos2015probabilistic}, and using a U-Net architecture to separate a multi-channel representation of audio into per-instrument transcriptions~\cite{wu2019musicnet}.
+Joint estimation of instrument and multiple pitches allows for flexible modeling of diverse sounds and enables an end-to-end approach for multi-instrument polyphonic transcription, while employing two separate stages of source separation followed by per-instrument transcription allows focusing on each stage separately.
+In this chapter, we use the former approach and develop a model that jointly performs instrument classification and polyphonic transcription.
 
 
 \subsection{Deep Clustering}
@@ -126,6 +127,7 @@ The synthesizer model is separately trained, and the transcriber model is then o
 \mathcal{L}_{\text{Overall}} = \mathcal{L}_{\text{Onsets \& Frames}} + \lambda \left ( \mathcal{L}_{\text{Embedding}} + \mathcal{L}_{\text{Synthesizer}} \right )
 \end{equation}
 The first term, $\mathcal{L}_{\text{Onsets \& Frames}}$, is the loss of the Onsets and Frames model which is the sum of the binary cross entropy of the onsets, offsets, and frame predictions.
+$\lambda$ is a hyperparameter that scales the ratio between the losses from the transcription and the synthesis models.
 We define $\mathcal{L}_{\text{Embedding}}$ as the mean squared error (MSE) between the predicted instrument embedding and the ground truth, and $\mathcal{L}_{\text{Synthesizer}}$ is defined as the mean cosine distance between the predicted and the ground-truth Mel spectra:
 \begin{equation}\label{eqn:cosine-distance-loss}
 \mathcal{L}_{\text{Synthesizer}} = \mathbb{E}_{\hat{\mathbf{s}}, \mathbf{s}} \left [ 1 - \frac{ \hat{\mathbf{s}} \cdot \mathbf{s} }{\lVert \hat{\mathbf{s}} \rVert \lVert \mathbf{s} \rVert} \right ]
@@ -147,6 +149,7 @@ We additionally train and compare a multi-label prediction model, which replaces
 The audio is resampled to 16kHz, and a training batch is composed of eight 20-second audio segments and labels.
 We use Adam optimizer~\cite{kingma2015adam} with learning rate 0.0006, and the learning rate decay of factor 0.98 is applied every 1000 steps.
 We ran the optimization for 180,000 steps and report the transcription accuracy evaluated on the 10 test recordings provided in the MusicNet dataset.
+We use $\lambda = 10^{-4}$, which was obtained from a hyperparameter search.
 
 \section{Results}
 
@@ -252,11 +255,11 @@ The multi-label baseline exhibits significantly lower performance in these instr
 \end{figure}
 
 Specifically, the proposed model achieves better recall than the single-label baseline while maintaining the same level of precision.
-To find out how the different behaviors of the two models contribute the differences in these metrics, we visualize in Figure~\ref{fig:frame-prediction-excerpts} a few interesting excerpts that explains the better recall score of the proposed model.
+To find out how the different behaviors of the two models contribute the differences in these metrics, we visualize in Figure~\ref{fig:frame-prediction-excerpts} a few interesting excerpts in the test dataset that explains the better recall score of the proposed model.
 Figure~\ref{fig:frame-prediction-excerpts}a is an excerpt of a solo violin track (MusicNet ID 2191) and shows that the proposed model is able to identify the highest note in the input that is not detected by the baseline model.
 In Figure~\ref{fig:frame-prediction-excerpts}b, which is the beginning of a solo cello piece (MusicNet ID 2298), the baseline model produces frame activations of a few notes before the first note, falsely predicted from the background noise in the input audio.
 Although the transcription metrics are not affected in this case since the activation values are below the threshold, it shows that the synthesizer model can suppress false predictions by the transcription model to a certain degree.
-Finally, in a solo piano excerpt shown in Figure~\ref{fig:frame-prediction-excerpts}c, the low sustained note in the latter half of the input is better predicted by the proposed model than the baseline.
+Finally, in a solo piano excerpt shown in Figure~\ref{fig:frame-prediction-excerpts}c (MusicNet ID 2303), the low sustained note in the latter half of the input is better predicted by the proposed model than the baseline.
 Transcription of a long sustained piano note is difficult because of the volume decay of a note, and this example implies that the appended synthesizer is able to encourage an accurate prediction of long notes.
 In all of these cases, the synthesizer helps in more accurately detecting frames, which in turn contributes to the better transcription metrics.
 
@@ -285,7 +288,7 @@ In all of these cases, the synthesizer helps in more accurately detecting frames
 In this subsection, we compare the multi-instrument transcription performance of the proposed model with the multi-label baseline model.
 The instrument labels are assigned by finding the nearest instrument embedding to the embedding vector predicted by the transcription model.
 Table~\ref{tab:multilabel-performance-comparison} summarizes the transcription metrics for each instrument and indicates that the proposed model actually performs worse than the multi-label baseline, despite the advantages in the instrument-agnostic evaluation in the previous subsection.
-One contributing factor for the lower performance is that the nearest-neighbor assignment of instrument labels cannot produce the same pitch activated by multiple instruments, i.e. playing in unison.
+One contributing factor for the lower performance is that the nearest-neighbor assignment of the instrument labels cannot produce the same pitch activated by multiple instruments, i.e. playing in unison.
 While the improvement in the individual multi-instrument performance remains a future work, the visualization of  Figure~\ref{fig:multi-instrument-example} shows that the model is capable of classifying the different classes of instruments, such as the piano and the strings.
 
 
@@ -304,7 +307,7 @@ While the improvement in the individual multi-instrument performance remains a f
 \end{figure}
 
 Finally, we introduce a web interface\footnote{\url{https://musicnet-instpector.github.io}} developed for easy inspection of the audio tracks in the MusicNet dataset, which helped identify the characteristics and imperfections of the music and the annotations in the dataset.
-The UI is shown in Figure~\ref{fig:musicnet-inspector}; the users can select one of the 330 tracks in the list showing the details of each track, and a video containing a CQT representation, color-coded piano-roll representation, and an audio amplitude visualization is played together with the audio.
+The UI is shown in Figure~\ref{fig:musicnet-inspector}; the users can select one of the 330 tracks in the list showing the details of each track, and a video containing a CQT representation, color-coded piano-roll representation, and an audio amplitude visualization are played together with the audio.
 Additionally, the users can participate in the discussion about each track, e.g. any errors in the annotations, in the comment section.
 This interface can serve as a useful tool for researchers using the MusicNet dataset, providing an easy way to inspect the content of the dataset.
 

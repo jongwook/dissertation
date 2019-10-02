@@ -223,51 +223,6 @@ Figure \ref{fig:correlations}b shows the breakdown of the curve corresponding to
 There are rather drastic differences among instruments, and most instruments have low Pearson correlations in low pitches except pizzicato strings.
 The implications of these trends are discussed in \cite{kim2019synthesis}, in comparison with the subjective audio quality test.
 
-\iffalse
-\subsubsection{Subjective Audio Quality Test}\label{sec:subjective}
-
-We performed a crowdsourced test asking the listeners to rate the quality of synthesis using a 5-point mean opinion score (MOS) scale with 0.5-point steps.
-MOS allows a simple interface that is more suitable for non-expert listeners in a crowdsourcing setup than e.g. MUSHRA \TODO{remove the subjective test part} and is used as a standard approach for assessing the perceptual quality of WaveNet syntheses \cite{oord2016wavenet,oord2018parallel}.
-For each of the six configurations corresponding to the curves in Figure \ref{fig:correlations}a in addition to the original audio, the first 20 seconds of the 140 validation tracks are evaluated.
-The listeners were provided with a randomly selected segment at a time, and each segment was evaluated by three listeners, comprising 420 samples in each configuration.
-18 or less questions were given to each listener, and 173 unique listeners participated.
-
-\begin{table}
-	\centering
-	\begin{tabular}{l|c} 
-		Condition & Mean Opinion Scores \\ \hline
-		Original audio & 4.301 $\pm$ 0.080 \\
-		$\mu$-law encode-decoded audio & 3.876 $\pm$ 0.097 \\
-		WaveNet: ground-truth Mel & 3.383 $\pm$ 0.100 \\
-		\hline
-		WaveNet: tanh-log-abs MSE & \textbf{3.183 $\pm$ 0.106} \\
-		WaveNet: log-abs MSE & 3.019 $\pm$ 0.109 \\
-		WaveNet: abs MSE & 2.751 $\pm$ 0.110 \\
-	\end{tabular}
-	\vspace{1em}
-	\caption{\TODO{caption}}\label{tab:synthesis-quality}
-\end{table}
-
-This table shows the mean opinion scores (MOS) and the 95\% confidence intervals, which generally follow the tendency similar to Figure \ref{fig:correlations}.
-Using the soft-thresholding loss in Equation \ref{eqn:tanh-log-abs-loss} results in the best subjective quality among the three loss functions compared, more significantly so than the numerical comparison in Figure \ref{fig:correlations}.
-
-\setlength{\intextsep}{.1em}
-\setlength{\columnsep}{1em}%
-
-\begin{figure}[t]
-	\centering
-	\includegraphics[width=0.4\linewidth]{scatter.pdf}
-	\caption{Per-instrument plot of synthesis quality, using the same icons as in Fig. \ref{fig:embedding}.\newline}
-	\label{fig:scatter}
-	\vspace{-1em}
-\end{figure}
-
-In Figure \ref{fig:scatter}, we compare the numerically and perceptually evaluated quality for each instrument.
-The horizontal coordinates are the average values for each curve in Figure \ref{fig:correlations}b.
-Pearson correlations between CQT are not necessarily indicative of the subjective synthesis quality, because a large contrast in the temporal envelope can contribute to high Pearson correlations, notwithstanding a low perceptual quality.
-Reflecting this, more transient instruments in the lower right such as pizzicato strings achieve higher Pearson correlations compared to the MOS, while more sustained instruments on the left side have relatively lower Pearson correlations but have higher perceptual quality.
-\fi
-
 \begin{figure}[t]
 	\centering
 	\includegraphics[width=\columnwidth]{runpixels.pdf}
