@@ -28,8 +28,8 @@ To take both polyphonic notes and multiple instruments into account, a model has
 To produce outputs in multiple domains, these models have to include an intricate set of design choices to implement a mathematical representation of the prior knowledge.
 
 Meanwhile, the main premise of deep learning is quite the opposite of how those models are designed.
-Rather than writing down the set of rules manually, layers of simple calculations can serve as a very effective function approximator, that can produce just about anything when an enough amount of data is fed to the black box.
-In these models, the prior knowledge baked into the model architecture is minimal.
+Rather than writing down the set of rules manually, layers of simple nonlinear calculations can serve as a very effective function approximator, that can produce just about anything when an enough amount of data is fed to the black box.
+In these models, the prior knowledge baked into the model architecture is minimal and more abstract.
 Take the Onsets and Frames model~\cite{hawthorne2018onsetsframes} for example; the model output has 88 dimensions corresponding to each key of the piano, but the 88 keys are treated as separate multi-label targets, without utilizing the crucial knowledge that each key should represent a certain frequency that the quasi-periodic signal in the input follows.
 Because of this lack of ``inductive bias'', deep learning models typically have to be trained with a very large amount of data; in other words, they are less sample efficient.
 
@@ -137,7 +137,7 @@ where $\mathbf{s}$ follows the distribution of Mel spectra in the input audio, a
 \section{Experimental Setup}
 
 We use the MusicNet dataset~\cite{thickstun2017musicnet} to train both the synthesizer and the transcriber.
-The dataset contains 2,048 minutes of classical chamber music audio and labels, which comprises 330 recordings of various ensembles.
+The dataset contains 2,048 minutes of classical chamber music audio and labels, which comprises 330 recordings of various ensembles performed by musicians.
 The dataset contains annotations of 11 General MIDI instruments: acoustic grand piano, harpsichord, violin, viola, cello, contrabass, french horn, oboe, bassoon, clarinet, and flute.
 Different recordings in the dataset have drastically different tuning, ranging more than a semitone in some recordings which would result in a wrong transcription even by a perfect transcriber.
 To alleviate this, we preprocess the dataset by running a tuning estimator implemented in librosa~\cite{mcfee2015librosa} on each track and pitch-shifted any recordings that are more than 20 cents apart from the A440 tuning.
@@ -182,7 +182,7 @@ While this output Mel spectrogram may not represent an audio signal that perfect
 \begin{table}
 	\centering\small
 	\begin{tabular}{l|ccc}
-		& \makecell{Baseline \\ (single label)} & \makecell{Baseline \\ (multi-label)} & \makecell{Baseline \\ (synthesizer-aided)} \\ \hline
+		& \makecell{Baseline \\ (single label)} & \makecell{Baseline \\ (multi-label)} & \makecell{Proposed \\ (synthesizer-aided)} \\ \hline
 		F1 Score & 0.720 & 0.650 & \textbf{0.729} \\
 		Precision & \textbf{0.736} & 0.714 & 0.735 \\
 		Recall & 0.711 & 0.600 & \textbf{0.726} \\
@@ -251,7 +251,7 @@ The multi-label baseline exhibits significantly lower performance in these instr
 		\caption{The proposed model better predicts the low sustained note in the latter half of the excerpt, while being more prone to false positive predictions than the baseline.}
 		\label{}
 	\end{subfigure}
-	\caption{Examples of the frame predictions by the baseline and the proposed model, }\label{fig:frame-prediction-excerpts}
+	\caption{Examples of the frame predictions by the baseline and the proposed model compared to the ground-truth, showing their qualitative differences in performance. }\label{fig:frame-prediction-excerpts}
 \end{figure}
 
 Specifically, the proposed model achieves better recall than the single-label baseline while maintaining the same level of precision.

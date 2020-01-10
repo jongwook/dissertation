@@ -85,16 +85,17 @@ Another reason for using both onsets and frames is that, because of the time qua
 
 The input goes through a linear 1x1 convolution layer, which is essentially a time-distributed fully connected layer, followed by a FiLM layer, to be described in the following subsection, which takes the timbre embedding vector and transforms the features accordingly.
 After a bidirectional LSTM layer and another FiLM layer for timbre conditioning, another linear 1x1 convolution layer produces the Mel spectrogram prediction.
-The resulting Mel spectrogram is then fed to a WaveNet vocoder to produce the music; Mel spectrograms compactly convey sufficient information for audio synthesis and have been successfully used for conditioning WaveNet~\cite{shen2018tacotron,ping2018deepvoice3}.
+The resulting Mel spectrogram is then fed to a separately trained WaveNet vocoder to produce the music; Mel spectrograms compactly convey sufficient information for audio synthesis and have been successfully used for conditioning WaveNet~\cite{shen2018tacotron,ping2018deepvoice3}.
 The use of bidirectional LSTM is justified because Mel spectrograms are constructed using a larger window than the step size, making it non-causal.
 The only nonlinearities in the network are in the LSTM, and there are no time-domain convolutions except in WaveNet.
 
 
 \subsection{Timbre Conditioning using FiLM Layers}
 
-We can think of this architecture as a multi-step process that shapes a piano roll into its Mel spectrogram, by applying appropriate timbre given as side information.
+We can think of the model architecture as a multi-step process that shapes a piano roll into its Mel spectrogram, by applying appropriate timbre given as side information.
 A FiLM layer~\cite{perez2018film} is a suitable choice for this task, because it can represent such action of shaping using an affine transformation of intermediate-layer features.
 For each instrument to model, its timbre is represented in an embedding vector $\mathbf{t}$, implemented as a learned matrix multiplication on one-hot encoded instrument labels.
+The values of instrument embedding vectors do not vary in time and are learned jointly with the rest of the model.
 A FiLM layer learns functions $f$ and $h$, which are simply linear layers mapping the timbre embedding $\mathbf{t}$ to $\gamma = f ( \mathbf{t} )$ and $\beta = h ( \mathbf{t} )$.
 The affine transformation, or FiLM-ing, of intermediate-layer features $\mathbf{F}$ is then applied using feature-wise operations: $
 \mathrm{FiLM}(\mathbf{F} ~|~ \gamma, \beta)
@@ -213,7 +214,7 @@ To calculate and visualize the correlations with respect to evenly spaced octave
 For ideal synthesis, the Pearson correlation should be close to $1$, and lower correlations indicate larger degradation from the original.
 
 Figure \ref{fig:correlations}a shows the correlations for each stage of degradation and for different loss functions used for training the model.
-The degradations are more severe in low frequencies in general, where the WaveNet model sees less number of periods of a note within its fixed receptive field length.
+The degradations are more severe in low frequencies in general, where the WaveNet model sees fewer periods of a note within its fixed receptive field length.
 The orange curve showing the correlations for WaveNet synthesis using ground-truth Mel spectrograms already exhibits a significant drop from the top curve; this defines an upper bound of Mel2Mel's synthesis quality.
 The lower three curves correspond to the loss functions in Equations \ref{eqn:abs-loss}-\ref{eqn:tanh-log-abs-loss}, among which the abs MSE loss clearly performs the worse than the other two which have almost identical Pearson correlation curve, indicating that the MSE loss is more effective in the log-magnitude scale.
 

@@ -7,7 +7,7 @@
 \chapter{CREPE: Deep Monophonic Pitch Estimation}
 \label{ch:monophonic}
 
-As outlined in chapter \ref{ch:introduction}, we start with a simpler formulation of music transcription that is later extended to ultimately support multi-instrument polyphonic music transcription.
+As outlined in Chapter \ref{ch:introduction}, we start with a simpler formulation of music transcription that is later extended to ultimately support multi-instrument polyphonic music transcription.
 This chapter concerns the first step where we assume that the input is monophonic, i.e. the audio contains at most one pitched sound at each instant.
 Through this simplified formulation, we aim to gain insights on how a supervised learning framework for music transcription tasks can be designed.
 Furthermore, we seek to identify important aspects of the proposed approach that can be applied to or extended to polyphonic and multi-instrument transcription tasks.
@@ -20,7 +20,7 @@ Pitch estimation plays an important role in music signal processing, where monop
 Pitch estimation is also important for speech analysis, where prosodic aspects such as intonations may reflect various features of speech \cite{zubizarreta1998prosody}.
 
 \iffalse % (pasted in section II)
-Computational methods for monotonic pitch estimation have been studied for more than a half-century \cite{noll1967cepstrum}, and many reliable methods have been proposed since.
+Computational methods for monophonic pitch estimation have been studied for more than a half-century \cite{noll1967cepstrum}, and many reliable methods have been proposed since.
 Earlier methods commonly employ a certain candidate-generating function, accompanied by pre- and post-processing stages to produce the pitch curve.
 Those functions include the cepstrum \cite{noll1967cepstrum}, the autocorrelation function (ACF) \cite{dubnowski1976acf}, the average magnitude difference function (AMDF) \cite{ross1974amdf}, the normalized cross-correlation function (NCCF) as proposed by RAPT \cite{talkin1995rapt} and PRAAT \cite{boersma1993praat}, and the cumulative mean normalized difference function as proposed by YIN \cite{decheveigne2002yin}. More recent approaches include SWIPE \cite{camacho2008swipe}, which performs template matching with the spectrum of a sawtooth waveform, and 
 pYIN \cite{mauch2014pyin}, a probabilistic variant of YIN that uses a Hidden Markov Model (HMM) to decode the most probable sequence of pitch values.

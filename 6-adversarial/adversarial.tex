@@ -11,10 +11,10 @@ In the previous chapter, we have introduced a WaveNet-based music synthesis mode
 A Mel spectrogram is a representation of audio whose dimension is in the order of hundreds at each frame.
 Accurate prediction of such high-dimensional representations requires sophisticated modeling of their statistical properties as well as extensive computational power to realize it.
 Piano roll representations of music, which are formulated in Chapter \ref{ch:introduction} as the output representation of polyphonic music transcription throughout this thesis, are another example of high-dimensional representations of audio which contain hundreds of data points at each instant.
-Therefore, unlike the single-pitch objective in Chapter \ref{ch:monophonic}, prediction of piano roll representations is inherently a multi-label problem and thus warrants a mathematical model that is right for high-dimensional representation.
+Therefore, unlike the single-valued objective in monophonic pitch estimation tasks, prediction of piano roll representations is inherently a multi-label problem and thus warrants a mathematical model that is right for high-dimensional representation.
 
 In this chapter, as hinted in the conclusions in the last chapter, we discuss a method to include adversarial loss to allow the model to predict the piano roll target more accurately.
-We first address a limitation in the conventional, element-wise definition of loss functions in which the inter-label probabilistic dependences are not accurately modeled.
+We first address a limitation in the conventional, element-wise definition of loss functions in which the inter-label probabilistic dependencies are not accurately modeled.
 Based on this observation, we show that appending an adversarial discriminator to a discriminative piano transcription model can help producing more confident predictions which in turn improve the transcription accuracy.
 The content of this chapter is largely based on the work presented at ISMIR 2019 \cite{kim2019adversarial}.
 

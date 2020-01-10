@@ -11,7 +11,7 @@
 
 As listening is a core constituent of human perception, an essential component of artificial intelligence is \emph{machine listening}.
 The purpose of machine listening research is to enable computers to process and understand sounds as humans do.
-In recent years, there have been an unprecedented amount of successes in the field of \emph{machine learning}, a near-synonym to artificial intelligence with a connotation of statistical and/or probabilistic methodologies, which redefined what a computer vision or natural language processing systems can do and made previously unimaginable applications such as autonomous driving and a superhuman StarCraft-playing AI into reality.
+In recent years, there have been an unprecedented amount of successes in the field of \emph{machine learning}, a near-synonym to artificial intelligence with a connotation of statistical and/or probabilistic methodologies, which redefined what a computer vision or natural language processing systems can do and made previously unimaginable applications such as semi-autonomous driving\footnote{Fully autonomous driving is under active development; e.g. \href{https://tesla.com/autopilot}{Tesla Autopilot} and \href{https://waymo.com/}{Waymo}.} and a superhuman StarCraft-playing AI~\cite{vinyals2019alphastar} into reality.
 
 In this context, this thesis focuses on improving the machine understanding of music in order to automatically transcribe music, which largely remains an unsolved problem despite decades of research.
 The recent rapid development in \emph{deep learning} research, however, hints at many new possibilities for improving the performance or even achieving human-level accuracy in music transcription.
@@ -35,7 +35,7 @@ To perform automatic music transcription, various properties of musical events, 
 In this sense, the setup of AMT is \emph{discriminative} in nature, meaning that it aims to identify different attributes from given audio, as opposed to \emph{generative} models concerning how to construct audio signals according to given conditions about those attributes.
 Meanwhile, when a generative model is jointly trained with an encoder, it can learn to generate data samples from a small number of latent factors, while the encoder learns to extract those factors from the audio in a compact representation, as depicted in Figure \ref{fig:autoencoder}.
 Recently, with the increased capacity of machine learning models and hardware, many \emph{deep generative models} have been proposed and shown to be capable of processing high-dimensional multimedia data.
-Furthermore, significant research efforts have been made towards learning disentangled representation of data, meaning that the latent factors contain meaningful information that can be easily separated and isolated.
+Furthermore, significant research efforts have been made towards learning disentangled representations of data, meaning that the latent factors contain meaningful information that can be easily separated and isolated.
 To this end, the goal of this thesis is to study representation learning methods powered by deep generative models, to obtain disentangled information from audio signals that can achieve better performance in music transcription.
 
 \begin{figure}[t]
@@ -80,7 +80,7 @@ Consequently, transcription models for harmonic sounds and percussive sounds req
 This thesis will limit the focus on the transcription of harmonic sounds and therefore use the per-instrument piano roll notation (Figure \ref{fig:transcription-to-piano-rolls}) as the output representation.
 This is a realistic trade-off to make, because of a number of reasons.
 First, learning to simultaneously model harmonic and percussive sounds is a harder problem both conceptually and computationally.
-Secondly, it is possible to plug a harmonic-only model into a pipeline consisting of HPSS (harmonic-percussive source separation) and a percussion transcription model as an alternative to a comprehensive approach.
+Secondly, it is possible to plug a harmonic-only model into a pipeline consisting of harmonic-percussive source separation (HPSS) and a percussion transcription model as an alternative to a comprehensive approach.
 Lastly, polyphonic transcription is considered to be the most difficult problem in the domain of automatic transcription, and it is sensible to tackle this as a standalone problem in the simplest possible setup.
 Excluding percussive sounds will disallow using most of pop music tracks as-is, but multi-track datasets can still be utilized since they contain each track separately.
 
@@ -162,8 +162,8 @@ By learning to generate data using fewer parameters than the scale of the datase
 In music transcription, these features correspond to the musical concepts such as pitch, timbre, and rhythm.
 Philosophically, this idea follows what Richard Feynman once wrote on his blackboard, \emph{``What I cannot create, I do not understand''} and \emph{``Know how to solve every problem that has been solved''}.
 He meant that the marker for truly understanding something is the ability to construct it completely from scratch.
-Generative models are a branch of unsupervised learning, because they do not require labeled data.
-\citeA{lecun2016unsupervised} introduced unsupervised learning as a cake, with supervised learning as icing and reinforcement learning as the cherry on the top, by which he meant that generative models need to predict at a much larger scale of information and should be is able to learn the ``common sense''.
+Studies on generative models have an advantage of not requiring explicitly labeled data, and they hence tend to take self-supervised or unsupervised learning approaches.
+\citeA{lecun2016unsupervised} introduced unsupervised learning as a cake, with supervised learning as icing and reinforcement learning as the cherry on the top, by which he meant that generative models need to predict at a much larger scale of information and should be able to learn the ``common sense''.
 
 \begin{figure}
 	\includegraphics[width=\textwidth]{generative-evolution.pdf}
@@ -180,7 +180,7 @@ Combined with the various techniques for manipulating the semantic information i
 
 In this context, this thesis aims to design and develop improved methods for automatic music transcription powered by deep generative models.
 The idea specifically hypothesizes that by training a generative model, it is possible to learn disentangled representations, from which the information necessary for transcription can be easily extracted, as depicted in Figure \ref{fig:autoencoder}.
-By doing so, the ultimate objective is to build an end-to-end differentiable model that connects the piano roll representation to audio signals, in order to perform automatic music transcription --- obtaining the most likely piano roll representation for given a audio waveform.
+By doing so, the ultimate objective is to build an end-to-end model that connects the piano roll representation to audio signals, in order to perform automatic music transcription --- obtaining the most likely piano roll representation for given a audio waveform.
 
 
 \subsection{On the Broader Context of Machine Listening in AI Research}
