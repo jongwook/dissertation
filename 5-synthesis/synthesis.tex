@@ -49,7 +49,7 @@ To overcome this, we employ a data-driven approach for music synthesis that is g
 \subsection{Timbre Spaces and Embeddings}
 
 Timbre is often modeled using a timbre space~\cite{peeters2011timbre}, in which similar timbres lie closer than dissimilar timbres.
-In early work in psychoacoustics, multidimensional scaling (MDS) is used to obtain a timbre space which preserves the timbral dissimilarities measured in perceptual experiments~\cite{grey1977multidimensional,wessel1979timbre}.
+In early work in psychoacoustics, multidimensional scaling (MDS) was used to obtain a timbre space which preserves the timbral dissimilarities measured in perceptual experiments~\cite{grey1977multidimensional,wessel1979timbre}.
 Meanwhile, in music content analysis, timbre similarity is measured using computed features such as the Mel-frequency cepstral coefficients (MFCCs) \cite{logan2000mfcc},
 descriptors of the spectral envelope \cite{agostini2013aid}, or hidden-layer weights of a neural network trained to distinguish different timbres~\cite{humphrey2011nlse}.
 A recent method~\cite{esling2018timbre} used a variational autoencoder \cite{kingma2014vae} to obtain a timbre space, and unlike the above embeddings, the method is able to generate monophonic audio for a particular timbre embedding but does not consider the temporal evolution of notes such as attacks and decays.
@@ -63,8 +63,8 @@ WaveNet achieves this by learning an autoregressive distribution which predicts 
 Tacotron~\cite{shen2018tacotron} and Deep Voice~\cite{ping2018deepvoice3} are WaveNet-based text-to-speech models which first predict a Mel spectrogram from text and use it to condition a WaveNet vocoder.
 
 There are also a few notable applications of WaveNet in music, including NSynth~\cite{engel2017nsynth}, an autoencoder architecture which separately encodes monophonic pitch with learned timbral features, and the universal music translation network~\cite{mor2019universal} which uses a denoising autoencoder architecture that can extract and translate between musical styles while preserving the melody.
-In \cite{hawthorne2019maestro}, a WaveNet is used for music synthesis conditioned directly on note sequences, while only supporting piano sounds.
-Our model is similarly built around WaveNet for its synthesis capability, while using a learned embedding space to flexibly control the timbre of polyphonic music.
+In \citeA{hawthorne2019maestro}, a WaveNet is used for music synthesis conditioned directly on note sequences but only supports piano sounds.
+Our model is similarly built around WaveNet for its synthesis capability but uses a learned embedding space to flexibly control the timbre of polyphonic music.
 
 \section{Method}\label{sec:method}
 
@@ -86,21 +86,23 @@ Another reason for using both onsets and frames is that, because of the time qua
 The input goes through a linear 1x1 convolution layer, which is essentially a time-distributed fully connected layer, followed by a FiLM layer, to be described in the following subsection, which takes the timbre embedding vector and transforms the features accordingly.
 After a bidirectional LSTM layer and another FiLM layer for timbre conditioning, another linear 1x1 convolution layer produces the Mel spectrogram prediction.
 The resulting Mel spectrogram is then fed to a separately trained WaveNet vocoder to produce the music; Mel spectrograms compactly convey sufficient information for audio synthesis and have been successfully used for conditioning WaveNet~\cite{shen2018tacotron,ping2018deepvoice3}.
-The use of bidirectional LSTM is justified because Mel spectrograms are constructed using a larger window than the step size, making it non-causal.
+The use of bidirectional LSTM is appropriate because Mel spectrograms are constructed using a larger window than the step size, making it non-causal.
 The only nonlinearities in the network are in the LSTM, and there are no time-domain convolutions except in WaveNet.
 
 
 \subsection{Timbre Conditioning using FiLM Layers}
 
-We can think of the model architecture as a multi-step process that shapes a piano roll into its Mel spectrogram, by applying appropriate timbre given as side information.
-A FiLM layer~\cite{perez2018film} is a suitable choice for this task, because it can represent such action of shaping using an affine transformation of intermediate-layer features.
-For each instrument to model, its timbre is represented in an embedding vector $\mathbf{t}$, implemented as a learned matrix multiplication on one-hot encoded instrument labels.
-The values of instrument embedding vectors do not vary in time and are learned jointly with the rest of the model.
-A FiLM layer learns functions $f$ and $h$, which are simply linear layers mapping the timbre embedding $\mathbf{t}$ to $\gamma = f ( \mathbf{t} )$ and $\beta = h ( \mathbf{t} )$.
-The affine transformation, or FiLM-ing, of intermediate-layer features $\mathbf{F}$ is then applied using feature-wise operations: $
+A FiLM layer~\cite{perez2018film} is a neural network that can take side information; it first learns functions $f$ and $h$, which are linear layers mapping the timbre embedding $\mathbf{t}$ to $\gamma = f ( \mathbf{t} )$ and $\beta = h ( \mathbf{t} )$.
+The affine transformation, or FiLM-ing, of intermediate-layer features $\mathbf{F}$ is then applied using feature-wise operations: 
+\begin{equation}
 \mathrm{FiLM}(\mathbf{F} ~|~ \gamma, \beta)
 = \gamma \mathbf{F} + \beta
-= f(\mathbf{t})\mathbf{F} + h(\mathbf{t}). $
+= f(\mathbf{t})\mathbf{F} + h(\mathbf{t}).
+\end{equation}
+We can think of the model architecture as a multi-step process that shapes a piano roll into its Mel spectrogram, by applying appropriate timbre given as side information.
+A FiLM layer is a suitable choice for this task, because it can represent such action of shaping using an affine transformation of intermediate-layer features.
+For each instrument to model, its timbre is represented in an embedding vector $\mathbf{t}$, implemented as a learned matrix multiplication on one-hot encoded instrument labels.
+The values of instrument embedding vectors do not vary in time and are learned jointly with the rest of the model.
 
 At a higher level, the affine transformations learned by the FiLM layers are nonlinearly transformed by the recurrent and convolutional layers to respectively form temporal and spectral envelopes, which are two important aspects that characterize instrumental timbre.
 Using the first FiLM layer is essential because the recurrent layer needs to take timbre-dependent input to apply the temporal dynamics according to the timbre, and the second FiLM layer can apply additional spectral envelope on the recurrent layer's output.
@@ -143,8 +145,8 @@ Each iteration takes a mini-batch of 4 sequences of length 16,384, i.e. 1.024 se
 
 \subsection{Datasets}
 
-While it is ideal to use recorded audio of real instruments as the training dataset, the largest multi-instrument polyphonic datasets available such as MusicNet~\cite{thickstun2017musicnet} is highly skewed, contains a limited variety of solo instrument recordings, and is expected to have a certain degree of labeling errors.
-So we resorted to using synthesized audio for training and collected MIDI files from \texttt{www.piano-midi.de}, which are also used in the MAPS Database~\cite{emiya2010smoothness}; these MIDI files are recorded from actual performances and contain expressive timing and velocity information.
+While it is ideal to use recorded audio of real instruments as the training dataset, the largest multi-instrument polyphonic datasets available such as MusicNet~\cite{thickstun2017musicnet} is highly skewed, contains a limited variety of solo instrument recordings, and is expected to have a certain degree of labeling errors as the authors suggest.
+Instead, we used synthesized audio for training and collected MIDI files from \texttt{www.piano-midi.de}, which are also used in the MAPS Database~\cite{emiya2010smoothness}; these MIDI files are recorded from actual performances and contain expressive timing and velocity information.
 We have selected 10 General MIDI instruments shown in Figure~\ref{fig:embedding} covering a wide variety of timbres, and 334 piano tracks are synthesized for each instrument using FluidSynth with the default SoundFont from MuseScore 3.
 The 334 tracks are randomly split into 320 for training and 14 for validation.
 The total size of the synthesized dataset is 3,340 tracks and 221 hours.
@@ -234,7 +236,7 @@ The implications of these trends are discussed in \cite{kim2019synthesis}, in co
 
 To make sense of how the learned embedding space conveys timbre information, we construct a 320-by-320 grid that encloses all instrument embeddings and predict the Mel spectrogram conditioned on every pixel in the grid.
 The spectral centroid and the mean energy corresponding to each pixel are plotted in Figure \ref{fig:embedding}, which are indicative of the two main aspects of instrumental timbres: the spectral and temporal envelopes.
-A higher spectral centroid signifies stronger harmonic partials in high frequency, while a lower spectral centroid indicates that it is closer to a pure sine tone.
+For a fixed f0, a higher spectral centroid signifies stronger harmonic partials in high frequency, while a lower spectral centroid indicates that it is closer to a pure sine tone.
 Similarly, higher mean energy implies a more sustained tone, and low mean energy means that the note is transient and decays rather quickly.
 The points corresponding to the 10 instruments are annotated with instrument icons.\footnote{The icons are made by Freepik and licensed by CC 3.0 BY.}
 These plots show that the learned embedding space forms a continuous span over the timbres expressed by all instruments in the training data.

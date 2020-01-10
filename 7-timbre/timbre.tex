@@ -83,7 +83,7 @@ These models typically work well for small test datasets with a homogeneous timb
 
 In the spirit of utilizing the synthesizer component for transcription,
 \citeA{li2017infinite} explored the idea of using on-the-fly synthesized training dataset for piano transcription, using a simple fully-connected neural network operating on the CQT representation.
-\cite{choi2019drum} proposes appending a drum synthesizer component to enable fully unsupervised training of drum transcription.
+\citeA{choi2019drum} proposed appending a drum synthesizer component to enable fully unsupervised training of drum transcription.
 The work in this chapter draws several ideas from these previous approaches of incorporating a synthesizer component into the loop, while also leveraging the flexibility and the generalizability of data-driven deep learning.
 
 \section{Method}
@@ -97,7 +97,7 @@ We are assuming here that predicting Mel spectrograms is equivalent to synthesiz
 
 The synthesizer consists of two subcomponents, the envelope estimator and the waveshaper, respectively implementing the temporal and spectral characteristics of the sound being synthesized.
 The computation in each subcomponent is performed independently for each pitch-instrument combinations, and their results are combined to obtain the resulting Mel spectrogram, as shown in Figure \ref{fig:synthesizer-architecture}.
-Both components take the instrument embedding in order for the synthesized audio to exhibit different temporal and spectral behaviors depending on the instrument, and together they ensure that the synthesis model only creates harmonic sounds with the frequency corresponding to the pitch of input notes and the spectral envelope consistent among each instrument.
+Both subcomponents take the instrument embedding in order for the synthesized audio to exhibit different temporal and spectral behaviors depending on the instrument, and together they ensure that the synthesis model only creates harmonic sounds with the frequency corresponding to the pitch of input notes and the spectral envelope consistent among each instrument.
 
 The envelope estimator component predicts the temporal envelope of each note, by mapping the note activities into a latent space using a one-dimensional convolution layer, followed by a FiLM layer~\cite{perez2018film} to condition on the instrument.
 A GRU layer~\cite{cho2014seq2seq} is then applied in order to model the temporal behavior, such as the attack-decay-sustain-release (ADSR) curves.

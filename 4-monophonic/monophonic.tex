@@ -74,7 +74,7 @@ The resulting pitch estimate $\hat{\cent}$ is the weighted average of the associ
 
 The target outputs we use to train the model are 360-dimensional vectors, where each dimension represents a frequency bin covering 20 cents (the same as the model's output).
 The bin corresponding to the ground truth fundamental frequency is given a magnitude of one.
-As in \cite{bittner2017deepsalience}, in order to soften the penalty for near-correct predictions, the target is Gaussian-blurred in frequency such that the energy surrounding a ground truth frequency decays with a standard deviation of 25 cents:
+As in \citeA{bittner2017deepsalience}, in order to soften the penalty for near-correct predictions, the target is Gaussian-blurred in frequency such that the energy surrounding a ground truth frequency decays with a standard deviation of 25 cents:
 \begin{equation}\label{eqn:gaussian}
 y_i = \exp \left ( {-\frac{(\cent_i - \cent_{\mathrm{true}})^2}{2 \cdot 25^2}} \right ),
 \end{equation}

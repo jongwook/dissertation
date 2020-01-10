@@ -20,7 +20,7 @@ At the same time, this chapter aims to provide a concise and timely overview of 
 
 \section{Neural Network Architectures}
 
-The key idea of an artificial neural network in the simplest setting is to find an appropriate matrix $W$ to model the relationship between variables $\bm{x}$ and $\bm{y}$, so that
+The key idea of an artificial neural network in the simplest setting is to find an appropriate matrix $W$ to model the relationship between variables $\bm{x}$ and $\bm{y}$, represented as real-valued vectors, so that
 \begin{equation}\label{eqn:perceptron}
 	\bm{y} = \sigma(W \bm{x})
 \end{equation}
@@ -35,40 +35,42 @@ The model in Equation \ref{eqn:mlp} is called a \emph{multilayer perceptron (MLP
 
 
 A multilayer perceptron is a special case of feedforward neural networks, which refer to any computational graph that does not contain a cycle.
-A popular model under this category is \emph{convolutional neural networks (CNN)}, which uses a convolution (a cross-correlation, to be precise) with fixed-size kernels instead of matrix multiplications.
+A popular model under this category is \emph{convolutional neural networks (CNN)}~\cite{lecun1995lenet}, which uses a convolution (a cross-correlation, to be precise) with fixed-size kernels instead of matrix multiplications.
 A 2-D convolutional layer takes input arrays $X_c \in \mathbb{R}^{H \times W}$, $c \in \{ 1, \cdots, C \}$, and produces output arrays $Y_d \in \mathbb{R}^{H \times W}$, $d \in \{ 1, \cdots, D \}$.
 The kernels $K_{cd} \in \mathbb{R}^{K_1 \times K_2}$, $c \in \{ 1, \cdots, C \}$, $d \in \{ 1, \cdots, D \}$, and the biases $\bm{b} \in \mathbb{R}^D$ are the parameters to be optimized, and the output is calculated as:
 \begin{equation}\label{eqn:convnet}
 Y_{d}[i,~j] = \sum_{m=1}^{K_1} \sum_{n=1}^{K_2} \sum_{c=1}^C K_{cd}[m,~n] X_c[i+m,~j+n] + b_d
 \end{equation}
 There are various options to this operation including whether to pad the input or trim the output of the convolution to according to the kernel size, and how much to stride the kernels while moving along the input arrays.
-The 2-D convolution is suitable for image data, where the initial $C$ can be the 3 RGB channels of color images, while the similarly-defined 1-D and 3-D convolutions are more often used with time-series and video data respectively.
+The 2-D convolution is suitable for image data, where the initial $C$ can be the 3 RGB channels of color images; this allows the convolutional layer to extract features that are spatially local but across all channels.
+For similar reasons, 1-D and 3-D convolutions are often used with time-series and video data respectively.
 
 Using convolutional layers results in a fewer number of parameters to learn in each layer than the equivalent multilayer perceptron, allowing deeper models for the same total number of parameters.
 LeNet \cite{lecun1995lenet} for digit classification is what pioneered the technique of using convolutional layers in neural networks, which has become an essential building block of the majority of deep learning methods.
 Such models include those that surpassed the human-level accuracy in the ImageNet Large Scale Visual Recognition Challenge (ILSVRC) \cite{krizhevsky2012imagenet, simonyan2014vgg, szegedy2015googlenet, he2016resnet}.
-A standard practice of building a CNN is to stack a multiple convolutional layers along with pooling layers to obtain a compact feature repesentation, which is fed to a multi-layer perceptron as in Equation \ref{eqn:mlp} to produce output.
+A standard practice of building a CNN is to stack a multiple convolutional layers along with pooling layers to obtain a compact and hierarchical feature repesentation that is also translation-invariant, which is then fed to a multi-layer perceptron as in Equation \ref{eqn:mlp} to produce output.
 The layers of MLP are called fully connected or dense layers, because unlike the convolutional layers, the weight matrix used in the matrix multiplication associates every pair of the input and output features.
 \emph{Fully convolutional networks}, which omit the fully connected layers that are typically placed at the last stages of neural networks, do not require a fixed input and output size and are known to perform well for image segmentation \cite{shelhamer2017fcn}.
 Using the ability of deep convolutional layers to extract complex semantic information from images, many artistic applications have been developed, such as the transfer of artistic style from one image to another \cite{gatys2015style}, and a captivating transformation of images using neural network weights known as \emph{Deep Dream} \cite{mahendran2016deepdream}.
 
 
-A network with cyclic connections is called a \emph{recurrent neural network (RNN)}, and has been successfully applied to modeling sequential data.
-Because it is hard for a recurrent neural network to propagate long-range dependencies through a chain of recurrent connections, specific recurrent units called \emph{long short-term memory (LSTM)} \cite{hochreiter1997lstm} and \emph{gated recurrent unit (GRU)} \cite{cho2014seq2seq} are devised to resolve the problem and are considered essential for recurrent neural networks.
+A network with cyclic connections is called a \emph{recurrent neural network} (RNN; \citeNP{rumelhart1986recurrent}), and has been successfully applied to modeling sequential data.
+Because it is hard for a recurrent neural network to propagate long-range dependencies through a chain of recurrent connections, specific recurrent units called \emph{long short-term memory} (LSTM; \citeNP{hochreiter1997lstm}) and \emph{gated recurrent unit} (GRU; \citeNP{cho2014seq2seq}) are devised to resolve the problem and are considered essential for recurrent neural networks.
 A formulation of recurrent neural network called the sequence-to-sequence model \cite{cho2014seq2seq,sutskever2014seq2seq}, which can model a mapping from variable-length input to variable-length output, is well known to be very effective for machine translation, and is deployed in production in Google's translation services \cite{wu2016google}.
 An important technique for building recurrent neural networks is \emph{attention} \cite{bahdanau2014attention}, which allows the network to focus on specific parts of a sequence for generating outputs.
 The attention mechanism is shown to be effective in tasks including not only machine translation as in the original paper, but also in image description generation \cite{karpathy2017desc}, speech recognition \cite{chorowski2015speech}, and question answering \cite{sukhbaatar2015memory}.
 
 \emph{Reinforcement learning} is a formulation of machine learning where a software agent takes actions in an environment to maximize the reward given according to the actions \cite{sutton2018reinforcement}.
-This formulation is inspired by behaviorist psychology and is well-suited for environments that require explorations by the agent, such as robotics and games.
-\emph{Deep Q-Network (DQN)} \cite{mnih2015dqn} is a neural network model designed for reinforcement learning, which has been successfully applied to automatically playing Atari games \cite{mnih2013atari} and the agent playing the game of Go that surpassed the human level of skill \cite{silver2016alphago}.
+This formulation is inspired by behaviorist psychology and is well-suited for partially-observed environments that involve delayed rewards and require explorations by the agent, such as robotics and games.
+\emph{Deep Q-Network} (DQN; \citeNP{mnih2015dqn}) is a neural network model designed for reinforcement learning, which has been successfully applied to automatically playing Atari games \cite{mnih2013atari} and the agent playing the game of Go that surpassed the human level of skill \cite{silver2016alphago}.
 
 
 \section{Performance Optimization Techniques}
 
 The success of deep learning was possible not only because of the architectural design of deeper models and the hardware capable of supporting such models, but also due to the numerous elaborate techniques and clever tricks that enabled previously impossible performances.
 
-Training a neural network involves optimization of its parameters, e.g. the weights $W$ in Equation \ref{eqn:perceptron}-\ref{eqn:mlp} and the kernels $K_{cd}$ in Equation \ref{eqn:convnet}, which typically requires the gradient of the loss function, i.e. the partial derivatives with respect to all of the model's parameters.
+Training a neural network involves optimization of its parameters, e.g. the weights $W$ in Equation \ref{eqn:perceptron}-\ref{eqn:mlp} and the kernels $K_{cd}$ in Equation \ref{eqn:convnet}, to minimize a task-specific loss function, which is a mapping from the parameters to a real number that we desire to be as low as possible.
+Such optimization processes usually require the gradient of the loss function, i.e. the partial derivatives with respect to all of the model's parameters.
 It is feasible to manually derive the gradient for simple models, but for deep neural networks it is often too complex and error-prone to calculate the derivative by hand.
 For this reason, a method called backpropagation \cite{werbos1982backpropagation, rumelhart1986backpropagation} was introduced based on the ideas of automatic differentiation \cite{linnainmaa1970ad} and revived neural network research that had been largely abandoned.
 The popularization of \emph{backpropagation} in the 1980s partly contributed to the ending of the first AI winter, leading to the first commercially successful application of neural network in optical digit recognition and speech recognition.
@@ -76,28 +78,28 @@ Backpropagation is still a fundamental element of deep learning, and many deep l
 This enables the developer to write only the forward calculation and run the backpropagation automatically, greatly improving the productivity.
 
 
-Once a gradient is known, the standard way of optimizing a neural network is to use a variant of \emph{stochastic gradient descent} (SGD), where the direction of the gradient descent is determined only based on a mini-batch of training data.
-Although using only a tiny subset of training data makes the gradient unstable, in practice, stochastic gradient descent converges faster than batch gradient descent using the same amount of training samples.
-Adding momentum in the gradient descent optimizer has shown to be effective for finding the convergence even faster, and many schemes for applying the momentum have been introduced, such as Adagrad \cite{duchi2011adagrad}, RMSprop \cite{hinton2012rmsprop}, Adadelta \cite{zeiler2012adadelta}, and Adam \cite{kingma2015adam}.
-While Adam is by far the most popular choice of optimizer, a few modification to Adam's algorithm have been proposed, including Eve \cite{koushik2016eve} using feedback from the objective function, Nadam \cite{dozat2016nadam} incorporating Nesterov's accelerated gradient descent, and AMSgrad \cite{reddi2018amsgrad} fixing a failure case of Adam where it does not converge to the optimum even in a simple convex optimization problem.
+Once a gradient is known, the standard way of optimizing a neural network is to use a variant of \emph{stochastic gradient descent} (SGD; \citeNP{robbins1951sgd}), where the direction of the gradient descent is determined only based on a mini-batch of training data.
+Although using only a tiny subset of training data makes the gradient noisy, in practice, stochastic gradient descent converges faster than batch gradient descent using the same amount of training samples.
+Adding momentum \cite{polyak1964momentum,sutskever2013momentum} in the gradient descent optimizer has shown to be effective for finding the convergence even faster, and many schemes for applying the momentum have been introduced, such as Adagrad \cite{duchi2011adagrad}, RMSprop \cite{hinton2012rmsprop}, Adadelta \cite{zeiler2012adadelta}, and Adam \cite{kingma2015adam}.
+While Adam is by far the most popular choice of optimizer, a few modification to Adam's algorithm have been proposed, including Eve \cite{koushik2016eve} using feedback from the objective function, Nadam \cite{dozat2016nadam} incorporating Nesterov's accelerated gradient descent~\cite{nesterov1983accelerated}, and AMSgrad \cite{reddi2018amsgrad} fixing a failure case of Adam where it does not converge to the optimum even in a simple convex optimization problem.
 
 Historically, the sigmoid and the hyperbolic tangent function have been popular choices for the nonlinearity, but it is surprisingly shown \cite{nair2010relu} that the \emph{rectified linear units} (ReLU),
 \begin{equation}
 	f(x) = \max \{ x, 0 \},
 \end{equation}
 generally improves the accuracy of deep learning models.
-It is also known that neural networks with ReLU activations converge faster, and more robust to the vanishing gradient problem.
-A number of ReLU variants, including leaky ReLU \cite{xu2015leakyrelu}, parametric ReLU (PReLU) \cite{he2015prelu}, SReLU \cite{jin2015srelu}, have been devised and shown to be effective in some cases.
+It is also known that neural networks with ReLU activations converge faster, and are more robust to the vanishing gradient problem.
+A number of ReLU variants, including leaky ReLU \cite{xu2015leakyrelu}, parametric ReLU (PReLU; \citeNP{he2015prelu}), SReLU \cite{jin2015srelu}, have been devised and shown to be effective in some cases.
 
 
 As with any other machine learning methods, overfitting is a problem to overcome for deep learning models as well.
 While directly adding a L1 or L2 regularization term of weights is possible, a few clever tricks for preventing overfitting have been devised and widely employed, and they are treated as regularization methods in a wider sense.
 \emph{Dropout} \cite{srivastava2014dropout} is a simple yet powerful regularization method that turns off a random subset of activations during the training process.
 Because the network has to learn how to make accurate predictions using only a random subset of its components, the training becomes more robust and less susceptible to overfitting.
-\emph{Batch normalization} \cite{ioffe2015batchnorm} is a method to reduce what the covariance shift of activations, by performing normalization for each training mini-batch so that the activations of each layer have zero mean and unit variance.
+\emph{Batch normalization} \cite{ioffe2015batchnorm} is a method to reduce the covariance shift of activations, by performing normalization for each training mini-batch so that the activations of each layer have zero mean and unit variance.
 It has also been empirically shown to improve the generalizability of the trained model.
 Despite being relatively new, dropout and batch normalization are drop-in methods that can be added to most deep architectures with almost no changes to code and yet significantly improve the performance and are thus included almost by default in the majority of newer deep models.
-\emph{Scaled exponential linear units} (SELU) \cite{klambauer2017selu} use a special activation function that induces a self-normalizing property over layers, making the activations have zero mean and unit variance without using batch normalization explicitly.
+\emph{Scaled exponential linear units} (SELU; \citeNP{klambauer2017selu}) use a special activation function that induces a self-normalizing property over layers, making the activations have zero mean and unit variance without using batch normalization explicitly.
 
 
 Additionally, because typical neural networks contain thousands to millions of parameters to train, a proper initialization of the weights prior to training is important.
@@ -113,20 +115,20 @@ This is in contrast with \emph{discriminative models}, which can only predict th
 \subsection{Traditional Generative Models}
 
 Classic examples of generative models include \emph{na\"{i}ve Bayes classifiers} \cite{maron1961naive} which model a conditional distribution of each feature assuming they are conditionally independent given the label and use Bayes' theorem to predict the labels.
-\emph{Gaussian mixture models} (GMM) \cite{everitt1981mixture} approximates the data distribution with a mixture of multivariate gaussian distributions.
+\emph{Gaussian mixture models} (GMM; \citeNP{everitt1981mixture}) approximates the data distribution with a mixture of multivariate gaussian distributions.
 
 While these simple models work effectively to a certain degree with a well-crafted set of features, it is desirable to have generative models that can capture more intricate geometry of the data distribution.
-\emph{Probabilistic graphical models (PGM)} specify the structural dependencies between random variables using graphs, with nodes representing random variables and connections between them representing their dependencies.
+\emph{Probabilistic graphical models} (PGM; \citeNP{pearl1988probabilistic}) specify the structural dependencies between random variables using graphs, with nodes representing random variables and connections between them representing their dependencies.
 The graphs can have directed or undirected connections to formulate the joint probability distributions of the variables.
-\emph{Hidden Markov models (HMM)} \cite{rabiner1989hmm} and \emph{latent Dirichlet allocation (LDA)} \cite{blei2003lda} are special cases of directed probabilistic graphical models, also called \emph{Bayesian networks}, and are widely used for sequence modeling and topic modeling, respectively.
-Undirected graphical models, also called \emph{Markov random fields (MRF)}, have many applications in image processing, typically by having connections between nodes corresponding to adjacent pixels.
-Undirected graphical models where every pair of nodes has a connection are called \emph{Boltzmann machines} and are capable of learning internal representations of data.
+\emph{Hidden Markov models} (HMM; \citeNP{rabiner1989hmm}) and \emph{latent Dirichlet allocation} (LDA; \citeNP{blei2003lda}) are special cases of directed probabilistic graphical models, also called \emph{Bayesian networks}, and are widely used for sequence modeling and topic modeling, respectively.
+Undirected graphical models, also called \emph{Markov random fields} (MRF; \citeNP{kindermann1980mrf}), have many applications in image processing, typically by having connections between nodes corresponding to adjacent pixels.
+Undirected graphical models where every pair of nodes has a connection are called \emph{Boltzmann machines} \cite{hinton1984boltzmann} and are capable of learning internal representations of data.
 
 \subsection{Early Deep Generative Models and Autoregressive Models}
 
-\emph{Restricted Boltzmann machines} (RBM) are simplified variants of Boltzmann machines consisting of two layers of nodes with only interlayer connections, and unlike Boltzmann machines, there exists a relatively efficient algorithm \cite{hinton2005cd} for training restricted Boltzmann machines.
-\emph{Deep belief networks} (DBN) \cite{hinton2006dbn} are composed of multiple layers of restricted Boltzmann machines, which can be trained using greedy layer-wise optimization, and are capable of classifying hand-written digits as well as conditionally generating them.
-Although deep belief networks are one of the first successful deep learning applications and gave many architectural and algorithmic insights to the development of deep learning in the subsequent years, the algorithms for training DBNs are not as scalable as those for other discriminative models like stochastic gradient descent, and eventually faded away in favor of the discriminative models that runs more effectively with a larger scale of data.
+\emph{Restricted Boltzmann machines} (RBM; \citeNP{smolensky1986rbm}) are simplified variants of Boltzmann machines consisting of two layers of nodes with only interlayer connections, and unlike Boltzmann machines, there exists a relatively efficient algorithm \cite{hinton2005cd} for training restricted Boltzmann machines.
+\emph{Deep belief networks} (DBN; \citeNP{hinton2006dbn}) are composed of multiple layers of restricted Boltzmann machines, which can be trained using greedy layer-wise optimization, and are capable of classifying hand-written digits as well as conditionally generating them.
+Although deep belief networks are one of the first successful deep learning methods and gave many architectural and algorithmic insights to the development of deep learning in the subsequent years, the algorithms for training DBNs are not as scalable as those for other discriminative models like stochastic gradient descent, and eventually faded away in favor of the discriminative models that runs more effectively with a larger scale of data.
 
 An alternative method to generate data samples using a neural network is to produce one element (i.e. one audio sample or one pixel) at a time by feeding the previous elements to the network.
 This approach is called an autoregressive model, and many architectures based on this idea including NADE \cite{larochelle2011nade}, DARN \cite{gregor2013darn}, RIDE \cite{theis2015ride}, DRAW \cite{gregor2015draw}, PixelCNN/PixelRNN \cite{oord2016pixelrnn}, SampleRNN \cite{mehri2016samplernn}, WaveNet \cite{oord2016wavenet}, and WaveRNN \cite{kalchbrenner2018wavernn} are proposed and shown to be capable of generating image and audio samples.
@@ -136,17 +138,17 @@ However, in addition to being inevitably slow having to repetitively run the mod
 
 A straightforward method to obtain a compact latent representation from unlabeled data is to build an encoder that transforms the input data into a smaller latent dimension, followed by a decoder that maps it back to the original data.
 This architecture is called an \emph{autoencoder} \cite{bengio2009deeplearning}, and being a deep extension to principal component analysis (PCA), it is capable of learning a nonlinear mapping for dimensionality reduction.
-The autoencoder architecture are shown to be effective at encoding the latent representation of data, through a few successful variants including sparse autoencoder \cite{ng2011sparse} which produces a sparse representation of the input data, denoising autoencoder \cite{vincent2008denoising} which is capable of reducing noise or recover a redacted portion of an image, and contractive autoencoder \cite{rifai2011contractive} which adds a regularization term to make the model robust to slight variations of input values.
+The autoencoder architecture are shown to be effective at encoding the latent representation of data, through a few successful variants including sparse autoencoder \cite{ng2011sparse} which produces a sparse representation of the input data, denoising autoencoder \cite{vincent2008denoising} which is capable of reducing noise or recovering a redacted portion of an image, and contractive autoencoder \cite{rifai2011contractive} which adds a regularization term to make the model robust to slight variations of input values.
 
 
 Autoencoders are not generative models in a strict sense, because, while its decoder part can produce data samples from their latent representations, it lacks the ability to randomly sample the points in the latent dimensions that corresponds to the data distribution.
-\emph{Variational autoencoders} (VAE) \cite{kingma2014vae} address this problem by restricting the posterior latent distribution to be Gaussian.
+\emph{Variational autoencoders} (VAE;  \citeNP{kingma2014vae}) address this problem by restricting the posterior latent distribution to be Gaussian.
 This is achieved by variational inference, reformulating the evidence lower bound (ELBO) of the data log-likelihood as:
 \begin{equation}\label{eqn:vae}
 \log p(\bm{x}) \ge \mathcal{L}(p_\theta, q_\phi) = \mathbb{E}_{q_\phi(\bm{z}|\bm{x})} [\log p_\theta(\bm{x}|\bm{z})] - \mathrm{KL}(q_\phi(\bm{z}|\bm{x}) || p(\bm{z})),
 \end{equation}
 where $q_\phi(\bm{z}|\bm{x})$ models the encoder and $p_\theta(\bm{x}|\bm{z})$ models the decoder, and both are parameterized using neural networks which provides a flexible and differentiable family of functions.
-Note that maximizing $\mathcal{L}$ will maximize the first term of RHS, the log likelihood of the reconstructed data, and minimize the second term, the KL divergence between the encoded data distribution and the prior, serving as a regularizer that induces the posterior to be Gaussian.
+Note that maximizing $\mathcal{L}$ will maximize the first term of RHS, the log likelihood of the reconstructed data, and minimize the second term, the KL divergence between the encoded data distribution and the Gaussian prior, serving as a regularizer that induces the posterior to be Gaussian.
 The Gaussian prior gives the KL divergence a closed-form solution making it straightfoward to derive the derivative according to $\phi$, whereas the first term contains an expectation over a distribution depending on $\phi$, which disallows moving the gradient operator into the expectation and makes the stochastic gradient descent and backpropagation impossible.
 A reparameterization trick is used to address this issue, by setting $\bm{z} = g({\epsilon}, \bm{x}) = \bm{\mu}_\phi (\bm{x}) + {\epsilon} \cdot \bm{\sigma}_\phi(\bm{x})$ where $\epsilon \sim \mathcal{N}(0, 1)$, which gives:
 \begin{equation}\label{eqn:reparam}
@@ -156,7 +158,7 @@ A reparameterization trick is used to address this issue, by setting $\bm{z} = g
 making the stochastic gradient ascent and backpropagation on the ELBO possible.
 
 
-The biggest drawback of variational autoencoders, however, is the blurriness in reconstructed images, that may come from the inexactness of the Gaussian assumption and the variational lower bound used by the model \cite{doersch2016tutorial}.
+A drawback of variational autoencoders, however, is the blurriness in reconstructed images, that may come from the inexactness of the Gaussian assumption and the variational lower bound used by the model \cite{doersch2016tutorial}.
 There have been many attempts to overcome this by allowing more flexible prior distributions \cite{rezende2015flow} as well as better latent representations \cite{kingma2016iaf}.
 VQ-VAE \cite{oord2017vqvae} uses discrete prior and posterior distributions, and is able to generate less blurry images and perform speaker conversion using raw audio.
 Variational autoencoders are powerful deep generative models with the advantages of having a single objective function to be optimized and thus having a stable training scheme.
@@ -165,7 +167,7 @@ Despite being one of the most successful types of deep generative models to date
 
 \section{Generative Adversarial Networks}\label{sec:gan}
 
-\emph{Generative adversarial networks} (GAN) \cite{goodfellow2014gan} are a family of deep generative models that have become extremely popular.
+\emph{Generative adversarial networks} (GAN; \citeNP{goodfellow2014gan}) are a family of deep generative models that have become extremely popular.
 Unlike other deep neural network models that use optimization to find the weights minimizing the loss function, GANs try to find a Nash equilibrium between its two components, the generator and discriminator.
 Given the training data $\bm{x}\sim p_{\mathrm{data}}$ and the prior of latent vectors $\bm{z} \sim p_{\bm{z}}$ which typically is a multivariate Gaussian distribution, GAN performs the following minimax game:
 \begin{equation}\label{eqn:gan}
@@ -195,7 +197,7 @@ GANs are notoriously difficult to train \cite{arjovsky2017principled}; its conve
 A plethora of variations of GAN have been proposed to mitigate this problem, aiming to stabilize the training and/or improve the perceptual quality of generated samples.
 A common approach among them is to devise a different loss function or to add a regularization term to the loss function that penalizes mode collapsing.
 
-$f$-GAN \cite{nowozin2016fgan} is a generalization of the original GAN using a family of $f$-divergences in addition to the original GAN's formulation using Jensen-Shannon divergence.
+$f$-GAN \cite{nowozin2016fgan} is a generalization of the original GAN using a family of $f$-divergences in addition to the original GAN's formulation which uses Jensen-Shannon divergence.
 Wasserstein GAN (WGAN) \cite{arjovsky2017wgan} minimizes the Wasserstein distance between the model and real distribution, and was later extended to WGAN-GP \cite{gulrajani2017wgan} which uses a gradient penalty that does not require weight clipping as in Wasserstein GAN.
 Based on WGAN's observation that Lipschitz continuity of GAN is beneficial, spectral normalization \cite{miyato2018spectral} is another technique to impose Lipschitz continuity that is more stable and provides higher diversity in generated images than gradient penalty.
 %Wasserstein distance is not an $f$-divergence but a special case of integral probability metrics (IPM), which also includes maximum mean discrepancy (MMD) distance, on which MMD GAN \cite{li2017mmdgan} and Distributional Adversarial Networks (DAN) \cite{li2017dan} are based.
@@ -212,7 +214,7 @@ While there are many more GAN formulations claiming to be superior than others, 
 
 It is usually desirable to generate samples according to certain conditions, e.g. generating images for a specific digit.
 Conditional GAN (cGAN) \cite{mirza2014conditional} is an architecture where the generator can use the class label as well as the noise input to produce samples.
-Auxiliary Classifier GAN (AC-GAN) \cite{odena2016acgan} is an extension to cGAN in which the discriminator can also serve as a classifier.
+Auxiliary Classifier GAN (AC-GAN) \cite{odena2016acgan} is an extension to cGAN in which the discriminator can also serve as a classifier for categories of data.
 InfoGAN \cite{chen2016infogan} can perform conditional generation in a completely unsupervised manner, i.e. without using class labels during training, by maximizing the mutual information between a subset of the latent variables and the observations.
 
 All of the above architectures use conditional latent components concatenated to the other feature components, which makes training a conditional GAN with a large number of classes difficult.

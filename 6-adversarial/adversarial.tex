@@ -52,7 +52,7 @@ In a probabilistic perspective, we can interpret $\mathcal{L}$ as the negative l
 p_\vartheta(\Y | \X) ~=~ e^{\shortminus\mathcal{L}(\hat{\Y}, \Y)} = \prod_{p=1}^{P} \prod_{t=1}^{T} e^{\shortminus\mathcal{L}(\hat{\Y}_{pt}, \Y_{pt})} = \prod_{p=1}^{P} \prod_{t=1}^{T} p_\vartheta(\Y_{pt} | \X)
 \end{equation}
 which indicates that each element of the label $\Y$ is conditionally independent with each other given the input $\X$.
-This encourages the model to predict the average of the posterior, making blurry predictions when the posterior distribution is multimodal, e.g. natural images~\cite{dosovitskiy2016generating}.
+This encourages the model to predict the average of the ground-truth distribution, making blurry predictions when the target is multimodal, e.g. natural images~\cite{dosovitskiy2016generating}.
 %This makes predictions blurry by encouraging the model to predict the average of fast or nuanced events, e.g. trills.
 
 Music data is highly contextual and multimodal, and the conditional independence assumption does not hold in general.
@@ -66,7 +66,7 @@ The Markov assumption is effective for one-dimensional sequence prediction tasks
 
 
 There exist a number of models in the computer vision literature that can express inter-label dependencies in two-dimensional predictions, such as the neural autoregressive distribution estimator (NADE)~\cite{larochelle2011nade}, PixelRNN~\cite{oord2016pixelrnn}, and PixelCNN~\cite{oord2016pixelcnn}.
-However, apart from a notable exception using a hybrid RNN-NADE approach~\cite{boulangerlewandowski2012temporal}, the effect of learning the joint posterior distribution for polyphonic music transcription has not been well studied.
+However, apart from a notable exception using a hybrid RNN-NADE approach~\cite{boulangerlewandowski2012temporal}, the effect of learning the joint multi-label distribution for polyphonic music transcription has not been well studied.
 
 
 To this end, we propose a new approach for effectively leveraging inter-label dependencies in polyphonic music transcription. We pose the problem as an image translation task and apply an adversarial loss incurred by a discriminator network attached to the baseline model.
@@ -91,7 +91,7 @@ NMF-based methods are designed to minimize a divergence function between the mat
 
 In this chapter, we use Onsets and Frames~\cite{hawthorne2018onsetsframes}, a state-of-the-art piano transcription model based on deep learning, as our baseline.
 It uses multiple columns of convolutional and recurrent neural network layers to predict onsets, offsets, velocities, and frame labels from the Mel spectrogram input, as shown in Figure~\ref{fig:onsetsframes}.
-Predicted onset and frame posteriors are then used for decoding the note sequences, where a threshold value is used to create binary onset and frame activations, and frame activations without the corresponding onsets are disregarded.
+Predicted onset and frame activations are then used for decoding the note sequences, where a threshold value is used to create binary onset and frame activations, and frame activations without the corresponding onsets are disregarded.
 Onsets and Frames also uses an element-wise optimization objective which does not consider the inter-label dependencies.
 This motivates the adversarial training scheme that is outlined in the following subsection.
 
@@ -180,7 +180,7 @@ For this reason, we make the discriminator a function of $\Y$ only, simplifying 
 \begin{equation}\label{eqn:simple-cgan}
 \mathcal{L}_{\text{cGAN}}(G, D) ~ = ~  \mathbb{E}_{\Y}  \log D(\Y) ~ + ~ \mathbb{E}_{\X} \log (1 - D ( G(\X))).
 \end{equation}
-Note that $\z$ is also omitted in Equation \ref{eqn:simple-cgan}, as we follow \cite{isola2017pix2pix} and implement the stochasticity of $\z$ only in terms of dropout layers \cite{srivastava2014dropout}, without explicitly feeding random noises into the generator.
+Note that $\z$ is also omitted in Equation \ref{eqn:simple-cgan}, as we follow \citeA{isola2017pix2pix} and implement the stochasticity of $\z$ only in terms of dropout layers \cite{srivastava2014dropout}, without explicitly feeding random noises into the generator.
 This causes a mode collapse problem where the learned $p(\Y|\X)$ is not diverse enough, but it does not harm our purpose of producing more realistic target representations.
 
 \subsection{TTUR and \textit{mixup} to Stabilize GAN Training}
@@ -250,6 +250,25 @@ Note that for training the generator network, we perform label flipping in $\mat
 Also, to train a least-squares GAN (Equation \ref{eqn:lsgan}) instead, we can simply replace $\ell$ with a mean squared error (MSE) loss.
 
 
+
+\section{Experimental Setup}
+
+To verify the effectiveness of our approach, we compare Onsets and Frames~\cite{hawthorne2018onsetsframes}, a state-of-the-art piano transcription model, with variants of the same model that are trained with the adversarial loss.
+We also aim to evaluate the choices of the GAN loss and the \textit{mixup} strength $\alpha$.
+
+\subsection{Model Architecture}
+
+We use the extended Onsets and Frames model~\cite{hawthorne2019maestro} which increased the CNN channels to 48/48/96, the LSTM units to 256, and the FC units to 768.
+The extended model has a total of 26.5 million parameters.
+We do not use the frame loss weights described in~\cite{hawthorne2018onsetsframes} in favor of the offset stack introduced in the extended version (see Figure~\ref{fig:onsetsframes}).
+During inference, we first calculate the activations corresponding to overlapping chunks of audio, with the same length as the training sequences, and perform overlap-add (OLA) using Hamming windows to obtain the full-length activation matrix.
+We perform OLA instead of applying the recurrent calculations for the full length, because the effects of adversarial learning are best achieved within the training sequence length.
+
+The input to the discriminator has two channels for the onset and frame predictions.
+The discriminator has 5 convolutional layers: \texttt{c32k3s2p1}, \texttt{c64k3s2p1}, \texttt{c128k3s2p1}, \texttt{c256k3s2p1}, \texttt{c1k5s1p2}, where the numbers indicate the number of output channels, the kernel size, the stride amount, and the padding size.
+At each non-final layer, dropout of probability 0.5 and leaky ReLU activation with negative slope 0.2 are used.
+The mean of the final layer output along the time and frequency axes is taken as the discriminator output.
+
 \begin{table}[t]
 	\small
 	\renewcommand\arraystretch{1.2}
@@ -271,7 +290,26 @@ Also, to train a least-squares GAN (Equation \ref{eqn:lsgan}) instead, we can si
 	\caption{Hyperparameters used during the experiments.}\label{tab:hyperparameters}
 \end{table}
 
-\begin{table}[t]
+
+\subsection{Hyperparameters}
+
+Table \ref{tab:hyperparameters} summarizes the hyperparameters used during the experiments, which are mostly taken directly from~\citeA{hawthorne2018onsetsframes} and \citeA{isola2017pix2pix}.
+Also following~\citeA{hawthorne2018onsetsframes}, we use Adam~\cite{kingma2015adam} and apply learning rate decay of factor 0.98 in every 10,000 iterations, for both the generator and the discriminator.
+We examine two types of GAN losses, the non-saturating GAN ($\ell = \text{BCE}$) and the least-squares GAN ($\ell = \text{MSE}$).
+For each GAN loss, multiple values of \textit{mixup} strengths are compared with $\alpha = 0$, i.e. no \textit{mixup}.
+Training runs for one million iterations, and the iteration that best performs on the validation set are used for evaluation on the test set.
+
+\subsection{Dataset}
+
+We use the MAESTRO dataset~\cite{hawthorne2019maestro}, which contains Disklavier recordings of 1,184 classical piano performances.
+The dataset consists of 172.3 hours of audio, which are provided with 140.1, 15.3, and 16.9 hours of train/validation/test splits such that recordings of one composition only appear in the same split.
+We resample the audio to 16 kHz and down-mix into a single channel.
+Following~\citeA{hawthorne2018onsetsframes}, an STFT window of 2,048 samples is used for producing 229-bin Mel spectrograms, and a hop length of 32 ms is used.
+% We do not perform audio amplitude normalization on the dataset, following the official implementation.
+Training sequences sliced at random positions are used, unlike the official implementation which slices training sequences at silence or zero crossings.
+
+
+\begin{table}[b]
 	\small
 	\centering
 	\renewcommand\arraystretch{1.5}
@@ -290,6 +328,22 @@ Also, to train a least-squares GAN (Equation \ref{eqn:lsgan}) instead, we can si
 	\vspace{1em}
 	\caption{Frame and note F1 scores are the highest when the non-saturating GAN loss and $\alpha = 0.3$ are used.}\label{tab:alpha}
 \end{table}
+
+
+\subsection{Evaluation Metrics}
+
+The Onsets and Frames model perform both frame-level and note-level predictions, and their performance can be evaluated with the standard precision, recall, and F1 metrics.
+For multi-pitch estimation, we also report the error rate metrics defined by~\citeA{poliner2006discriminative}, which include total error, substitution error, miss error, and false alarm error.
+We use the \texttt{mir\_eval}~\cite{raffel2014mir_eval} library for all metric calculations.
+For the note-level metrics, we use the default settings of the library, which use 50 ms for the onset tolerance, 50 ms or 20\% of the note length (whichever is longer) for the offset tolerance, and 0.1 for the velocity tolerance.
+
+
+\section{Results}
+
+%Our results show that adversarial learning brings a consistent improvement over the baseline which is already very robust, as shown with quantitative and qualitative analyses in the following subsections.
+
+
+\subsection{Comparison with the Baseline Metrics}
 
 \begin{table*}[t]
 	\centering
@@ -325,58 +379,6 @@ Also, to train a least-squares GAN (Equation \ref{eqn:lsgan}) instead, we can si
 \end{table*}
 
 
-\section{Experimental Setup}
-
-To verify the effectiveness of our approach, we compare Onsets and Frames~\cite{hawthorne2018onsetsframes}, a state-of-the-art piano transcription model, with variants of the same model that are trained with the adversarial loss.
-We also aim to evaluate the choices of the GAN loss and the \textit{mixup} strength $\alpha$.
-
-\subsection{Model Architecture}
-
-We use the extended Onsets and Frames model~\cite{hawthorne2019maestro} which increased the CNN channels to 48/48/96, the LSTM units to 256, and the FC units to 768.
-The extended model has a total of 26.5 million parameters.
-We do not use the frame loss weights described in~\cite{hawthorne2018onsetsframes} in favor of the offset stack introduced in the extended version (see Figure~\ref{fig:onsetsframes}).
-During inference, we first calculate the posteriors corresponding to overlapping chunks of audio, with the same length as the training sequences, and perform overlap-add (OLA) using Hamming windows to obtain the full-length posterior.
-We perform OLA instead of applying the recurrent calculations for the full length, because the effects of adversarial learning are best achieved within the training sequence length.
-
-The input to the discriminator has two channels for the onset and frame predictions.
-The discriminator has 5 convolutional layers: \texttt{c32k3s2p1}, \texttt{c64k3s2p1}, \texttt{c128k3s2p1}, \texttt{c256k3s2p1}, \texttt{c1k5s1p2}, where the numbers indicate the number of output channels, the kernel size, the stride amount, and the padding size.
-At each non-final layer, dropout of probability 0.5 and leaky ReLU activation with negative slope 0.2 are used.
-The mean of the final layer output along the time and frequency axes is taken as the discriminator output.
-
-
-
-\subsection{Hyperparameters}
-
-Table \ref{tab:hyperparameters} summarizes the hyperparameters used during the experiments, which are mostly taken directly from~\citeA{hawthorne2018onsetsframes} and \citeA{isola2017pix2pix}.
-Also following~\citeA{hawthorne2018onsetsframes}, we use Adam~\cite{kingma2015adam} and apply learning rate decay of factor 0.98 in every 10,000 iterations, for both the generator and the discriminator.
-We examine two types of GAN losses, the non-saturating GAN ($\ell = \text{BCE}$) and the least-squares GAN ($\ell = \text{MSE}$).
-For each GAN loss, multiple values of \textit{mixup} strengths are compared with $\alpha = 0$, i.e. no \textit{mixup}.
-Training runs for one million iterations, and the iteration that best performs on the validation set are used for evaluation on the test set.
-
-\subsection{Dataset}
-
-We use the MAESTRO dataset~\cite{hawthorne2019maestro}, which contains Disklavier recordings of 1,184 classical piano performances.
-The dataset consists of 172.3 hours of audio, which are provided with 140.1, 15.3, and 16.9 hours of train/validation/test splits such that recordings of one composition only appear in the same split.
-We resample the audio to 16 kHz and down-mix into a single channel.
-Following~\citeA{hawthorne2018onsetsframes}, an STFT window of 2,048 samples is used for producing 229-bin Mel spectrograms, and a hop length of 32 ms is used.
-% We do not perform audio amplitude normalization on the dataset, following the official implementation.
-Training sequences sliced at random positions are used, unlike the official implementation which slices training sequences at silence or zero crossings.
-
-\subsection{Evaluation Metrics}
-
-The Onsets and Frames model perform both frame-level and note-level predictions, and their performance can be evaluated with the standard precision, recall, and F1 metrics.
-For multi-pitch estimation, we also report the error rate metrics defined by~\citeA{poliner2006discriminative}, which include total error, substitution error, miss error, and false alarm error.
-We use the \texttt{mir\_eval}~\cite{raffel2014mir_eval} library for all metric calculations.
-For the note-level metrics, we use the default settings of the library, which use 50 ms for the onset tolerance, 50 ms or 20\% of the note length (whichever is longer) for the offset tolerance, and 0.1 for the velocity tolerance.
-
-
-\section{Results}
-
-%Our results show that adversarial learning brings a consistent improvement over the baseline which is already very robust, as shown with quantitative and qualitative analyses in the following subsections.
-
-
-\subsection{Comparison with the Baseline Metrics}
-
 \begin{figure*}[t]
 	\centering
 	\minipage{1.03\textwidth}
@@ -385,7 +387,7 @@ For the note-level metrics, we use the default settings of the library, which us
 	\includegraphics[width=0.499\textwidth]{predictions-73.pdf}%
 	%\includegraphics[width=0.333\textwidth]{predictions-64.pdf}%
 	\endminipage
-	\caption{Comparisons of the frame activation posterior predicted by the baseline and our model ($\ell = \text{BCE}$, $\alpha = 0.3$), on three example segments. The input Mel spectrograms and the target piano rolls are shown together. The GAN version produces more confident predictions compared to the noisy baselines, leading to more accurate predictions.}\label{fig:predictions}
+	\caption{Comparisons of the frame activations predicted by the baseline and our model ($\ell = \text{BCE}$, $\alpha = 0.3$), on three example segments. The input Mel spectrograms and the target piano rolls are shown together. The GAN version produces more confident predictions compared to the noisy baselines, leading to more accurate predictions.}\label{fig:predictions}
 \end{figure*}
 
 \begin{figure*}[t]
@@ -416,11 +418,11 @@ These improvements are especially promising, considering that Onsets and Frames 
 
 \subsection{Visualization of Frame Activations}
 
-To better understand the inner workings of the conditional GAN framework, we visualize the frame posteriorgrams created by the baseline and the best performing conditional GAN model in Figure \ref{fig:predictions}.
-In contrast to the baseline posteriorgrams which have many blurry segments, the posteriorgrams generated by our method mostly contain segments with solid colors, meaning that the model is more confident in its prediction.
+To better understand the inner workings of the conditional GAN framework, we visualize the frame activations created by the baseline and the best performing conditional GAN model in Figure \ref{fig:predictions}.
+In contrast to the baseline which have many blurry segments, the activations generated by our method mostly contain segments with solid colors, meaning that the model is more confident in its prediction.
 Figure~\ref{fig:distribution} shows that the proportion of frame activation values in $(0.1, 0.9)$ is noticeably higher in the baseline, thus making the output less sensitive to the threshold choice.
 This is because indecisive predictions are penalized by the discriminator, since they are easy to distinguish from the ground-truth which contains only binary labels.
-The generator is therefore encouraged to output the most probable note sequences even when it is unsure, rather than producing blurry posteriorgrams that might hamper the decoding process.
+The generator is therefore encouraged to output the most probable note sequences even when it is unsure, rather than producing blurry activations that might hamper the decoding process.
 This allows for an interpretation in which the GAN loss provides a prior for valid onset and frame activations, and the model learns to perform MAP estimation based on this prior.
 
 

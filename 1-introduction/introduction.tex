@@ -117,14 +117,14 @@ However, the readability of the score rendered from a transcribed MIDI file is l
 This study of automatic music transcription is entirely quantitative and does not involve subjective tests on human participants.
 We only aim to discover the systematic relations between audio signals and corresponding note sequences present in the datasets we use for training.
 However, music is essentially a perceived notion, and thus are the core qualities of sound --- pitch, timbre, and loudness --- which are the output of automatic transcription.
-For this reason, manually annotating polyphonic music is an error-prone process, where any two annotators may produce drastically different annotations.
+Limited human performance and subjectivity make transcription of polyphonic music an error-prone process, where any two annotators may produce drastically different annotations.
 Although this problem of inaccuracy and subjective difference is often overcome by using a ground-truth dataset synthesized from known frequency information, the gap still persists between what a model can learn from synthesized audio and how it will respond to real-world sounds.
 This thesis uses both kinds of datasets, from synthesized and recorded audio signals, and thus the real-world applicability of each of the proposed models should be carefully examined.
 
 The goal of automatic transcription is at a lower level than for tasks such as  chord recognition and melody tracking, which may incur even more subjective disagreements caused by the imprecise definitions of chords and melodies.
 Being directly related to the physical concept of fundamental frequency, pitch is relatively precisely defined in this sense, and formulating automatic music transcription as an audio-to-piano-roll conversion mostly eliminates the ambiguity that exists in chord recognition and melody tracking.
 There exist some cases where the mathematical definition of fundamental frequency still cannot be applied for all pitched sounds, such as the Shepard tone \cite{shepard1964circularity} where the pitch of a harmonic sound fails to be consistently mapped to a fundamental frequency.
-However, disregarding these few edge cases, this study assumes that the piano roll notation can convey an objective transcription for many practical purposes, allowing us to postulate AMT as a mathematical problem which does not require experiments on human subjects.
+However, disregarding these few edge cases, this study assumes that the piano roll notation can convey an objective transcription for many practical purposes, allowing us to formulate AMT as a mathematical problem which does not require experiments on human subjects.
 
 \section{Need for Study}
 
@@ -139,12 +139,12 @@ A brief perspective on AMT is presented in the context of wider AI research, fol
 
 Many applications of the techniques in the realm of automatic music transcription is on interactive music systems.
 \citeA{vercoe1984performer} proposed a quest for a \emph{synthetic performer}, which can listen, perform, and learn in the context of live performance.
-Relevant sub-fields include automatic \emph{real-time accompaniment} \cite{dannenberg1985accompaniment} based on dynamic programming was one of the first successful demonstrations of AMT techniques, and \emph{Score following}, a general term referring to the synchronization of a computer with a performer playing a known score \cite{orio2003following}.
+Relevant sub-fields include automatic \emph{real-time accompaniment} \cite{dannenberg1985accompaniment} based on dynamic programming was one of the first successful demonstrations of AMT techniques, and \emph{score following}, a general term referring to the synchronization of a computer with a performer playing a known score \cite{orio2003following}.
 An offline music-to-score matching algorithm can also be applied to intelligent audio editors \cite{dannenberg2003following}.
 
 \emph{Music recommender systems} can combine many kinds of information for improved music retrieval and personalization \cite{celma2010music}.
 Content-based music recommender systems can utilize not only the metadata but also the audio content, and methods using timbral \cite{magno2008recommendation}, temporal \cite{li2007recommender}, and tonal features \cite{lu2009recommendation} have been introduced.
-These music recommender systems can be further improved when the complete information on each domain is made available through AMT.
+These music recommender systems can be further improved when the complete annotations are made available through AMT.
 
 AMT system can help create databases for query-by-humming \cite{ghias1995humming} by automatically estimating melody annotations, where users can retrieve music by humming an excerpt of the song.
 Such databases can also facilitate large-scale musicological analyses \cite{abdallah2015british}, as well as the development of computer-aided music composition \cite{agostini2013aid} that incorporates musicological knowledge.
@@ -163,7 +163,7 @@ In music transcription, these features correspond to the musical concepts such a
 Philosophically, this idea follows what Richard Feynman once wrote on his blackboard, \emph{``What I cannot create, I do not understand''} and \emph{``Know how to solve every problem that has been solved''}.
 He meant that the marker for truly understanding something is the ability to construct it completely from scratch.
 Studies on generative models have an advantage of not requiring explicitly labeled data, and they hence tend to take self-supervised or unsupervised learning approaches.
-\citeA{lecun2016unsupervised} introduced unsupervised learning as a cake, with supervised learning as icing and reinforcement learning as the cherry on the top, by which he meant that generative models need to predict at a much larger scale of information and should be able to learn the ``common sense''.
+\citeA{lecun2016unsupervised} described unsupervised learning as a cake, with supervised learning as icing and reinforcement learning as the cherry on the top, by which he meant that generative models need to predict at a much larger scale of information and should be able to learn the underlying ``common sense''.
 
 \begin{figure}
 	\includegraphics[width=\textwidth]{generative-evolution.pdf}
@@ -175,7 +175,7 @@ Studies on generative models have an advantage of not requiring explicitly label
 Inherently, unsupervised learning is less well-defined than supervised learning, and this is the reason why unsupervised learning is sometimes synonymous with clustering, because finding clusters is usually as much an unsupervised learning system can do.
 However, the recent success of deep learning introduced a new breed of generative models, enabling the end-to-end generation of complex data such as photos and audio signals.
 \emph{Generative adversarial networks} (GAN) \cite{goodfellow2014gan} are the most notable among them, and their performance in generating realistic images has been improving at an extraordinary pace, as shown in Figure \ref{fig:generative-evolution}.
-Combined with the various techniques for manipulating the semantic information in GANs as will be introduced in Section \ref{ch:deeplearning}.\ref{sec:gan}, this hints at completely new kinds of generative methodologies for audio processing.
+Combined with the various techniques for manipulating the semantic information in GANs as will be introduced in Section \ref{ch:deeplearning}.\ref{sec:gan}, this facilitates completely new kinds of generative methodologies for audio processing.
 
 
 In this context, this thesis aims to design and develop improved methods for automatic music transcription powered by deep generative models.
